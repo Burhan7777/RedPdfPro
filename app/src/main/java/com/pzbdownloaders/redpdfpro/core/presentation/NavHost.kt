@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import com.pzbdownloaders.redpdfpro.MainActivity
+import com.pzbdownloaders.redpdfpro.compresspdffeature.screens.CompressPDF
 import com.pzbdownloaders.redpdfpro.mergepdffeature.screens.MergePdf
 import com.pzbdownloaders.redpdfpro.splitpdffeature.screens.SplitPdf
 
@@ -15,16 +16,19 @@ fun MyNavHost(
 ) {
     androidx.navigation.compose.NavHost(
         navController = navHostController,
-        startDestination = Screens.homePage.route
+        startDestination = Screens.HomePage.route
     ) {
-        composable(route = Screens.homePage.route) {
+        composable(route = Screens.HomePage.route) {
             HomePage(navHostController, viewModel)
         }
-        composable(route = Screens.splitPdf.route) {
+        composable(route = Screens.SplitPdf.route) {
             SplitPdf(navHostController, activity, viewModel)
         }
-        composable(Screens.mergePdf.route) {
+        composable(Screens.MergePdf.route) {
             MergePdf(activity = activity, viewModel)
+        }
+        composable(Screens.CompressPDf.route) {
+            CompressPDF(mainActivity = activity)
         }
     }
 

@@ -32,6 +32,7 @@ android {
                     install("datetime")
                     install("pypdf")
                     install("pypdf[image]")
+                    install("PYPDF2")
                 }
             }
             productFlavors {

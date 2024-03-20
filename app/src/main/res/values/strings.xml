@@ -7,4 +7,7 @@
     <string name="cancel">Cancel</string>
     <string name="saveAs">Save As</string>
     <string name="mergePDFs">Merge PDFs</string>
+    <string name="compressPDF">Compress PDF</string>
+    <string name="tools">Tools</string>
+    <string name="extractFromPdf">Extract from PDF</string>
 </resources>
