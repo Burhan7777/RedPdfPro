@@ -1,4 +1,4 @@
-package com.pzbdownloaders.redpdfpro.splitpdf.components
+package com.pzbdownloaders.redpdfpro.splitpdffeature.components
 
 import android.graphics.Bitmap
 import androidx.compose.runtime.MutableState

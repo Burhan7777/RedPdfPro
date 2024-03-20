@@ -1,4 +1,4 @@
-package com.pzbdownloaders.redpdfpro.splitpdf.utils
+package com.pzbdownloaders.redpdfpro.splitpdffeature.utils
 
 import android.net.Uri
 import com.pzbdownloaders.redpdfpro.MainActivity

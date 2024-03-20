@@ -1,4 +1,4 @@
-package com.pzbdownloaders.redpdfpro.splitpdf.components
+package com.pzbdownloaders.redpdfpro.splitpdffeature.components
 
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke

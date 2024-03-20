@@ -1,12 +1,10 @@
-package com.pzbdownloaders.redpdfpro.splitpdf.utils
+package com.pzbdownloaders.redpdfpro.splitpdffeature.utils
 
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.pdf.PdfRenderer
-import android.os.ParcelFileDescriptor
-import androidx.compose.foundation.isSystemInDarkTheme
 import java.io.File
 
 fun loadPage(
