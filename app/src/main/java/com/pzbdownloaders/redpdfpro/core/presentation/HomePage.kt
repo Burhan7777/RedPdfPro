@@ -18,6 +18,8 @@ import com.pzbdownloaders.redpdfpro.core.presentation.Component.FeatureBox
 @Composable
 fun HomePage(navHostController: NavHostController, viewModel: MyViewModel) {
     viewModel.modelList.clear()
+    viewModel.listOfPdfToMerge.clear()
+    viewModel.pdfNames.clear()
     Column(
         modifier = Modifier
             .fillMaxSize()

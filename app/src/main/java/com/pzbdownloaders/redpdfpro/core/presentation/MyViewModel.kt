@@ -6,4 +6,6 @@ import com.pzbdownloaders.redpdfpro.splitpdffeature.components.modelBitmap
 
 class MyViewModel : ViewModel() {
     var modelList = mutableStateListOf<modelBitmap>()
+    var listOfPdfToMerge = mutableStateListOf<String>()
+    var pdfNames = mutableStateListOf<String>()
 }

@@ -1,4 +1,4 @@
-package com.pzbdownloaders.redpdfpro.splitpdffeature.components
+package com.pzbdownloaders.redpdfpro.core.presentation.Component
 
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
@@ -12,6 +12,12 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -22,12 +28,18 @@ import com.pzbdownloaders.redpdfpro.R
 
 @Composable
 fun AlertDialogBox(
-    name: MutableState<String>,
-    path: String,
-    pageNumbersSelected: ArrayList<Int>,
+    name: MutableState<String> = mutableStateOf(""),
+    path: String = "",
+    listOfPdfs: SnapshotStateList<String> = mutableStateListOf(),
+    pageNumbersSelected: ArrayList<Int> = ArrayList(),
     onDismiss: () -> Unit,
+    featureExecution: () -> Unit
 
-    ) {
+) {
+
+    var showFeature by remember {
+        mutableStateOf(false)
+    }
 
     val context = LocalContext.current
     androidx.compose.material3.AlertDialog(
@@ -78,12 +90,7 @@ fun AlertDialogBox(
             Button(
                 onClick = {
                     if (name.value.isNotEmpty()) {
-                        val python = Python.getInstance()
-                        val module = python.getModule("splitPDF")
-                        module.callAttr("split", path, pageNumbersSelected.toArray(), name.value)
-                        println(path)
-                        println(pageNumbersSelected.size)
-                        println(name.value)
+                        featureExecution()
                         onDismiss()
                     } else {
                         Toast.makeText(context, "Please enter name", Toast.LENGTH_SHORT).show()

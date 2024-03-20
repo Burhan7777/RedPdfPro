@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import com.pzbdownloaders.redpdfpro.MainActivity
-import com.pzbdownloaders.redpdfpro.mergepdffeature.MergePdf
+import com.pzbdownloaders.redpdfpro.mergepdffeature.screens.MergePdf
 import com.pzbdownloaders.redpdfpro.splitpdffeature.screens.SplitPdf
 
 @Composable

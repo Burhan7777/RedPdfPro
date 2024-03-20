@@ -36,7 +36,7 @@ import com.chaquo.python.Python
 import com.pzbdownloaders.redpdfpro.MainActivity
 import com.pzbdownloaders.redpdfpro.R
 import com.pzbdownloaders.redpdfpro.core.presentation.MyViewModel
-import com.pzbdownloaders.redpdfpro.splitpdffeature.components.AlertDialogBox
+import com.pzbdownloaders.redpdfpro.core.presentation.Component.AlertDialogBox
 import com.pzbdownloaders.redpdfpro.splitpdffeature.components.SingleRow
 import com.pzbdownloaders.redpdfpro.splitpdffeature.components.modelBitmap
 import com.pzbdownloaders.redpdfpro.splitpdffeature.utils.getFilePathFromContentUri
@@ -129,10 +129,13 @@ fun SplitPdf(navHostController: NavHostController, activity: MainActivity, viewM
         AlertDialogBox(
             name = name,
             path = path,
-            pageNumbersSelected = pageNumbersSelected.value
-        ) {
-            showAlertBox = false
-        }
+            pageNumbersSelected = pageNumbersSelected.value,
+            featureExecution = {
+                val python = Python.getInstance()
+                val module = python.getModule("splitPDF")
+                module.callAttr("split", path, pageNumbersSelected.value.toArray(), name.value)
+            },
+            onDismiss = { showAlertBox = false })
 
 }
 
