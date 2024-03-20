@@ -2,6 +2,7 @@ package com.pzbdownloaders.redpdfpro.core.presentation.Component
 
 import android.graphics.Paint.Align
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,6 +19,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -31,13 +34,15 @@ import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.pzbdownloaders.redpdfpro.R
+import com.pzbdownloaders.redpdfpro.splitpdf.components.modelBitmap
 
 @Composable
 fun FeatureBox(
     stringId: Int,
     drawableId: Int,
     contentDescription: String,
-    navHostController: NavHostController
+    navHostController: NavHostController,
+    route: String,
 ) {
     Box(
         modifier = Modifier
@@ -50,6 +55,9 @@ fun FeatureBox(
             )
             .background(MaterialTheme.colorScheme.primary)
             .padding(all = 10.dp)
+            .clickable {
+                navHostController.navigate(route)
+            }
     ) {
         Column(
             verticalArrangement = Arrangement.Center,
@@ -66,8 +74,9 @@ fun FeatureBox(
             Text(
                 text = stringResource(id = stringId),
                 modifier = Modifier,
-                fontSize =  12.sp,
+                fontSize = 12.sp,
                 textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.onPrimary
             )
         }
     }

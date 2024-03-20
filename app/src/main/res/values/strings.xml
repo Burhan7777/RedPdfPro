@@ -1,5 +1,9 @@
 <resources>
-    <string name="app_name">RedPdfPro</string>
+    <string name="app_name">Red Pdf</string>
     <string name="splitPdf">Split PDF</string>
     <string name="mergePdf">Merge PDF</string>
+    <string name="addPDF">ADD PDF</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="saveAs">Save As</string>
 </resources>
