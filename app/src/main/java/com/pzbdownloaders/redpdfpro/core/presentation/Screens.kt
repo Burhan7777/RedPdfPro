@@ -5,4 +5,5 @@ sealed class Screens(var route: String) {
     object SplitPdf : Screens("split_pdf_screen")
     object MergePdf : Screens("merge_pdf_screen")
     object CompressPDf : Screens("compress_pdf_screen")
+    object ExtractText : Screens("extract_text_screen")
 }

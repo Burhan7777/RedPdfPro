@@ -52,7 +52,7 @@ fun HomePage(navHostController: NavHostController, viewModel: MyViewModel) {
             FeatureBox(
                 stringId = R.string.splitPdf,
                 drawableId = R.drawable.split,
-                contentDescription = "Split PDF",
+                contentDescription = stringResource(id = R.string.splitPdf),
                 navHostController,
                 Screens.SplitPdf.route,
             )
@@ -60,7 +60,7 @@ fun HomePage(navHostController: NavHostController, viewModel: MyViewModel) {
             FeatureBox(
                 stringId = R.string.mergePdf,
                 drawableId = R.drawable.merge,
-                contentDescription = "Merge PDF",
+                contentDescription = stringResource(id = R.string.mergePdf),
                 navHostController,
                 Screens.MergePdf.route
             )
@@ -73,6 +73,20 @@ fun HomePage(navHostController: NavHostController, viewModel: MyViewModel) {
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold
         )
+        Spacer(
+            modifier = Modifier.height(10.dp)
+        )
+        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+
+            FeatureBox(
+                stringId = R.string.extractText,
+                drawableId = R.drawable.text,
+                contentDescription = stringResource(id = R.string.extractText),
+                navHostController,
+                Screens.ExtractText.route,
+            )
+
+        }
 
     }
 }

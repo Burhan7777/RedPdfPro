@@ -10,4 +10,5 @@
     <string name="compressPDF">Compress PDF</string>
     <string name="tools">Tools</string>
     <string name="extractFromPdf">Extract from PDF</string>
+    <string name="extractText">Extract Text</string>
 </resources>

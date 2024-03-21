@@ -5,6 +5,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import com.pzbdownloaders.redpdfpro.MainActivity
 import com.pzbdownloaders.redpdfpro.compresspdffeature.screens.CompressPDF
+import com.pzbdownloaders.redpdfpro.extracttextfeature.ExtractText
 import com.pzbdownloaders.redpdfpro.mergepdffeature.screens.MergePdf
 import com.pzbdownloaders.redpdfpro.splitpdffeature.screens.SplitPdf
 
@@ -29,6 +30,9 @@ fun MyNavHost(
         }
         composable(Screens.CompressPDf.route) {
             CompressPDF(mainActivity = activity)
+        }
+        composable(Screens.ExtractText.route) {
+            ExtractText(activity)
         }
     }
 
