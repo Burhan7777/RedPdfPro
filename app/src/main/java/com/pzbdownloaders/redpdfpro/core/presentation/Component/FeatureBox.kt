@@ -45,7 +45,6 @@ fun FeatureBox(
                 )
             )
             .background(MaterialTheme.colorScheme.primary)
-            .padding(all = 10.dp)
             .clickable {
                 navHostController.navigate(route)
             }
