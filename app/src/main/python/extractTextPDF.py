@@ -1,4 +1,3 @@
-
 from pypdf import PdfReader, PdfWriter
 
 
@@ -13,13 +12,17 @@ from pypdf import PdfReader, PdfWriter
 #     with open(f"/storage/emulated/0/Download/{name}.txt", 'w') as file1:
 #         file1.write(actual_text)
 
-def extract_text_pypdf(file,name):
+def extract_text_pypdf(file, name):
     actual_text = ""
     writer = PdfWriter()
     reader1 = PdfReader(file)
     for i in range(len(reader1.pages)):
         actual_text += reader1.pages[i].extract_text()
 
-    with open(f"/storage/emulated/0/Download/{name}.txt", 'w') as file1:
-        file1.write(actual_text)
+    try:
+        with open(f"/storage/emulated/0/Download/{name}.txt", 'w') as file1:
+            file1.write(actual_text)
 
+            return "Success"
+    except Exception:
+        return "Failure"

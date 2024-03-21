@@ -11,5 +11,11 @@ def compress_pdf(file, name):
     for page in writer.pages:
         page.compress_content_streams()  # This is CPU intensive!
 
-    with open(f"/storage/emulated/0/Download/{name}.pdf", "wb") as f:
-        writer.write(f)
+    try:
+        with open(f"/storage/emulated/0/Download/{name}.pdf", "wb") as f:
+            writer.write(f)
+
+        return "Success"
+
+    except Exception:
+        return "Failure"
