@@ -99,11 +99,13 @@ fun SplitPdf(navHostController: NavHostController, activity: MainActivity, viewM
     var result = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
         onResult = {
-            path = getFilePathFromContentUri(it!!, activity)!!
-            file = File(path)
-            val python = Python.getInstance()
-            val module = python.getModule("splitPDF")
-            totalPages = module.callAttr("total_pages", path).toString().toInt()
+            if (it != null) {
+                path = getFilePathFromContentUri(it!!, activity)!!
+                file = File(path)
+                val python = Python.getInstance()
+                val module = python.getModule("splitPDF")
+                totalPages = module.callAttr("total_pages", path).toString().toInt()
+            }
         })
 
     Box(modifier = Modifier.fillMaxSize()) {

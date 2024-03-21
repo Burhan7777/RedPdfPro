@@ -58,8 +58,10 @@ fun MergePdf(activity: MainActivity, viewModel: MyViewModel) {
     var result = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
         onResult = {
-            viewModel.pdfNames.add(getFileName(it!!, activity))
-            viewModel.listOfPdfToMerge.add(getFilePathFromContentUri(it, activity = activity)!!)
+            if (it != null) {
+                viewModel.pdfNames.add(getFileName(it!!, activity))
+                viewModel.listOfPdfToMerge.add(getFilePathFromContentUri(it, activity = activity)!!)
+            }
         })
 
     var showAlertBox = remember {
