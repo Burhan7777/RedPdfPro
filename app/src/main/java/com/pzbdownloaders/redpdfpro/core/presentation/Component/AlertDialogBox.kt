@@ -90,8 +90,9 @@ fun AlertDialogBox(
             Button(
                 onClick = {
                     if (name.value.isNotEmpty()) {
-                        featureExecution()
                         onDismiss()
+                        featureExecution()
+
                     } else {
                         Toast.makeText(context, "Please enter name", Toast.LENGTH_SHORT).show()
                     }

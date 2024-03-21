@@ -13,4 +13,8 @@ def split(file, list, name):
     for i in list:
         writer.add_page(pages[i])
 
-    writer.write(f"/storage/emulated/0/Download/{name}.pdf")
+    try:
+        writer.write(f"/storage/emulated/0/Download/{name}.pdf")
+        return "Success"
+    except Exception:
+        return "Failure"
