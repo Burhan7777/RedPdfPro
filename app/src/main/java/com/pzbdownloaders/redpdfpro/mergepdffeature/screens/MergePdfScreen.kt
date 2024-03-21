@@ -1,5 +1,6 @@
 package com.pzbdownloaders.redpdfpro.mergepdffeature.screens
 
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -18,20 +19,26 @@ import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import com.chaquo.python.Python
 import com.pzbdownloaders.redpdfpro.MainActivity
 import com.pzbdownloaders.redpdfpro.R
@@ -43,6 +50,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 
 @Composable
@@ -61,6 +69,13 @@ fun MergePdf(activity: MainActivity, viewModel: MyViewModel) {
     var name = remember {
         mutableStateOf("")
     }
+
+    var showProgress by remember {
+        mutableStateOf(false)
+    }
+
+    var context = LocalContext.current
+    var scope = rememberCoroutineScope()
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -110,6 +125,17 @@ fun MergePdf(activity: MainActivity, viewModel: MyViewModel) {
                     )
             }
         }
+
+        if (showProgress) {
+            CircularProgressIndicator(
+                modifier = Modifier
+                    .height(40.dp)
+                    .width(40.dp)
+                    .zIndex(10f)
+                    .align(Alignment.Center),
+                color = Color.Red
+            )
+        }
         if (viewModel.listOfPdfToMerge.size > 1) {
             Button(
                 onClick = { showAlertBox.value = !showAlertBox.value },
@@ -127,17 +153,28 @@ fun MergePdf(activity: MainActivity, viewModel: MyViewModel) {
                 name = name,
                 listOfPdfs = viewModel.listOfPdfToMerge,
                 onDismiss = { showAlertBox.value = !showAlertBox.value }) {
-                val scope = CoroutineScope(Dispatchers.IO)
-                val python = Python.getInstance()
-                val module = python.getModule("mergePDF")
-                scope.launch(
-                    Dispatchers.IO
-                ) {
-                    module.callAttr(
+                scope.launch(Dispatchers.IO) {
+                    showProgress = true
+                    val python = Python.getInstance()
+                    val module = python.getModule("mergePDF")
+                    val result = module.callAttr(
                         "merge_pdf",
                         viewModel.listOfPdfToMerge.toTypedArray(),
                         name.value
                     )
+                    withContext(Dispatchers.Main) {
+                        if (result.toString() == "Success") {
+                            showProgress = false
+                            Toast.makeText(
+                                context,
+                                "Successfully saved at /storage/emulated/0/Download/${name}.pdf",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        } else if (result.toString() == "Failure") {
+                            showProgress = false
+                            Toast.makeText(context, "Operation Failed", Toast.LENGTH_SHORT).show()
+                        }
+                    }
                 }
             }
         }

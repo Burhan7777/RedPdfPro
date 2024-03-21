@@ -6,4 +6,8 @@ def merge_pdf(list_of_pdf, name):
     for i in list_of_pdf:
         pdf_writer.append(i)
 
-    pdf_writer.write(f"/storage/emulated/0/Download/{name}.pdf")
+    try:
+        pdf_writer.write(f"/storage/emulated/0/Download/{name}.pdf")
+        return "Success"
+    except Exception:
+        return "Failure"
