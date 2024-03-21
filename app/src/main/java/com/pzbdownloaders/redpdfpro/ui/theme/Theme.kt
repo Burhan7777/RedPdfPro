@@ -52,7 +52,7 @@ fun RedPdfProTheme(
             if (darkTheme) LightColorScheme else LightColorScheme
         }
 
-        darkTheme -> DarkColorScheme
+        darkTheme -> LightColorScheme
         else -> LightColorScheme
     }
     val view = LocalView.current
