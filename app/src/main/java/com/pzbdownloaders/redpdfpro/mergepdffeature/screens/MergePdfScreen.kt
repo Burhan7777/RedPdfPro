@@ -197,7 +197,6 @@ fun MergePdf(activity: MainActivity, viewModel: MyViewModel) {
         if (showAlertBox.value) {
             AlertDialogBox(
                 name = name,
-                listOfPdfs = viewModel.listOfPdfToMerge,
                 onDismiss = { showAlertBox.value = !showAlertBox.value }) {
                 scope.launch(Dispatchers.IO) {
                     showProgress = true

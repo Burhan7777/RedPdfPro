@@ -7,6 +7,7 @@ import com.pzbdownloaders.redpdfpro.MainActivity
 import com.pzbdownloaders.redpdfpro.compresspdffeature.screens.CompressPDF
 import com.pzbdownloaders.redpdfpro.extracttextfeature.ExtractText
 import com.pzbdownloaders.redpdfpro.mergepdffeature.screens.MergePdf
+import com.pzbdownloaders.redpdfpro.rotatepdffeature.screens.RotatePDf
 import com.pzbdownloaders.redpdfpro.splitpdffeature.screens.SplitPdf
 
 @Composable
@@ -33,6 +34,9 @@ fun MyNavHost(
         }
         composable(Screens.ExtractText.route) {
             ExtractText(activity)
+        }
+        composable(Screens.RotatePdf.route) {
+            RotatePDf(navHostController, viewModel, activity)
         }
     }
 

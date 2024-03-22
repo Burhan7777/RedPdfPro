@@ -64,6 +64,14 @@ fun HomePage(navHostController: NavHostController, viewModel: MyViewModel) {
                 navHostController,
                 Screens.MergePdf.route
             )
+            FeatureBox(
+                stringId = R.string.rotatePDF,
+                drawableId = R.drawable.rotate,
+                contentDescription = stringResource(id = R.string.rotatePDF),
+                navHostController,
+                Screens.RotatePdf.route
+            )
+
         }
 
         Spacer(modifier = Modifier.height(30.dp))

@@ -1,4 +1,4 @@
-package com.pzbdownloaders.redpdfpro.splitpdffeature.screens
+package com.pzbdownloaders.redpdfpro.rotatepdffeature.screens
 
 import android.content.Context
 import android.graphics.pdf.PdfRenderer
@@ -25,11 +25,11 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -39,7 +39,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.PaintingStyle.Companion.Stroke
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
@@ -52,8 +51,9 @@ import androidx.navigation.NavHostController
 import com.chaquo.python.Python
 import com.pzbdownloaders.redpdfpro.MainActivity
 import com.pzbdownloaders.redpdfpro.R
-import com.pzbdownloaders.redpdfpro.core.presentation.MyViewModel
 import com.pzbdownloaders.redpdfpro.core.presentation.Component.AlertDialogBox
+import com.pzbdownloaders.redpdfpro.core.presentation.MyViewModel
+import com.pzbdownloaders.redpdfpro.rotatepdffeature.components.RotateDialogBox
 import com.pzbdownloaders.redpdfpro.splitpdffeature.components.SingleRow
 import com.pzbdownloaders.redpdfpro.splitpdffeature.components.modelBitmap
 import com.pzbdownloaders.redpdfpro.splitpdffeature.utils.getFilePathFromContentUri
@@ -63,10 +63,12 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 
-
 @Composable
-fun SplitPdf(navHostController: NavHostController, activity: MainActivity, viewModel: MyViewModel) {
-
+fun RotatePDf(
+    navHostController: NavHostController,
+    viewModel: MyViewModel,
+    activity: MainActivity
+) {
     val context = LocalContext.current
     var pageNumbersSelected = remember { mutableStateOf(ArrayList<Int>()) }
     var path by remember {
@@ -76,7 +78,7 @@ fun SplitPdf(navHostController: NavHostController, activity: MainActivity, viewM
     var name = remember {
         mutableStateOf("")
     }
-    var showAlertBox by remember { mutableStateOf(false) }
+    var showAlertBox = remember { mutableStateOf(false) }
 
     var scope = rememberCoroutineScope()
 
@@ -85,6 +87,14 @@ fun SplitPdf(navHostController: NavHostController, activity: MainActivity, viewM
     var showProgress by remember {
         mutableStateOf(false)
     }
+
+    var selectedRotateAngle = remember { mutableIntStateOf(0) }
+
+    var showRadioDialogBox = remember {
+        mutableStateOf(false)
+    }
+
+    var options = arrayOf("90", "180", "270")
 
     var totalPages by remember { mutableStateOf(0) }
     lateinit var pdfRenderer: PdfRenderer
@@ -171,7 +181,7 @@ fun SplitPdf(navHostController: NavHostController, activity: MainActivity, viewM
                     parcelFileDescriptor =
                         ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY)
                     pdfRenderer = PdfRenderer(parcelFileDescriptor)
-                    LazyColumnVer(
+                    com.pzbdownloaders.redpdfpro.splitpdffeature.screens.LazyColumnVer(
                         totalPages = totalPages.toString().toInt(),
                         context = context,
                         file = file!!,
@@ -189,12 +199,13 @@ fun SplitPdf(navHostController: NavHostController, activity: MainActivity, viewM
                     if (pageNumbersSelected.value.isEmpty()) {
                         Toast.makeText(
                             context,
-                            "Please select pages to be split",
+                            "Please select pages to be rotated",
                             Toast.LENGTH_SHORT
                         )
                             .show()
-                    } else
-                        showAlertBox = !showAlertBox
+                    } else {
+                        showRadioDialogBox.value = !showRadioDialogBox.value
+                    }
                 }, modifier = Modifier
                     .fillMaxWidth()
                     .height(60.dp)
@@ -203,25 +214,28 @@ fun SplitPdf(navHostController: NavHostController, activity: MainActivity, viewM
                     all = CornerSize(10.dp)
                 )
             ) {
-                Text(text = stringResource(id = R.string.splitPdf))
+                Text(text = stringResource(id = R.string.rotatePDF))
             }
         }
     }
-    if (showAlertBox)
+    if (showAlertBox.value)
         AlertDialogBox(
             name = name,
+            showRotateDialogBox = showRadioDialogBox,
             featureExecution = {
                 scope.launch(Dispatchers.IO) {
                     showProgress = true
                     val python = Python.getInstance()
-                    val module = python.getModule("splitPDF")
+                    val module = python.getModule("rotatePDF")
                     var result = module.callAttr(
-                        "split",
+                        "rotate_pdf",
                         path,
+                        selectedRotateAngle.value,
                         pageNumbersSelected.value.toArray(),
                         name.value
                     )
                     withContext(Dispatchers.Main) {
+                        println(selectedRotateAngle.value)
                         if (result.toString() == "Success") {
                             withContext(Dispatchers.Main) {
                                 showProgress = false
@@ -238,7 +252,17 @@ fun SplitPdf(navHostController: NavHostController, activity: MainActivity, viewM
                     }
                 }
             },
-            onDismiss = { showAlertBox = false })
+            onDismiss = { showAlertBox.value = false })
+
+    if (showRadioDialogBox.value) {
+        RotateDialogBox(
+            showAlertDialog = showAlertBox,
+            selectedRotateAngle = selectedRotateAngle,
+            options = options,
+            onDismiss = { showRadioDialogBox.value = false }) {
+
+        }
+    }
 
 
 }
@@ -286,5 +310,3 @@ fun LazyColumnVer(
 
     }
 }
-
-

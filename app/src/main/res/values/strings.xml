@@ -12,4 +12,6 @@
     <string name="extractFromPdf">Extract from PDF</string>
     <string name="extractText">Extract Text</string>
     <string name="upload">Upload</string>
+    <string name="rotatePDF">Rotate PDF</string>
+    <string name="rotateByAngle">Rotate By Angle</string>
 </resources>
