@@ -64,18 +64,21 @@ import java.io.File
 
 @Composable
 fun MergePdf(activity: MainActivity, viewModel: MyViewModel) {
+
+    var showAlertBox = remember {
+        mutableStateOf(false)
+    }
+
     var result = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
         onResult = {
             if (it != null) {
                 viewModel.pdfNames.add(getFileName(it!!, activity))
                 viewModel.listOfPdfToMerge.add(getFilePathFromContentUri(it, activity = activity)!!)
+
             }
         })
 
-    var showAlertBox = remember {
-        mutableStateOf(false)
-    }
 
     var name = remember {
         mutableStateOf("")
