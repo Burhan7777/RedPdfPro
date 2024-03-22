@@ -14,4 +14,6 @@
     <string name="upload">Upload</string>
     <string name="rotatePDF">Rotate PDF</string>
     <string name="rotateByAngle">Rotate By Angle</string>
+    <string name="lockPDF">Lock PDF</string>
+    <string name="createNewPassword">Create new password</string>
 </resources>

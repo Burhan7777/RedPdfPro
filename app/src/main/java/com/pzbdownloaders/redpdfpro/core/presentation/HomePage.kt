@@ -71,6 +71,13 @@ fun HomePage(navHostController: NavHostController, viewModel: MyViewModel) {
                 navHostController,
                 Screens.RotatePdf.route
             )
+            FeatureBox(
+                stringId = R.string.lockPDF,
+                drawableId = R.drawable.lock,
+                contentDescription = stringResource(id = R.string.lockPDF),
+                navHostController,
+                Screens.LockPdf.route
+            )
 
         }
 

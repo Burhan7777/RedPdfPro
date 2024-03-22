@@ -30,6 +30,7 @@ import com.pzbdownloaders.redpdfpro.R
 fun AlertDialogBox(
     name: MutableState<String> = mutableStateOf(""),
     showRotateDialogBox: MutableState<Boolean> = mutableStateOf(false),
+    id: Int = R.string.saveAs,
     onDismiss: () -> Unit,
     featureExecution: () -> Unit
 
@@ -61,7 +62,7 @@ fun AlertDialogBox(
                 onValueChange = { name.value = it },
                 label = {
                     Text(
-                        text = stringResource(id = R.string.saveAs),
+                        text = stringResource(id = id),
                         color = MaterialTheme.colorScheme.onPrimary,
                         fontSize = 15.sp,
                     )

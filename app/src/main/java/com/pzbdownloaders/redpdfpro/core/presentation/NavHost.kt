@@ -6,6 +6,7 @@ import androidx.navigation.compose.composable
 import com.pzbdownloaders.redpdfpro.MainActivity
 import com.pzbdownloaders.redpdfpro.compresspdffeature.screens.CompressPDF
 import com.pzbdownloaders.redpdfpro.extracttextfeature.ExtractText
+import com.pzbdownloaders.redpdfpro.lockpdffeature.LockPdf
 import com.pzbdownloaders.redpdfpro.mergepdffeature.screens.MergePdf
 import com.pzbdownloaders.redpdfpro.rotatepdffeature.screens.RotatePDf
 import com.pzbdownloaders.redpdfpro.splitpdffeature.screens.SplitPdf
@@ -37,6 +38,9 @@ fun MyNavHost(
         }
         composable(Screens.RotatePdf.route) {
             RotatePDf(navHostController, viewModel, activity)
+        }
+        composable(Screens.LockPdf.route) {
+            LockPdf(activity)
         }
     }
 
