@@ -78,7 +78,16 @@ fun HomePage(navHostController: NavHostController, viewModel: MyViewModel) {
                 navHostController,
                 Screens.LockPdf.route
             )
-
+        }
+        Spacer(modifier = Modifier.height(5.dp))
+        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            FeatureBox(
+                stringId = R.string.unlockPDF,
+                drawableId = R.drawable.unlock,
+                contentDescription = stringResource(id = R.string.unlockPDF),
+                navHostController,
+                Screens.UnlockPdf.route
+            )
         }
 
         Spacer(modifier = Modifier.height(30.dp))

@@ -10,6 +10,7 @@ import com.pzbdownloaders.redpdfpro.lockpdffeature.LockPdf
 import com.pzbdownloaders.redpdfpro.mergepdffeature.screens.MergePdf
 import com.pzbdownloaders.redpdfpro.rotatepdffeature.screens.RotatePDf
 import com.pzbdownloaders.redpdfpro.splitpdffeature.screens.SplitPdf
+import com.pzbdownloaders.redpdfpro.unlockpdffeature.UnlockPdf
 
 @Composable
 fun MyNavHost(
@@ -41,6 +42,9 @@ fun MyNavHost(
         }
         composable(Screens.LockPdf.route) {
             LockPdf(activity)
+        }
+        composable(Screens.UnlockPdf.route) {
+            UnlockPdf(activity)
         }
     }
 

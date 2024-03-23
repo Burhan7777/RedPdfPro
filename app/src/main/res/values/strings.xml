@@ -16,4 +16,6 @@
     <string name="rotateByAngle">Rotate By Angle</string>
     <string name="lockPDF">Lock PDF</string>
     <string name="createNewPassword">Create new password</string>
+    <string name="unlockPDF">Unlock PDF</string>
+    <string name="existingPassword">Existing password</string>
 </resources>
