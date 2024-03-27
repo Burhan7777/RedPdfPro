@@ -23,6 +23,11 @@ android {
             // On Apple silicon, you can omit x86_64.
             abiFilters += "arm64-v8a"
         }
+        externalNativeBuild {
+            cmake {
+                cppFlags += ""
+            }
+        }
         chaquopy {
             defaultConfig {
                 version = "3.8"
@@ -33,6 +38,12 @@ android {
                     install("pypdf")
                     install("pypdf[image]")
                     install("PYPDF2")
+                    install("pillow")
+                    install("fpdf")
+                    install("python-docx")
+                    install("ppt2pdf")
+                    install("pypdfium2")
+                    install("python-pptx")
                 }
             }
             productFlavors {
@@ -69,6 +80,12 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+    externalNativeBuild {
+        cmake {
+            path = file("src/main/cpp/CMakeLists.txt")
+            version = "3.22.1"
+        }
+    }
 }
 
 dependencies {
@@ -94,5 +111,12 @@ dependencies {
 
     //MATERIAL 3
     implementation("androidx.compose.material3:material3:1.2.1")
+
+    //ML PDF SCANNER
+    implementation("com.google.android.gms:play-services-mlkit-document-scanner:16.0.0-beta1")
+
+    //COIL
+    implementation("io.coil-kt:coil-compose:2.6.0")
+
 
 }

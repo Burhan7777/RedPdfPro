@@ -1,20 +1,14 @@
 package com.pzbdownloaders.redpdfpro.core.presentation
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -36,7 +30,7 @@ fun HomePage(navHostController: NavHostController, viewModel: MyViewModel) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(30.dp)
+            .padding(10.dp)
             .verticalScroll(rememberScrollState())
             .background(MaterialTheme.colorScheme.secondary)
     ) {
@@ -108,6 +102,41 @@ fun HomePage(navHostController: NavHostController, viewModel: MyViewModel) {
                 contentDescription = stringResource(id = R.string.extractText),
                 navHostController,
                 Screens.ExtractText.route,
+            )
+            FeatureBox(
+                stringId = R.string.extractImage,
+                drawableId = R.drawable.image,
+                contentDescription = stringResource(id = R.string.extractImage),
+                navHostController,
+                Screens.ExtractImageFromPdf.route,
+            )
+
+        }
+        Spacer(modifier = Modifier.height(30.dp))
+        Text(
+            text = stringResource(id = R.string.convertTOPDF),
+            color = MaterialTheme.colorScheme.onPrimary,
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold
+        )
+        Spacer(
+            modifier = Modifier.height(10.dp)
+        )
+        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+
+            FeatureBox(
+                stringId = R.string.imagesToPDF,
+                drawableId = R.drawable.converttopdf,
+                contentDescription = stringResource(id = R.string.imagesToPDF),
+                navHostController,
+                Screens.ImageToPdf.route,
+            )
+            FeatureBox(
+                stringId = R.string.docsToPDF,
+                drawableId = R.drawable.converttopdf,
+                contentDescription = stringResource(id = R.string.docsToPDF),
+                navHostController,
+                Screens.DocsToPdf.route,
             )
 
         }

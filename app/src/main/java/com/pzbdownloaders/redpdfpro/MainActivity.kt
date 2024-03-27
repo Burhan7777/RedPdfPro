@@ -16,6 +16,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.compose.rememberNavController
 import com.chaquo.python.Python
 import com.chaquo.python.android.AndroidPlatform
+import com.pzbdownloaders.redpdfpro.core.presentation.MainScreen
 import com.pzbdownloaders.redpdfpro.core.presentation.MyNavHost
 import com.pzbdownloaders.redpdfpro.core.presentation.MyViewModel
 import com.pzbdownloaders.redpdfpro.ui.theme.RedPdfProTheme
@@ -35,7 +36,11 @@ class MainActivity : ComponentActivity() {
                         .fillMaxSize()
                         .background(MaterialTheme.colorScheme.secondary)
                 ) {
-                    MyNavHost(rememberNavController(), this@MainActivity,viewModel)
+                    MainScreen(
+                        navHostController = rememberNavController(),
+                        viewModel = viewModel,
+                        activity = this@MainActivity
+                    )
                 }
             }
         }

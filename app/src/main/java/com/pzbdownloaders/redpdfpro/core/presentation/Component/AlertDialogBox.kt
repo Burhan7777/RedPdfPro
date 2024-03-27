@@ -94,7 +94,7 @@ fun AlertDialogBox(
                         featureExecution()
 
                     } else {
-                        Toast.makeText(context, "Please enter name", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Please enter details", Toast.LENGTH_SHORT).show()
                     }
                 },
                 colors = ButtonDefaults.outlinedButtonColors(

@@ -18,4 +18,9 @@
     <string name="createNewPassword">Create new password</string>
     <string name="unlockPDF">Unlock PDF</string>
     <string name="existingPassword">Existing password</string>
+    <string name="enterPassword">Enter password</string>
+    <string name="extractImage">Extract Images</string>
+    <string name="convertTOPDF">Convert to PDF</string>
+    <string name="imagesToPDF">Images to PDF</string>
+    <string name="docsToPDF">Docs to PDF</string>
 </resources>

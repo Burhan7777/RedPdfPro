@@ -75,7 +75,6 @@ fun MergePdf(activity: MainActivity, viewModel: MyViewModel) {
             if (it != null) {
                 viewModel.pdfNames.add(getFileName(it!!, activity))
                 viewModel.listOfPdfToMerge.add(getFilePathFromContentUri(it, activity = activity)!!)
-
             }
         })
 

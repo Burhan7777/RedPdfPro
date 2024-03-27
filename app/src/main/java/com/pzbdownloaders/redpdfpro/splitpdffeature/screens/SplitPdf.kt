@@ -34,6 +34,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.traceEventEnd
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -86,6 +87,13 @@ fun SplitPdf(navHostController: NavHostController, activity: MainActivity, viewM
         mutableStateOf(false)
     }
 
+    val showPasswordAlertBox = remember {
+        mutableStateOf(false)
+    }
+    val passwordOfLockedFile = remember {
+        mutableStateOf("")
+    }
+
     var totalPages by remember { mutableStateOf(0) }
     lateinit var pdfRenderer: PdfRenderer
     lateinit var parcelFileDescriptor: ParcelFileDescriptor
@@ -100,11 +108,33 @@ fun SplitPdf(navHostController: NavHostController, activity: MainActivity, viewM
         contract = ActivityResultContracts.GetContent(),
         onResult = {
             if (it != null) {
-                path = getFilePathFromContentUri(it!!, activity)!!
+                path = getFilePathFromContentUri(it, activity)!!
                 file = File(path)
                 val python = Python.getInstance()
                 val module = python.getModule("splitPDF")
-                totalPages = module.callAttr("total_pages", path).toString().toInt()
+                var response = module.callAttr("is_encrypted", path)
+                if (response.toString() == "True") {
+                    showPasswordAlertBox.value = true
+                    println(passwordOfLockedFile.value)
+                    if (passwordOfLockedFile.value.isNotEmpty()) {
+                        totalPages =
+                            module.callAttr("total_pages", path, passwordOfLockedFile.value)
+                                .toString()
+                                .toInt()
+                    }
+                } else if (response.toString() == "False") {
+                    totalPages =
+                        module.callAttr("total_pages", path).toString()
+                            .toInt()
+                }
+                /*   if (response== "PDFlocked") {
+                       showPasswordAlertBox.value = true
+                       totalPages =
+                           module.callAttr("unlock_pdf", path, passwordOfLockedFile.value).toString()
+                               .toInt()
+                   } else {
+                       totalPages = response.toString().toInt()*/
+                // }
             }
         })
 
@@ -169,7 +199,7 @@ fun SplitPdf(navHostController: NavHostController, activity: MainActivity, viewM
 
                 if (totalPages > 0 && file != null) {
                     parcelFileDescriptor =
-                        ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY)
+                        ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY,)
                     pdfRenderer = PdfRenderer(parcelFileDescriptor)
                     LazyColumnVer(
                         totalPages = totalPages.toString().toInt(),
@@ -240,7 +270,14 @@ fun SplitPdf(navHostController: NavHostController, activity: MainActivity, viewM
             },
             onDismiss = { showAlertBox = false })
 
+    if (showPasswordAlertBox.value) {
+        AlertDialogBox(
+            name = passwordOfLockedFile,
+            id = R.string.enterPassword,
+            onDismiss = { showPasswordAlertBox.value = false }) {
 
+        }
+    }
 }
 
 @Composable
