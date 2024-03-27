@@ -1,8 +1,10 @@
 package com.pzbdownloaders.scannerfeature
 
 import android.app.Activity.RESULT_OK
+import android.graphics.pdf.PdfRenderer
 import android.net.Uri
 import android.os.Environment
+import android.os.ParcelFileDescriptor
 import android.speech.tts.TextToSpeech.EngineInfo
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.IntentSenderRequest
@@ -24,6 +26,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Modifier
@@ -42,8 +46,12 @@ import com.google.mlkit.vision.documentscanner.GmsDocumentScanningResult
 import com.pzbdownloaders.redpdfpro.MainActivity
 import com.pzbdownloaders.redpdfpro.R
 import com.pzbdownloaders.redpdfpro.core.presentation.MyViewModel
+import com.pzbdownloaders.redpdfpro.splitpdffeature.utils.loadPage
 import com.pzbdownloaders.scannerfeature.components.SingleRowScannerMainScreen
 import com.pzbdownloaders.scannerfeature.util.ScannerModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.jetbrains.annotations.Async
 import java.io.File
 import java.io.FileInputStream
@@ -56,14 +64,22 @@ fun ScannerScreen(
     viewModel: MyViewModel,
     navHostController: NavHostController
 ) {
-    var listOfFiles: ArrayList<File> = ArrayList<File>()
-    var modelScanner: SnapshotStateList<ScannerModel> = mutableStateListOf()
+
+    var scope = rememberCoroutineScope()
     val options = GmsDocumentScannerOptions.Builder()
         .setScannerMode(SCANNER_MODE_FULL)
         .setResultFormats(RESULT_FORMAT_JPEG, RESULT_FORMAT_PDF)
         .setGalleryImportAllowed(true).build()
 
     val scanner = GmsDocumentScanning.getClient(options)
+
+    val file = File("storage/emulated/0/Download/Pro Scanner")
+    if (viewModel.listOfFiles.size < (file.listFiles()?.size ?: 0)) {
+
+        viewModel.listOfFiles =
+            file.listFiles()?.toCollection(ArrayList()) ?: ArrayList<File>()
+        viewModel.getImage()
+    }
 
     var imageUris = mutableStateOf<List<Uri>>(emptyList())
     val result = rememberLauncherForActivityResult(
@@ -80,18 +96,20 @@ fun ScannerScreen(
                     if (!file.exists()) {
                         file.mkdirs()
                     }
+
                     var path =
                         File("$externalDIr/Pro Scanner/scanned${UUID.randomUUID()}.pdf")
                     if (!path.exists()) {
                         path.createNewFile()
                     }
-
                     var fos = FileOutputStream(
                         path
                     )
                     activity.contentResolver.openInputStream(pdf.uri).use { inputStream ->
                         inputStream?.copyTo(fos)
                     }
+                    viewModel.listOfFiles.add(path)
+                    viewModel.addItem()
                 }
 
             }
@@ -117,17 +135,21 @@ fun ScannerScreen(
                 .padding(it)
                 .background(MaterialTheme.colorScheme.secondary)
         ) {
-            var file = File("storage/emulated/0/Download/Pro Scanner")
-            listOfFiles = file.listFiles()?.toCollection(ArrayList()) ?: ArrayList<File>()
-            for (i in 0 until (file.listFiles()?.size ?: 0)) {
-                modelScanner.add(ScannerModel(listOfFiles[i].name, listOfFiles[i]))
-            }
 
-            LazyColumn(
-            ) {
-                items(items = modelScanner.toList()) { scannerModel ->
-                    SingleRowScannerMainScreen(scannerModel)
+
+            scope.launch(Dispatchers.Default) {
+
+                withContext(Dispatchers.Main) {
+
                 }
+            }
+        }
+        LazyColumn(
+        ) {
+            items(
+                items = viewModel.modelScanner.toList()
+            ) { scannerModel ->
+                SingleRowScannerMainScreen(scannerModel)
             }
         }
     }
