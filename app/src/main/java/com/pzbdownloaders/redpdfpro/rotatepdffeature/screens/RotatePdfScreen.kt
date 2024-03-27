@@ -187,7 +187,6 @@ fun RotatePDf(
                         file = file!!,
                         pdfRenderer,
                         pageNumbersSelected.value,
-                        darkTheme,
                         viewModel
                     )
                 }
@@ -283,11 +282,8 @@ fun LazyColumnVer(
     scope.launch(Dispatchers.IO) {
         for (i in 0 until totalPages) {
             var bitmap = loadPage(
-                context,
-                file,
                 i,
                 pdfRenderer,
-                darkTheme
             )
             withContext(Dispatchers.Main) {
                 if (viewModel.modelList.size < totalPages)

@@ -8,18 +8,11 @@ import android.graphics.pdf.PdfRenderer
 import java.io.File
 
 fun loadPage(
-    context: Context,
-    file: File,
     pageIndex: Int,
-    renderer: PdfRenderer,
-    darkTheme: Boolean
+    renderer: PdfRenderer
 ): Bitmap {
     val page: PdfRenderer.Page = renderer.openPage(pageIndex)
     val bitmap = Bitmap.createBitmap(page.width, page.height, Bitmap.Config.ARGB_8888)
-    if (darkTheme) {
-        val canvas = Canvas(bitmap)
-        canvas.drawColor(Color.WHITE)
-    }
     page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
     page.close()
     return bitmap

@@ -81,8 +81,6 @@ fun SplitPdf(navHostController: NavHostController, activity: MainActivity, viewM
 
     var scope = rememberCoroutineScope()
 
-    var darkTheme = isSystemInDarkTheme()
-
     var showProgress by remember {
         mutableStateOf(false)
     }
@@ -199,7 +197,7 @@ fun SplitPdf(navHostController: NavHostController, activity: MainActivity, viewM
 
                 if (totalPages > 0 && file != null) {
                     parcelFileDescriptor =
-                        ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY,)
+                        ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY)
                     pdfRenderer = PdfRenderer(parcelFileDescriptor)
                     LazyColumnVer(
                         totalPages = totalPages.toString().toInt(),
@@ -207,7 +205,6 @@ fun SplitPdf(navHostController: NavHostController, activity: MainActivity, viewM
                         file = file!!,
                         pdfRenderer,
                         pageNumbersSelected.value,
-                        darkTheme,
                         viewModel
                     )
                 }
@@ -287,7 +284,6 @@ fun LazyColumnVer(
     file: File,
     pdfRenderer: PdfRenderer,
     pageNoSelected: ArrayList<Int>,
-    darkTheme: Boolean,
     viewModel: MyViewModel
 ) {
 
@@ -296,11 +292,8 @@ fun LazyColumnVer(
     scope.launch(Dispatchers.IO) {
         for (i in 0 until totalPages) {
             var bitmap = loadPage(
-                context,
-                file,
                 i,
-                pdfRenderer,
-                darkTheme
+                pdfRenderer
             )
             withContext(Dispatchers.Main) {
                 if (viewModel.modelList.size < totalPages)
