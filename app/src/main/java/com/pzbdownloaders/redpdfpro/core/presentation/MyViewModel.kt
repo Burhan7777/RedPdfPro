@@ -77,6 +77,15 @@ class MyViewModel : ViewModel() {
                         mutableStateOf(bitmap)
                     )
                 )
+                var lastModelScanner = modelScanner[modelScanner.size - 1]
+                for (i in modelScanner.size downTo  0) {
+                    try {
+                        modelScanner[i] = modelScanner[i - 1]
+                    } catch (exception: IndexOutOfBoundsException) {
+
+                    }
+                }
+                modelScanner[0] = lastModelScanner
             }
         }
     }

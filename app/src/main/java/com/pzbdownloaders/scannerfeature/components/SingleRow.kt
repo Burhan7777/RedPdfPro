@@ -79,8 +79,7 @@ fun SingleRowScannerMainScreen(modelScanner: ScannerModel) {
         ) {
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
-                    .data(modelScanner.bitmap.value).build(),
-                placeholder = painterResource(id = R.drawable.text_scanner),
+                    .data(modelScanner.bitmap.value).crossfade(true).build(),
                 contentDescription = "Pdf Image",
                 modifier = Modifier
                     .fillMaxHeight()

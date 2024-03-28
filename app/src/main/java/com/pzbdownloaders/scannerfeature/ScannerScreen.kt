@@ -1,42 +1,27 @@
 package com.pzbdownloaders.scannerfeature
 
 import android.app.Activity.RESULT_OK
-import android.graphics.pdf.PdfRenderer
 import android.net.Uri
 import android.os.Environment
-import android.os.ParcelFileDescriptor
-import android.speech.tts.TextToSpeech.EngineInfo
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.snapshots.SnapshotStateList
-import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import coil.compose.AsyncImage
 import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions
 import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions.RESULT_FORMAT_JPEG
 import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions.RESULT_FORMAT_PDF
@@ -46,17 +31,15 @@ import com.google.mlkit.vision.documentscanner.GmsDocumentScanningResult
 import com.pzbdownloaders.redpdfpro.MainActivity
 import com.pzbdownloaders.redpdfpro.R
 import com.pzbdownloaders.redpdfpro.core.presentation.MyViewModel
-import com.pzbdownloaders.redpdfpro.splitpdffeature.utils.loadPage
 import com.pzbdownloaders.scannerfeature.components.SingleRowScannerMainScreen
-import com.pzbdownloaders.scannerfeature.util.ScannerModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.jetbrains.annotations.Async
 import java.io.File
-import java.io.FileInputStream
 import java.io.FileOutputStream
+import java.util.Arrays
 import java.util.UUID
+
 
 @Composable
 fun ScannerScreen(
@@ -78,6 +61,15 @@ fun ScannerScreen(
 
         viewModel.listOfFiles =
             file.listFiles()?.toCollection(ArrayList()) ?: ArrayList<File>()
+        viewModel.listOfFiles.reverse()
+        /* Arrays.sort<File>(
+             viewModel.listOfFiles.toTypedArray()
+         ) { object1: File, object2: File ->
+             Math.max(
+                 object1.lastModified().toInt(),
+                 object2.lastModified().toInt()
+             ) as Int
+         }*/
         viewModel.getImage()
     }
 
@@ -144,6 +136,7 @@ fun ScannerScreen(
                 }
             }
         }
+
         LazyColumn(
         ) {
             items(
