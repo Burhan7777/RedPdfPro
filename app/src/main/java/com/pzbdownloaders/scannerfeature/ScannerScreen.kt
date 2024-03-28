@@ -30,6 +30,7 @@ import com.google.mlkit.vision.documentscanner.GmsDocumentScanning
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanningResult
 import com.pzbdownloaders.redpdfpro.MainActivity
 import com.pzbdownloaders.redpdfpro.R
+import com.pzbdownloaders.redpdfpro.core.presentation.Component.AlertDialogBox
 import com.pzbdownloaders.redpdfpro.core.presentation.MyViewModel
 import com.pzbdownloaders.scannerfeature.components.SingleRowScannerMainScreen
 import kotlinx.coroutines.Dispatchers
@@ -49,6 +50,10 @@ fun ScannerScreen(
 ) {
 
     var scope = rememberCoroutineScope()
+    var path: File? = null
+    var resultFromActivity: GmsDocumentScanningResult? = null
+    val showSaveDialogBox = mutableStateOf(false)
+    val name = mutableStateOf("")
     val options = GmsDocumentScannerOptions.Builder()
         .setScannerMode(SCANNER_MODE_FULL)
         .setResultFormats(RESULT_FORMAT_JPEG, RESULT_FORMAT_PDF)
@@ -62,14 +67,6 @@ fun ScannerScreen(
         viewModel.listOfFiles =
             file.listFiles()?.toCollection(ArrayList()) ?: ArrayList<File>()
         viewModel.listOfFiles.reverse()
-        /* Arrays.sort<File>(
-             viewModel.listOfFiles.toTypedArray()
-         ) { object1: File, object2: File ->
-             Math.max(
-                 object1.lastModified().toInt(),
-                 object2.lastModified().toInt()
-             ) as Int
-         }*/
         viewModel.getImage()
     }
 
@@ -79,32 +76,10 @@ fun ScannerScreen(
         onResult = {
 
             if (it.resultCode == RESULT_OK) {
-                val result = GmsDocumentScanningResult.fromActivityResultIntent(it.data)
-                imageUris.value = result?.pages?.map { it.imageUri } ?: emptyList()
-                result?.pdf?.let { pdf ->
-                    var externalDIr =
-                        Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-                    var file = File("$externalDIr/Pro Scanner")
-                    if (!file.exists()) {
-                        file.mkdirs()
-                    }
-
-                    var path =
-                        File("$externalDIr/Pro Scanner/scanned${UUID.randomUUID()}.pdf")
-                    if (!path.exists()) {
-                        path.createNewFile()
-                    }
-                    var fos = FileOutputStream(
-                        path
-                    )
-                    activity.contentResolver.openInputStream(pdf.uri).use { inputStream ->
-                        inputStream?.copyTo(fos)
-                    }
-                    viewModel.listOfFiles.add(path)
-                    viewModel.addItem()
-                }
-
+                resultFromActivity = GmsDocumentScanningResult.fromActivityResultIntent(it.data)
+                showSaveDialogBox.value = true
             }
+
         }
     )
     Scaffold(
@@ -116,7 +91,7 @@ fun ScannerScreen(
             }) {
                 Icon(
                     painter = painterResource(id = R.drawable.camera),
-                    contentDescription = "camera"
+                    contentDescription = "Scan pages"
                 )
             }
         }
@@ -128,21 +103,41 @@ fun ScannerScreen(
                 .background(MaterialTheme.colorScheme.secondary)
         ) {
 
-
-            scope.launch(Dispatchers.Default) {
-
-                withContext(Dispatchers.Main) {
-
+            if (showSaveDialogBox.value) {
+                AlertDialogBox(
+                    name = name,
+                    onDismiss = { showSaveDialogBox.value = !showSaveDialogBox.value }) {
+                    resultFromActivity?.pdf?.let { pdf ->
+                        var externalDIr =
+                            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                        var file = File("$externalDIr/Pro Scanner")
+                        if (!file.exists()) {
+                            file.mkdirs()
+                        }
+                        var path =
+                            File("$externalDIr/Pro Scanner/${name.value}.pdf")
+                        if (!path.exists()) {
+                            path?.createNewFile()
+                        }
+                        var fos = FileOutputStream(
+                            path
+                        )
+                        activity.contentResolver.openInputStream(pdf.uri).use { inputStream ->
+                            inputStream?.copyTo(fos)
+                        }
+                        viewModel.listOfFiles.add(path!!)
+                        viewModel.addItem()
+                    }
                 }
             }
-        }
 
-        LazyColumn(
-        ) {
-            items(
-                items = viewModel.modelScanner.toList()
-            ) { scannerModel ->
-                SingleRowScannerMainScreen(scannerModel)
+            LazyColumn(
+            ) {
+                items(
+                    items = viewModel.modelScanner.toList()
+                ) { scannerModel ->
+                    SingleRowScannerMainScreen(scannerModel)
+                }
             }
         }
     }
