@@ -62,20 +62,6 @@ fun DocsToPdf(mainActivity: MainActivity) {
                 .padding(start = 20.dp, end = 20.dp)
                 .clickable {
                     //result.launch(" application/pdf")
-                    var assets = mainActivity.assets.open("eng.traineddata")
-                    var fos = FileOutputStream("${mainActivity.filesDir}/tessdata/eng.traineddata")
-                    assets.use {
-                        it.copyTo(fos)
-                    }
-                    var tesseract = TessBaseAPI()
-                    var path = File("${mainActivity.filesDir}").absolutePath
-                    if (!tesseract.init(path, "eng")) {
-                        tesseract.recycle()
-                        return@clickable
-                    }
-                    tesseract.setImage(File("storage/emulated/0/Pictures/ocr.jpg"))
-                    println(tesseract.utF8Text)
-                    return@clickable
                 }
                 .drawBehind {
                     drawRoundRect(

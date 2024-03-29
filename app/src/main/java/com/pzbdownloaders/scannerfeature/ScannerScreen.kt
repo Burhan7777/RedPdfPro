@@ -7,11 +7,15 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -19,8 +23,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions
 import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions.RESULT_FORMAT_JPEG
@@ -31,6 +37,7 @@ import com.google.mlkit.vision.documentscanner.GmsDocumentScanningResult
 import com.pzbdownloaders.redpdfpro.MainActivity
 import com.pzbdownloaders.redpdfpro.R
 import com.pzbdownloaders.redpdfpro.core.presentation.Component.AlertDialogBox
+import com.pzbdownloaders.redpdfpro.core.presentation.Component.ProgressDialogBox
 import com.pzbdownloaders.redpdfpro.core.presentation.MyViewModel
 import com.pzbdownloaders.scannerfeature.components.SingleRowScannerMainScreen
 import kotlinx.coroutines.Dispatchers
@@ -49,11 +56,12 @@ fun ScannerScreen(
     navHostController: NavHostController
 ) {
 
-    var scope = rememberCoroutineScope()
     var path: File? = null
     var resultFromActivity: GmsDocumentScanningResult? = null
     val showSaveDialogBox = mutableStateOf(false)
+    val showProgressDialogBox = mutableStateOf(false)
     val name = mutableStateOf("")
+    var message = mutableStateOf("Saving pdf as jpeg")
     val options = GmsDocumentScannerOptions.Builder()
         .setScannerMode(SCANNER_MODE_FULL)
         .setResultFormats(RESULT_FORMAT_JPEG, RESULT_FORMAT_PDF)
@@ -101,9 +109,12 @@ fun ScannerScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(it)
-                .background(MaterialTheme.colorScheme.secondary)
+                .background(MaterialTheme.colorScheme.secondary),
         ) {
 
+            if (showProgressDialogBox.value) {
+                ProgressDialogBox(message = message)
+            }
             if (showSaveDialogBox.value) {
                 AlertDialogBox(
                     name = name,
@@ -137,7 +148,7 @@ fun ScannerScreen(
                 items(
                     items = viewModel.modelScanner.toList()
                 ) { scannerModel ->
-                    SingleRowScannerMainScreen(scannerModel)
+                    SingleRowScannerMainScreen(scannerModel, showProgressDialogBox)
                 }
             }
         }

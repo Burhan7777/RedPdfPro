@@ -39,12 +39,9 @@ android {
                     install("pypdf[image]")
                     install("PYPDF2")
                     install("pillow")
-                    install("fpdf")
                     install("python-docx")
                     install("ppt2pdf")
-                    install("pypdfium2")
                     install("python-pptx")
-                    install("pytesseract")
                 }
             }
             productFlavors {

@@ -25,6 +25,7 @@ import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.TextFields
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -52,14 +53,19 @@ import com.chaquo.python.Python
 import com.pzbdownloaders.redpdfpro.R
 import com.pzbdownloaders.redpdfpro.splitpdffeature.utils.loadPage
 import com.pzbdownloaders.scannerfeature.util.ScannerModel
+import com.pzbdownloaders.scannerfeature.util.convertPdfToImage
 import com.pzbdownloaders.scannerfeature.util.downloadPdfAsJpeg
+
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 
 @Composable
-fun SingleRowScannerMainScreen(modelScanner: ScannerModel) {
+fun SingleRowScannerMainScreen(
+    modelScanner: ScannerModel,
+    showCircularProgress: MutableState<Boolean>
+) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
     Card(
@@ -95,7 +101,7 @@ fun SingleRowScannerMainScreen(modelScanner: ScannerModel) {
             )
             Column(
                 modifier = Modifier
-                    .fillMaxHeight()
+                    .fillMaxHeight(),
             ) {
                 Text(text = modelScanner.name.value ?: "", modifier = Modifier.padding(5.dp))
                 Spacer(modifier = Modifier.height(10.dp))
@@ -107,8 +113,9 @@ fun SingleRowScannerMainScreen(modelScanner: ScannerModel) {
                         )
                     }
                     IconButton(onClick = {
+                        showCircularProgress.value = true
                         scope.launch(Dispatchers.IO) {
-                            val result = downloadPdfAsJpeg(modelScanner.path!!,context)
+                            val result = downloadPdfAsJpeg(modelScanner.path!!, context)
                             withContext(Dispatchers.Main) {
                                 if (result == "Done")
                                     Toast.makeText(
@@ -116,6 +123,7 @@ fun SingleRowScannerMainScreen(modelScanner: ScannerModel) {
                                         " Images saved",
                                         Toast.LENGTH_SHORT
                                     ).show()
+                                showCircularProgress.value = false
                             }
                         }
 
@@ -126,7 +134,16 @@ fun SingleRowScannerMainScreen(modelScanner: ScannerModel) {
                             tint = Color.Unspecified
                         )
                     }
-                    IconButton(onClick = { /*TODO*/ }) {
+                    IconButton(onClick = {
+                        println("hello")
+                        scope.launch(Dispatchers.IO) {
+                        convertPdfToImage(context, modelScanner.path!!)
+                            withContext(Dispatchers.Main) {
+                                //  println(result)
+                            }
+                        }
+
+                    }) {
                         Icon(
                             painter = painterResource(id = R.drawable.word),
                             contentDescription = "Save to word file",
@@ -149,5 +166,6 @@ fun SingleRowScannerMainScreen(modelScanner: ScannerModel) {
             }
         }
     }
+
 
 }

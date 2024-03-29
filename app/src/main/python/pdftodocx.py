@@ -17,3 +17,10 @@ def pdf_to_docx(file, name):
         document.add_paragraph(text)
 
     document.save(f"/storage/emulated/0/Download/{name}.docx")
+
+
+def create_docx_from_text(text, name):
+    document = docx.Document()
+    document.add_paragraph(text)
+
+    document.save(f"storage/emulated/0/Download/Pro Scanner/docx/{name}.docx")
