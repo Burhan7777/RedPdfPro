@@ -108,7 +108,7 @@ fun SingleRowScannerMainScreen(modelScanner: ScannerModel) {
                     }
                     IconButton(onClick = {
                         scope.launch(Dispatchers.IO) {
-                            val result = downloadPdfAsJpeg(modelScanner.path!!)
+                            val result = downloadPdfAsJpeg(modelScanner.path!!,context)
                             withContext(Dispatchers.Main) {
                                 if (result == "Done")
                                     Toast.makeText(

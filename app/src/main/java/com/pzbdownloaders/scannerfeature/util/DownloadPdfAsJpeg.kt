@@ -3,6 +3,7 @@ package com.pzbdownloaders.scannerfeature.util
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.pdf.PdfRenderer
+import android.media.MediaScannerConnection
 import android.os.Environment
 import android.os.ParcelFileDescriptor
 import android.widget.Toast
@@ -12,7 +13,7 @@ import java.io.File
 import java.io.FileOutputStream
 import java.util.UUID
 
-fun downloadPdfAsJpeg(path: String): String {
+fun downloadPdfAsJpeg(path: String, context: Context): String {
     var listOfBitmaps: ArrayList<Bitmap> = ArrayList()
     val python = Python.getInstance()
     val module = python.getModule("splitPDF")
@@ -46,7 +47,19 @@ fun downloadPdfAsJpeg(path: String): String {
         }
         var fileOutputStream = FileOutputStream(file)
         listOfBitmaps[i].compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream)
+        scanFile(pathOfBitmap, context)
     }
 
     return "Done"
+}
+
+fun scanFile(filePath: String, context: Context) {
+    MediaScannerConnection.scanFile(
+        context,
+        arrayOf(filePath),
+        null
+    ) { path, uri ->
+        // Callback invoked after scanning is complete
+        // You can perform any additional actions here if needed
+    }
 }
