@@ -19,14 +19,16 @@ private val DarkColorScheme = darkColorScheme(
     primary = primaryColorDark,
     secondary = secondaryColorDark,
     onPrimary = white,
-    onSecondary = black
+    onSecondary = black,
+    tertiary = pdfRed
 )
 
 private val LightColorScheme = lightColorScheme(
     primary = primaryColorLight,
     secondary = secondaryColorLight,
     onPrimary = black,
-    onSecondary = white
+    onSecondary = white,
+    tertiary = pdfRed
 
     /* Other default colors to override
     background = Color(0xFFFFFBFE),

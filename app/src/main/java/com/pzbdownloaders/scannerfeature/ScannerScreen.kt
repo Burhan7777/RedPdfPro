@@ -61,7 +61,8 @@ fun ScannerScreen(
 
     val scanner = GmsDocumentScanning.getClient(options)
 
-    val file = File("storage/emulated/0/Download/Pro Scanner")
+    val file = File("storage/emulated/0/Download/Pro Scanner/Pdfs")
+    println(file.listFiles().size)
     if (viewModel.listOfFiles.size < (file.listFiles()?.size ?: 0)) {
 
         viewModel.listOfFiles =
@@ -110,12 +111,12 @@ fun ScannerScreen(
                     resultFromActivity?.pdf?.let { pdf ->
                         var externalDIr =
                             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-                        var file = File("$externalDIr/Pro Scanner")
+                        var file = File("$externalDIr/Pro Scanner/Pdfs")
                         if (!file.exists()) {
                             file.mkdirs()
                         }
                         var path =
-                            File("$externalDIr/Pro Scanner/${name.value}.pdf")
+                            File("$externalDIr/Pro Scanner/Pdfs/${name.value}.pdf")
                         if (!path.exists()) {
                             path?.createNewFile()
                         }

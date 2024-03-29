@@ -44,6 +44,7 @@ android {
                     install("ppt2pdf")
                     install("pypdfium2")
                     install("python-pptx")
+                    install("pytesseract")
                 }
             }
             productFlavors {
@@ -120,6 +121,9 @@ dependencies {
 
     // EXTENDED ICONS
     implementation("androidx.compose.material:material-icons-extended:1.6.4")
+
+    //TESSERACT
+    implementation ("cz.adaptech.tesseract4android:tesseract4android-openmp:4.7.0")
 
 
 }

@@ -30,7 +30,8 @@ class MyViewModel : ViewModel() {
                     modelScanner.add(
                         ScannerModel(
                             mutableStateOf(listOfFiles[i].name),
-                            mutableStateOf(null)
+                            mutableStateOf(null),
+                            "storage/emulated/0/Download/Pro Scanner/Pdfs/${listOfFiles[i].name}"
                         )
                     )
 
@@ -43,6 +44,12 @@ class MyViewModel : ViewModel() {
                         listOfFiles[i],
                         ParcelFileDescriptor.MODE_READ_ONLY
                     )
+
+                //Process: com.pzbdownloaders.redpdfpro, PID: 7895
+                //                                                                                                    java.io.IOException: file not in PDF format or corrupted
+                //
+                //catch this exception in pro scanner while creating bitmap
+
                 var pdfRenderer = PdfRenderer(parcelFileDescriptor)
                 var bitmap = loadPage(
                     0,
@@ -51,7 +58,8 @@ class MyViewModel : ViewModel() {
                 withContext(Dispatchers.Main) {
                     modelScanner[i] = ScannerModel(
                         mutableStateOf(listOfFiles[i].name),
-                        mutableStateOf(bitmap)
+                        mutableStateOf(bitmap),
+                        "storage/emulated/0/Download/Pro Scanner/Pdfs/${listOfFiles[i].name}"
                     )
                 }
             }
@@ -74,11 +82,12 @@ class MyViewModel : ViewModel() {
                 modelScanner.add(
                     ScannerModel(
                         mutableStateOf(listOfFiles[listOfFiles.size - 1].name),
-                        mutableStateOf(bitmap)
+                        mutableStateOf(bitmap),
+                        "storage/emulated/0/Download/Pro Scanner/Pdfs/${listOfFiles[listOfFiles.size - 1].name}"
                     )
                 )
                 var lastModelScanner = modelScanner[modelScanner.size - 1]
-                for (i in modelScanner.size downTo  0) {
+                for (i in modelScanner.size downTo 0) {
                     try {
                         modelScanner[i] = modelScanner[i - 1]
                     } catch (exception: IndexOutOfBoundsException) {

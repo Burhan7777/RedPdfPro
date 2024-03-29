@@ -6,5 +6,6 @@ import java.io.File
 
 data class ScannerModel(
     val name: MutableState<String?>,
-    val bitmap: MutableState<Bitmap?>
+    val bitmap: MutableState<Bitmap?>,
+    val path: String?
 )

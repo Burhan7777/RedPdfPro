@@ -3,6 +3,7 @@ package com.pzbdownloaders.scannerfeature.components
 import android.graphics.Bitmap
 import android.graphics.pdf.PdfRenderer
 import android.os.ParcelFileDescriptor
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -33,6 +34,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -46,15 +48,20 @@ import androidx.core.graphics.createBitmap
 import coil.compose.AsyncImage
 import coil.compose.rememberImagePainter
 import coil.request.ImageRequest
+import com.chaquo.python.Python
 import com.pzbdownloaders.redpdfpro.R
 import com.pzbdownloaders.redpdfpro.splitpdffeature.utils.loadPage
 import com.pzbdownloaders.scannerfeature.util.ScannerModel
+import com.pzbdownloaders.scannerfeature.util.downloadPdfAsJpeg
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 
 @Composable
 fun SingleRowScannerMainScreen(modelScanner: ScannerModel) {
-
-    var bitmap = remember { mutableStateOf(modelScanner.bitmap) }
+    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -90,7 +97,7 @@ fun SingleRowScannerMainScreen(modelScanner: ScannerModel) {
                 modifier = Modifier
                     .fillMaxHeight()
             ) {
-                Text(text = modelScanner.name?.value ?: "", modifier = Modifier.padding(5.dp))
+                Text(text = modelScanner.name.value ?: "", modifier = Modifier.padding(5.dp))
                 Spacer(modifier = Modifier.height(10.dp))
                 Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
                     IconButton(onClick = { /*TODO*/ }) {
@@ -99,7 +106,20 @@ fun SingleRowScannerMainScreen(modelScanner: ScannerModel) {
                             contentDescription = "Share file"
                         )
                     }
-                    IconButton(onClick = { /*TODO*/ }) {
+                    IconButton(onClick = {
+                        scope.launch(Dispatchers.IO) {
+                            val result = downloadPdfAsJpeg(modelScanner.path!!)
+                            withContext(Dispatchers.Main) {
+                                if (result == "Done")
+                                    Toast.makeText(
+                                        context,
+                                        " Images saved",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                            }
+                        }
+
+                    }) {
                         Icon(
                             imageVector = Icons.Default.Image,
                             contentDescription = "Download as Image",

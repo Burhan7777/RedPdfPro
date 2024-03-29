@@ -25,9 +25,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.chaquo.python.Python
+import com.googlecode.tesseract.android.TessBaseAPI
 import com.pzbdownloaders.redpdfpro.MainActivity
 import com.pzbdownloaders.redpdfpro.R
 import com.pzbdownloaders.redpdfpro.splitpdffeature.utils.getFilePathFromContentUri
+import java.io.File
+import java.io.FileOutputStream
 
 @Composable
 fun DocsToPdf(mainActivity: MainActivity) {
@@ -39,13 +42,13 @@ fun DocsToPdf(mainActivity: MainActivity) {
     val result = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
         onResult = {
-            var path = getFilePathFromContentUri(it!!, mainActivity)
+            // var path = getFilePathFromContentUri(it!!, mainActivity)
             val python = Python.getInstance()
-            val module = python.getModule("pdftodocx")
+            val module = python.getModule("ocr")
             module.callAttr(
-                "pdf_to_docx",
-                path,
-                "demo1.docx"
+                "ocr",
+                "storage/emulated/0/Pictures/ocr.jpg",
+                "burhan123"
             )
         })
     Column(
@@ -58,7 +61,21 @@ fun DocsToPdf(mainActivity: MainActivity) {
                 .height(150.dp)
                 .padding(start = 20.dp, end = 20.dp)
                 .clickable {
-                    result.launch("application/pdf")
+                    //result.launch(" application/pdf")
+                    var assets = mainActivity.assets.open("eng.traineddata")
+                    var fos = FileOutputStream("${mainActivity.filesDir}/tessdata/eng.traineddata")
+                    assets.use {
+                        it.copyTo(fos)
+                    }
+                    var tesseract = TessBaseAPI()
+                    var path = File("${mainActivity.filesDir}").absolutePath
+                    if (!tesseract.init(path, "eng")) {
+                        tesseract.recycle()
+                        return@clickable
+                    }
+                    tesseract.setImage(File("storage/emulated/0/Pictures/ocr.jpg"))
+                    println(tesseract.utF8Text)
+                    return@clickable
                 }
                 .drawBehind {
                     drawRoundRect(

@@ -7,7 +7,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemColors
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,7 +35,8 @@ fun MainScreen(
         Column(
             modifier = Modifier
                 .padding(it)
-                .fillMaxSize().background(MaterialTheme.colorScheme.secondary)
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.secondary)
         ) {
             MyNavHost(
                 navHostController = navHostController,
@@ -59,13 +63,14 @@ fun MyBottomBar(navHostController: NavHostController) {
                 navHostController.navigate(it.route)
             }, icon = {
                 Icon(
-                    imageVector = ScreensBottomNavigation.ScannerScreen.imageVector,
+                    imageVector = it.imageVector,
                     contentDescription = "Scanner"
                 )
             },
                 label = {
                     Text(text = it.title)
-                })
+                },
+            )
         }
     }
 
