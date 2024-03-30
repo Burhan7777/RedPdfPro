@@ -23,4 +23,6 @@
     <string name="convertTOPDF">Convert to PDF</string>
     <string name="imagesToPDF">Images to PDF</string>
     <string name="docsToPDF">Docs to PDF</string>
+    <string name="saveAsDocxFile">Save as .docx file</string>
+    <string name="saveAsTxtFile">Save as .txt file</string>
 </resources>

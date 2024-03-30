@@ -122,7 +122,9 @@ fun SingleRowScannerMainScreen(
                     )
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(5.dp),
-                        modifier = Modifier.align(Alignment.BottomCenter)
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .padding(bottom = 5.dp)
                     ) {
                         IconButton(onClick = {
                             Intent(Intent.ACTION_SEND).apply {
