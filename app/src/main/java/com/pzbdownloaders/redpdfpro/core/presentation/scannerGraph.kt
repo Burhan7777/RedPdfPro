@@ -5,7 +5,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.pzbdownloaders.redpdfpro.MainActivity
-import com.pzbdownloaders.scannerfeature.ScannerScreen
+import com.pzbdownloaders.scannerfeature.screens.ScannerScreen
 
 fun NavGraphBuilder.scannerGraph(
     navHostController: NavHostController,

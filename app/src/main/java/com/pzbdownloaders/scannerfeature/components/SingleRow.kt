@@ -1,7 +1,9 @@
 package com.pzbdownloaders.scannerfeature.components
 
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.pdf.PdfRenderer
+import android.net.Uri
 import android.os.ParcelFileDescriptor
 import android.widget.Toast
 import androidx.compose.foundation.Image
@@ -44,12 +46,15 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.core.content.FileProvider
 import androidx.core.graphics.createBitmap
 import coil.compose.AsyncImage
 import coil.compose.rememberImagePainter
 import coil.request.ImageRequest
 import com.chaquo.python.Python
+import com.pzbdownloaders.redpdfpro.MainActivity
 import com.pzbdownloaders.redpdfpro.R
 import com.pzbdownloaders.redpdfpro.splitpdffeature.utils.loadPage
 import com.pzbdownloaders.scannerfeature.util.ScannerModel
@@ -68,14 +73,14 @@ fun SingleRowScannerMainScreen(
     nameOfWordFile: MutableState<String>,
     pathOfPdfFile: MutableState<String>,
     showWordFIleSaveDialogBox: MutableState<Boolean>,
-    showTextFileSaveDialogBox: MutableState<Boolean>
+    showTextFileSaveDialogBox: MutableState<Boolean>,
+    activity: MainActivity
 ) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(150.dp)
             .padding(10.dp),
         shape = RoundedCornerShape(10.dp),
         colors = CardDefaults.cardColors(
@@ -99,71 +104,93 @@ fun SingleRowScannerMainScreen(
                     .data(modelScanner.bitmap.value).crossfade(true).build(),
                 contentDescription = "Pdf Image",
                 modifier = Modifier
-                    .fillMaxHeight()
+                    .height(150.dp)
                     .width(120.dp),
                 contentScale = ContentScale.Crop,
             )
             Column(
                 modifier = Modifier
-                    .fillMaxHeight(),
+                    .height(150.dp),
             ) {
-                Text(text = modelScanner.name.value ?: "", modifier = Modifier.padding(5.dp))
-                Spacer(modifier = Modifier.height(10.dp))
-                Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
-                    IconButton(onClick = { /*TODO*/ }) {
-                        Icon(
-                            imageVector = Icons.Default.Share,
-                            contentDescription = "Share file"
-                        )
-                    }
-                    IconButton(onClick = {
-                        showCircularProgress.value = true
-                        scope.launch(Dispatchers.IO) {
-                            val result = downloadPdfAsJpeg(modelScanner.path!!, context)
-                            withContext(Dispatchers.Main) {
-                                if (result == "Done")
-                                    Toast.makeText(
-                                        context,
-                                        " Images saved",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                showCircularProgress.value = false
+                Box(modifier = Modifier.fillMaxHeight()) {
+                    Text(
+                        text = modelScanner.name.value ?: "",
+                        modifier = Modifier
+                            .padding(start = 10.dp, top = 10.dp)
+                            .align(Alignment.TopStart),
+                        fontWeight = FontWeight.Bold
+                    )
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(5.dp),
+                        modifier = Modifier.align(Alignment.BottomCenter)
+                    ) {
+                        IconButton(onClick = {
+                            Intent(Intent.ACTION_SEND).apply {
+                                type = "application/pdf"
+                                var uri = FileProvider.getUriForFile(
+                                    context,
+                                    context.applicationContext.packageName + ".provider",
+                                    File(modelScanner.path!!)
+                                );
+                                putExtra(Intent.EXTRA_STREAM, uri)
+                                activity.startActivity(this)
+
                             }
+                        }) {
+                            Icon(
+                                imageVector = Icons.Default.Share,
+                                contentDescription = "Share file"
+                            )
                         }
+                        IconButton(onClick = {
+                            showCircularProgress.value = true
+                            scope.launch(Dispatchers.IO) {
+                                val result = downloadPdfAsJpeg(modelScanner.path!!, context)
+                                withContext(Dispatchers.Main) {
+                                    if (result == "Done")
+                                        Toast.makeText(
+                                            context,
+                                            " Images saved",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    showCircularProgress.value = false
+                                }
+                            }
 
-                    }) {
-                        Icon(
-                            imageVector = Icons.Default.Image,
-                            contentDescription = "Download as Image",
-                            tint = Color.Unspecified
-                        )
-                    }
-                    IconButton(onClick = {
-                        println("hello")
-                        pathOfPdfFile.value = modelScanner.path!!
-                        showWordFIleSaveDialogBox.value = true
+                        }) {
+                            Icon(
+                                imageVector = Icons.Default.Image,
+                                contentDescription = "Download as Image",
+                                tint = Color.Unspecified
+                            )
+                        }
+                        IconButton(onClick = {
+                            println("hello")
+                            pathOfPdfFile.value = modelScanner.path!!
+                            showWordFIleSaveDialogBox.value = true
 
-                    }) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.word),
-                            contentDescription = "Save to word file",
-                            tint = Color.Unspecified
-                        )
-                    }
-                    IconButton(onClick = {
-                        pathOfPdfFile.value = modelScanner.path!!
-                        showTextFileSaveDialogBox.value = true
-                    }) {
-                        Icon(
-                            painterResource(id = R.drawable.text_scanner),
-                            contentDescription = "Save as text file"
-                        )
-                    }
-                    IconButton(onClick = { /*TODO*/ }) {
-                        Icon(
-                            imageVector = Icons.Default.MoreVert,
-                            contentDescription = "More options"
-                        )
+                        }) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.word),
+                                contentDescription = "Save to word file",
+                                tint = Color.Unspecified
+                            )
+                        }
+                        IconButton(onClick = {
+                            pathOfPdfFile.value = modelScanner.path!!
+                            showTextFileSaveDialogBox.value = true
+                        }) {
+                            Icon(
+                                painterResource(id = R.drawable.text_scanner),
+                                contentDescription = "Save as text file"
+                            )
+                        }
+                        IconButton(onClick = { /*TODO*/ }) {
+                            Icon(
+                                imageVector = Icons.Default.MoreVert,
+                                contentDescription = "More options"
+                            )
+                        }
                     }
                 }
             }

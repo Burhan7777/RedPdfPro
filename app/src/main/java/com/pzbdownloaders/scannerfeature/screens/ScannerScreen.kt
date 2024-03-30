@@ -1,22 +1,15 @@
-package com.pzbdownloaders.scannerfeature
+package com.pzbdownloaders.scannerfeature.screens
 
 import android.app.Activity.RESULT_OK
-import android.net.Uri
-import android.os.Environment
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -24,11 +17,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions
 import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions.RESULT_FORMAT_JPEG
@@ -38,21 +28,13 @@ import com.google.mlkit.vision.documentscanner.GmsDocumentScanning
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanningResult
 import com.pzbdownloaders.redpdfpro.MainActivity
 import com.pzbdownloaders.redpdfpro.R
-import com.pzbdownloaders.redpdfpro.core.presentation.Component.AlertDialogBox
-import com.pzbdownloaders.redpdfpro.core.presentation.Component.ProgressDialogBox
 import com.pzbdownloaders.redpdfpro.core.presentation.MyViewModel
 import com.pzbdownloaders.scannerfeature.components.SaveFIleAsPdf
 import com.pzbdownloaders.scannerfeature.components.SavePdfAsDocxFile
 import com.pzbdownloaders.scannerfeature.components.SavePdfAsImage
 import com.pzbdownloaders.scannerfeature.components.SavePdfAsText
 import com.pzbdownloaders.scannerfeature.components.SingleRowScannerMainScreen
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.io.File
-import java.io.FileOutputStream
-import java.util.Arrays
-import java.util.UUID
 
 
 @Composable
@@ -172,7 +154,8 @@ fun ScannerScreen(
                         nameOfWordFile,
                         pathOfPdfFile,
                         showWordFIleSaveDialogBox,
-                        showTextFileSaveDialogBox
+                        showTextFileSaveDialogBox,
+                        activity
                     )
                 }
             }
