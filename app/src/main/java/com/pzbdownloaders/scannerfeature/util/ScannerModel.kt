@@ -5,7 +5,7 @@ import androidx.compose.runtime.MutableState
 import java.io.File
 
 data class ScannerModel(
-    val name: MutableState<String?>,
-    val bitmap: MutableState<Bitmap?>,
+    val name: String?,
+    val bitmap: Bitmap?,
     val path: String?
 )

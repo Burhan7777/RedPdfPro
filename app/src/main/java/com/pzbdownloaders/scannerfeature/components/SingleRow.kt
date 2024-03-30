@@ -74,7 +74,10 @@ fun SingleRowScannerMainScreen(
     pathOfPdfFile: MutableState<String>,
     showWordFIleSaveDialogBox: MutableState<Boolean>,
     showTextFileSaveDialogBox: MutableState<Boolean>,
-    activity: MainActivity
+    activity: MainActivity,
+    showBottomSheet: MutableState<Boolean>,
+    bitmapOfPdfFile: MutableState<Bitmap?>,
+    nameOfPdfFIle: MutableState<String?>
 ) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
@@ -101,7 +104,7 @@ fun SingleRowScannerMainScreen(
         ) {
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
-                    .data(modelScanner.bitmap.value).crossfade(true).build(),
+                    .data(modelScanner.bitmap).crossfade(true).build(),
                 contentDescription = "Pdf Image",
                 modifier = Modifier
                     .height(150.dp)
@@ -114,7 +117,7 @@ fun SingleRowScannerMainScreen(
             ) {
                 Box(modifier = Modifier.fillMaxHeight()) {
                     Text(
-                        text = modelScanner.name.value ?: "",
+                        text = modelScanner.name ?: "",
                         modifier = Modifier
                             .padding(start = 10.dp, top = 10.dp)
                             .align(Alignment.TopStart),
@@ -187,7 +190,12 @@ fun SingleRowScannerMainScreen(
                                 contentDescription = "Save as text file"
                             )
                         }
-                        IconButton(onClick = { /*TODO*/ }) {
+                        IconButton(onClick = {
+                            pathOfPdfFile.value = modelScanner.path!!
+                            bitmapOfPdfFile.value = modelScanner.bitmap
+                            nameOfPdfFIle.value = modelScanner.name
+                            showBottomSheet.value = true
+                        }) {
                             Icon(
                                 imageVector = Icons.Default.MoreVert,
                                 contentDescription = "More options"

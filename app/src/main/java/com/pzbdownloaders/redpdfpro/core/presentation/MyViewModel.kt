@@ -38,8 +38,8 @@ class MyViewModel : ViewModel() {
                 for (i in 0 until (listOfFiles.size ?: 0)) {
                     modelScanner.add(
                         ScannerModel(
-                            mutableStateOf(listOfFiles[i].name),
-                            mutableStateOf(null),
+                            listOfFiles[i].name,
+                            null,
                             "storage/emulated/0/Download/Pro Scanner/Pdfs/${listOfFiles[i].name}"
                         )
                     )
@@ -66,8 +66,8 @@ class MyViewModel : ViewModel() {
                 )
                 withContext(Dispatchers.Main) {
                     modelScanner[i] = ScannerModel(
-                        mutableStateOf(listOfFiles[i].name),
-                        mutableStateOf(bitmap),
+                        listOfFiles[i].name,
+                        bitmap,
                         "storage/emulated/0/Download/Pro Scanner/Pdfs/${listOfFiles[i].name}"
                     )
                 }
@@ -90,8 +90,8 @@ class MyViewModel : ViewModel() {
             withContext(Dispatchers.Main) {
                 modelScanner.add(
                     ScannerModel(
-                        mutableStateOf(listOfFiles[listOfFiles.size - 1].name),
-                        mutableStateOf(bitmap),
+                        listOfFiles[listOfFiles.size - 1].name,
+                        bitmap,
                         "storage/emulated/0/Download/Pro Scanner/Pdfs/${listOfFiles[listOfFiles.size - 1].name}"
                     )
                 )
@@ -107,6 +107,7 @@ class MyViewModel : ViewModel() {
             }
         }
     }
+
 
     fun convertPdfIntoAWordFIle(
         context: Context,

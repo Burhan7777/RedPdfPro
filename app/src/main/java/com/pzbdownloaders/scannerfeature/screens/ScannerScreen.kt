@@ -1,24 +1,46 @@
 package com.pzbdownloaders.scannerfeature.screens
 
 import android.app.Activity.RESULT_OK
+import android.graphics.Bitmap
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.BottomSheetDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.toMutableStateList
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.core.content.FileProvider
 import androidx.navigation.NavHostController
 import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions
 import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions.RESULT_FORMAT_JPEG
@@ -29,14 +51,17 @@ import com.google.mlkit.vision.documentscanner.GmsDocumentScanningResult
 import com.pzbdownloaders.redpdfpro.MainActivity
 import com.pzbdownloaders.redpdfpro.R
 import com.pzbdownloaders.redpdfpro.core.presentation.MyViewModel
+import com.pzbdownloaders.scannerfeature.components.DeleteNoteAlertBox
 import com.pzbdownloaders.scannerfeature.components.SaveFIleAsPdf
 import com.pzbdownloaders.scannerfeature.components.SavePdfAsDocxFile
 import com.pzbdownloaders.scannerfeature.components.SavePdfAsImage
 import com.pzbdownloaders.scannerfeature.components.SavePdfAsText
 import com.pzbdownloaders.scannerfeature.components.SingleRowScannerMainScreen
+import com.pzbdownloaders.scannerfeature.util.ScannerModel
 import java.io.File
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ScannerScreen(
     activity: MainActivity,
@@ -54,6 +79,7 @@ fun ScannerScreen(
         mutableStateOf(false) // When we press the save as docx button this dialog box appears can asks for name of save file
     val showTextFileSaveDialogBox =
         mutableStateOf(false) // // When we press the save as text button this dialog box appears can asks for name of save file
+    val showDeleteDialogBox = mutableStateOf(false)
     val name =
         mutableStateOf("") // This is the name of the file which is to be saved as pdf when we return from scanner activity(Google's scanner activity)
     val nameOfWordFile =
@@ -62,12 +88,15 @@ fun ScannerScreen(
         mutableStateOf("")// This is the name of txt file when we save pdf as txt file
     val pathOfPdfFile =
         mutableStateOf("") // Path of the word file. This is passed to the singleRow and it becomes equal to the path of the selected pdf. It is important since we save docx file in viewmodel so we need this path here in this screen.
+    val bitmapOfPdfFile = mutableStateOf<Bitmap?>(null)
+    val nameOfPdfFIle = mutableStateOf<String?>("")
     var message =
         mutableStateOf("Saving pdf as jpeg") // This is the message of progress dialog box when we save the pdf as images
     val messageSavingWordFIle =
         mutableStateOf("Saving pdf as docx") // This is the message of progress dialog box when we save the pdf as docx filer.
     val messageSavingTextFile =
         mutableStateOf("Saving pdf as txt") // This is the message of progress dialog box when we save the pdf as txt filer.
+    val showBottomSheet = mutableStateOf(false)
 
     //  Why isn't there equivalent for "showSaveDialogBox" for files converted in docx. Well the equivalent is "showProgressDialogBoxOfWordFile" and it comes from viewmodel. This is because this needs to be passed on to "DownloadPdfAsWord" file and that methods of that file are called in viewmodel
     val options = GmsDocumentScannerOptions.Builder()
@@ -139,14 +168,47 @@ fun ScannerScreen(
                 messageSavingTextFIle = messageSavingTextFile
             )
 
+            if (showBottomSheet.value) {
+                ModalBottomSheet(
+                    onDismissRequest = { showBottomSheet.value = false },
+                    dragHandle = {
+                        BottomSheetDefaults.DragHandle(
 
-
-
-
+                        )
+                    },
+                    windowInsets = BottomSheetDefaults.windowInsets,
+                    modifier = Modifier.height(300.dp)
+                ) {
+                    BottomSheetItem(
+                        showDeleteDialogBox,
+                        viewModel,
+                        activity,
+                        navHostController,
+                        Icons.Default.Delete,
+                        R.string.deletePdf,
+                        R.string.delete
+                    ) {
+                        val file = File(pathOfPdfFile.value)
+                        var uri = FileProvider.getUriForFile(
+                            activity,
+                            activity.applicationContext.packageName + ".provider",
+                            File(pathOfPdfFile.value)
+                        );
+                        activity.contentResolver.delete(uri, null, null)
+                        viewModel.modelScanner.remove(
+                            ScannerModel(
+                                nameOfPdfFIle.value,
+                                bitmapOfPdfFile.value,
+                                pathOfPdfFile.value
+                            )
+                        )
+                    }
+                }
+            }
             LazyColumn(
             ) {
                 items(
-                    items = viewModel.modelScanner.toList()
+                    items = viewModel.modelScanner
                 ) { scannerModel ->
                     SingleRowScannerMainScreen(
                         scannerModel,
@@ -155,7 +217,10 @@ fun ScannerScreen(
                         pathOfPdfFile,
                         showWordFIleSaveDialogBox,
                         showTextFileSaveDialogBox,
-                        activity
+                        activity,
+                        showBottomSheet,
+                        bitmapOfPdfFile,
+                        nameOfPdfFIle
                     )
                 }
             }
@@ -163,7 +228,54 @@ fun ScannerScreen(
     }
 }
 
-
-
+@Composable
+fun BottomSheetItem(
+    showDeleteDialogBox: MutableState<Boolean>,
+    viewModel: MyViewModel,
+    activity: MainActivity,
+    navHostController: NavHostController,
+    imageVector: ImageVector,
+    contentDescriptionId: Int,
+    nameId: Int,
+    deleteFile: () -> Unit
+) {
+    if (showDeleteDialogBox.value) {
+        DeleteNoteAlertBox(
+            viewModel = viewModel,
+            activity = activity,
+            navHostController = navHostController,
+            onDismiss = { showDeleteDialogBox.value = false }) {
+            deleteFile()
+            showDeleteDialogBox.value = false
+        }
+    }
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier
+            .clickable { showDeleteDialogBox.value = true }
+            .padding(top = 7.dp, bottom = 7.dp)
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(15.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = imageVector,
+                contentDescription = stringResource(id = contentDescriptionId),
+                modifier = Modifier.padding(
+                    start = 30.dp, top = 10.dp
+                )
+            )
+            Text(
+                text = stringResource(id = nameId),
+                fontSize = 18.sp,
+                modifier = Modifier
+                    .padding(top = 10.dp)
+                    .fillMaxWidth()
+                    .wrapContentHeight(align = Alignment.CenterVertically)
+            )
+        }
+    }
+}
 
 

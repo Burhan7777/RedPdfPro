@@ -25,4 +25,8 @@
     <string name="docsToPDF">Docs to PDF</string>
     <string name="saveAsDocxFile">Save as .docx file</string>
     <string name="saveAsTxtFile">Save as .txt file</string>
+    <string name="delete">Delete</string>
+    <string name="deletePdf">Delete PDF</string>
+    <string name="deleteFile">Delete FIle?</string>
+    <string name="areYouSure">Are you sure you want to delete this.It will permanently delete the file forever.</string>
 </resources>
