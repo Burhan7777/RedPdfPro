@@ -1,16 +1,22 @@
 package com.pzbdownloaders.redpdfpro.core.presentation
 
+import android.app.Application
+import android.content.Context
 import android.graphics.pdf.PdfRenderer
 import android.os.ParcelFileDescriptor
+import android.widget.Toast
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pzbdownloaders.redpdfpro.splitpdffeature.components.modelBitmap
 import com.pzbdownloaders.redpdfpro.splitpdffeature.utils.loadPage
 import com.pzbdownloaders.scannerfeature.util.ScannerModel
+import com.pzbdownloaders.scannerfeature.util.convertPdfToImage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -22,6 +28,7 @@ class MyViewModel : ViewModel() {
     var pdfNames = mutableStateListOf<String>()
     var modelScanner: SnapshotStateList<ScannerModel> = mutableStateListOf()
     var listOfFiles: ArrayList<File> = ArrayList()
+    val showProgressDialogBoxOfWordFile = mutableStateOf(false)
 
     fun getImage() {
         viewModelScope.launch(Dispatchers.Default) {
@@ -95,6 +102,19 @@ class MyViewModel : ViewModel() {
                     }
                 }
                 modelScanner[0] = lastModelScanner
+            }
+        }
+    }
+
+    fun convertPdfIntoAWordFIle(
+        context: Context,
+        path: String,
+        nameOfWordFile: MutableState<String>
+    ) {
+        viewModelScope.launch(Dispatchers.IO) {
+            convertPdfToImage(context, path, nameOfWordFile,showProgressDialogBoxOfWordFile)
+            withContext(Dispatchers.Main) {
+                Toast.makeText(context, "File Saved", Toast.LENGTH_SHORT).show()
             }
         }
     }

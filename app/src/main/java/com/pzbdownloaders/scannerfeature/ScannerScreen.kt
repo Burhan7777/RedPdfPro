@@ -3,6 +3,7 @@ package com.pzbdownloaders.scannerfeature
 import android.app.Activity.RESULT_OK
 import android.net.Uri
 import android.os.Environment
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -60,8 +61,13 @@ fun ScannerScreen(
     var resultFromActivity: GmsDocumentScanningResult? = null
     val showSaveDialogBox = mutableStateOf(false)
     val showProgressDialogBox = mutableStateOf(false)
+    val showWordFIleSaveDialogBox = mutableStateOf(false)
     val name = mutableStateOf("")
+    val nameOfWordFile = mutableStateOf("")
+    val pathOfPdfFile = mutableStateOf("")
     var message = mutableStateOf("Saving pdf as jpeg")
+    val messageSavingWordFIle = mutableStateOf("Saving pdf as docx")
+
     val options = GmsDocumentScannerOptions.Builder()
         .setScannerMode(SCANNER_MODE_FULL)
         .setResultFormats(RESULT_FORMAT_JPEG, RESULT_FORMAT_PDF)
@@ -70,7 +76,6 @@ fun ScannerScreen(
     val scanner = GmsDocumentScanning.getClient(options)
 
     val file = File("storage/emulated/0/Download/Pro Scanner/Pdfs")
-    println(file.listFiles().size)
     if (viewModel.listOfFiles.size < (file.listFiles()?.size ?: 0)) {
 
         viewModel.listOfFiles =
@@ -79,7 +84,6 @@ fun ScannerScreen(
         viewModel.getImage()
     }
 
-    var imageUris = mutableStateOf<List<Uri>>(emptyList())
     val result = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult(),
         onResult = {
@@ -115,6 +119,25 @@ fun ScannerScreen(
             if (showProgressDialogBox.value) {
                 ProgressDialogBox(message = message)
             }
+
+
+            if (showWordFIleSaveDialogBox.value) {
+                AlertDialogBox(
+                    name = nameOfWordFile,
+                    onDismiss = {
+                        showWordFIleSaveDialogBox.value = !showWordFIleSaveDialogBox.value
+                    }) {
+                    viewModel.showProgressDialogBoxOfWordFile.value = true
+                    viewModel.convertPdfIntoAWordFIle(
+                        activity.applicationContext,
+                        pathOfPdfFile.value,
+                        nameOfWordFile
+                    )
+                }
+            }
+            if (viewModel.showProgressDialogBoxOfWordFile.value) {
+                ProgressDialogBox(message = messageSavingWordFIle)
+            }
             if (showSaveDialogBox.value) {
                 AlertDialogBox(
                     name = name,
@@ -129,7 +152,7 @@ fun ScannerScreen(
                         var path =
                             File("$externalDIr/Pro Scanner/Pdfs/${name.value}.pdf")
                         if (!path.exists()) {
-                            path?.createNewFile()
+                            path.createNewFile()
                         }
                         var fos = FileOutputStream(
                             path
@@ -148,7 +171,14 @@ fun ScannerScreen(
                 items(
                     items = viewModel.modelScanner.toList()
                 ) { scannerModel ->
-                    SingleRowScannerMainScreen(scannerModel, showProgressDialogBox)
+                    SingleRowScannerMainScreen(
+                        scannerModel,
+                        showProgressDialogBox,
+                        nameOfWordFile,
+                        pathOfPdfFile,
+                        showWordFIleSaveDialogBox,
+                        viewModel.showProgressDialogBoxOfWordFile
+                    )
                 }
             }
         }

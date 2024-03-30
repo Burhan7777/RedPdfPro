@@ -64,7 +64,11 @@ import java.io.File
 @Composable
 fun SingleRowScannerMainScreen(
     modelScanner: ScannerModel,
-    showCircularProgress: MutableState<Boolean>
+    showCircularProgress: MutableState<Boolean>,
+    nameOfWordFile: MutableState<String>,
+    pathOfPdfFile: MutableState<String>,
+    showWordFIleSaveDialogBox: MutableState<Boolean>,
+    showProgressDialogBoxOfWordFile: MutableState<Boolean>
 ) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
@@ -136,12 +140,8 @@ fun SingleRowScannerMainScreen(
                     }
                     IconButton(onClick = {
                         println("hello")
-                        scope.launch(Dispatchers.IO) {
-                        convertPdfToImage(context, modelScanner.path!!)
-                            withContext(Dispatchers.Main) {
-                                //  println(result)
-                            }
-                        }
+                        pathOfPdfFile.value = modelScanner.path!!
+                        showWordFIleSaveDialogBox.value = true
 
                     }) {
                         Icon(
