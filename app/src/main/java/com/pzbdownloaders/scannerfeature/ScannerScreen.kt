@@ -59,15 +59,16 @@ fun ScannerScreen(
 
     var path: File? = null
     var resultFromActivity: GmsDocumentScanningResult? = null
-    val showSaveDialogBox = mutableStateOf(false)
-    val showProgressDialogBox = mutableStateOf(false)
-    val showWordFIleSaveDialogBox = mutableStateOf(false)
-    val name = mutableStateOf("")
-    val nameOfWordFile = mutableStateOf("")
-    val pathOfPdfFile = mutableStateOf("")
-    var message = mutableStateOf("Saving pdf as jpeg")
-    val messageSavingWordFIle = mutableStateOf("Saving pdf as docx")
+    val showSaveDialogBox = mutableStateOf(false) //  When we return from the scanner activity this dialog shows to save the pdf
+    val showProgressDialogBox = mutableStateOf(false) // When we press the save as image button this dialog box appears
+    val showWordFIleSaveDialogBox = mutableStateOf(false) // When we press the save as docx button this dialog box appears can asks for name of save file
+    val name = mutableStateOf("") // This is the name of the file which is to be saved as pdf when we return from scanner activity(Google's scanner activity)
+    val nameOfWordFile = mutableStateOf("") // This is the name of docx file when we save pdf as docx file
+    val pathOfPdfFile = mutableStateOf("") // Path of the word file. This is passed to the singleRow and it becomes equal to the path of the selected pdf. It is important since we save docx file in viewmodel so we need this path here in this screen.
+    var message = mutableStateOf("Saving pdf as jpeg") // This is the message of progress dialog box when we save the pdf as images
+    val messageSavingWordFIle = mutableStateOf("Saving pdf as docx") // This is the message of progress dialog box when we save the pdf as docx filer.
 
+    //  Why isn't there equivalent for "showSaveDialogBox" for files converted in docx. Well the equivalent is "showProgressDialogBoxOfWordFile" and it comes from viewmodel. This is because this needs to be passed on to "DownloadPdfAsWord" file and that methods of that file are called in viewmodel
     val options = GmsDocumentScannerOptions.Builder()
         .setScannerMode(SCANNER_MODE_FULL)
         .setResultFormats(RESULT_FORMAT_JPEG, RESULT_FORMAT_PDF)
