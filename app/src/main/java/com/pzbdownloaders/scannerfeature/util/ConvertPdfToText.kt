@@ -87,7 +87,7 @@ fun saveFile(
         tesseract.setImage(File(listOfFilePaths[i]))
         finalText += tesseract.utF8Text
     }
-    val textFolder = File("storage/emulated/0/Download/Pro Scanner/text_files")
+    val textFolder = File("storage/emulated/0/Download/Pro Scanner/text files")
     if (!textFolder.exists()) {
         textFolder.mkdirs()
     }
@@ -95,7 +95,7 @@ fun saveFile(
     // java.io.FileNotFoundException: storage/emulated/0/Download/Pro Scanner/text_files/3pages.txt: open failed: EEXIST (File exists)
     // Handle this error when file already exists
     val textFile =
-        File("storage/emulated/0/Download/Pro Scanner/text_files/${nameOfTextFile.value}.txt")
+        File("storage/emulated/0/Download/Pro Scanner/text files/${nameOfTextFile.value}.txt")
     if (!textFile.exists()) {
         textFile.createNewFile()
         textFile.writeText(finalText)
