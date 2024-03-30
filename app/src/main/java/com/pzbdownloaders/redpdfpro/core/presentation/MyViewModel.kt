@@ -17,6 +17,7 @@ import com.pzbdownloaders.redpdfpro.splitpdffeature.components.modelBitmap
 import com.pzbdownloaders.redpdfpro.splitpdffeature.utils.loadPage
 import com.pzbdownloaders.scannerfeature.util.ScannerModel
 import com.pzbdownloaders.scannerfeature.util.convertPdfToImage
+import com.pzbdownloaders.scannerfeature.util.getImagesForTextFiles
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -29,6 +30,7 @@ class MyViewModel : ViewModel() {
     var modelScanner: SnapshotStateList<ScannerModel> = mutableStateListOf()
     var listOfFiles: ArrayList<File> = ArrayList()
     val showProgressDialogBoxOfWordFile = mutableStateOf(false)
+    val showProgressDialogBoxOfTextFile = mutableStateOf(false)
 
     fun getImage() {
         viewModelScope.launch(Dispatchers.Default) {
@@ -112,10 +114,34 @@ class MyViewModel : ViewModel() {
         nameOfWordFile: MutableState<String>
     ) {
         viewModelScope.launch(Dispatchers.IO) {
-            convertPdfToImage(context, path, nameOfWordFile,showProgressDialogBoxOfWordFile)
+            convertPdfToImage(
+                context,
+                path,
+                nameOfWordFile,
+                showProgressDialogBoxOfWordFile,
+            )
             withContext(Dispatchers.Main) {
                 Toast.makeText(context, "File Saved", Toast.LENGTH_SHORT).show()
             }
         }
     }
+
+    fun convertPdfIntoTextFile(
+        context: Context,
+        path: String,
+        nameOfTextFile: MutableState<String>
+    ) {
+        viewModelScope.launch(Dispatchers.IO) {
+            getImagesForTextFiles(
+                context,
+                path,
+                nameOfTextFile,
+                showProgressDialogBoxOfTextFile,
+            )
+            withContext(Dispatchers.Main) {
+                Toast.makeText(context, "File Saved", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
 }

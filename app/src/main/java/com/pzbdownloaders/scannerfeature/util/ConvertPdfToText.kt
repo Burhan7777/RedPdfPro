@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.pdf.PdfRenderer
 import android.os.ParcelFileDescriptor
-import android.widget.Toast
 import androidx.compose.runtime.MutableState
 import com.chaquo.python.Python
 import com.googlecode.tesseract.android.TessBaseAPI
@@ -12,14 +11,13 @@ import com.pzbdownloaders.redpdfpro.splitpdffeature.utils.loadPage
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
-import java.io.InputStream
 
 
-fun convertPdfToImage(
+fun getImagesForTextFiles(
     context: Context,
     path: String,
     nameOfWordFIle: MutableState<String>,
-    showProgressDialogBoxOfWordFile: MutableState<Boolean>
+    showProgressDialogBoxOfTextFile: MutableState<Boolean>
 ) {
     var listOfBitmaps: ArrayList<Bitmap> = ArrayList()
     val listOfFIlePaths: ArrayList<String> = ArrayList()
@@ -57,14 +55,20 @@ fun convertPdfToImage(
         listOfBitmaps[i].compress(Bitmap.CompressFormat.JPEG, 100, fos)
         listOfFIlePaths.add("storage/emulated/0/Download/Pro Scanner/temp_images/image{$i}.jpg")
     }
-    getTextFromPdf(context, listOfFIlePaths, nameOfWordFIle, showProgressDialogBoxOfWordFile)
+    saveFile(
+        context,
+        listOfFIlePaths,
+        nameOfWordFIle,
+        showProgressDialogBoxOfTextFile
+    )
 }
 
-fun getTextFromPdf(
+
+fun saveFile(
     context: Context,
     listOfFilePaths: List<String>,
-    nameOfWordFIle: MutableState<String>,
-    showProgressDialogBoxOfWordFile: MutableState<Boolean>
+    nameOfTextFile: MutableState<String>,
+    showProgressDialogBoxOfTextFile: MutableState<Boolean>
 ) {
     /*    var assets = context.assets.open("eng.traineddata")
         var fos = FileOutputStream("${context.filesDir}/tessdata/eng.traineddata")
@@ -83,22 +87,19 @@ fun getTextFromPdf(
         tesseract.setImage(File(listOfFilePaths[i]))
         finalText += tesseract.utF8Text
     }
-    addTextToTheWordFile(finalText, nameOfWordFIle.value, context, showProgressDialogBoxOfWordFile)
-}
-
-fun addTextToTheWordFile(
-    text: String,
-    name: String,
-    context: Context,
-    showProgressDialogBoxOfWordFile: MutableState<Boolean>
-) {
-    var docxFolder = File("storage/emulated/0/Download/Pro Scanner/docx/")
-    if (!docxFolder.exists()) {
-        docxFolder.mkdirs()
+    val textFolder = File("storage/emulated/0/Download/Pro Scanner/text_files")
+    if (!textFolder.exists()) {
+        textFolder.mkdirs()
     }
-    val python = Python.getInstance()
-    val module = python.getModule("pdftodocx")
-    module.callAttr("create_docx_from_text", text, name)
-    showProgressDialogBoxOfWordFile.value = false
-}
 
+    // java.io.FileNotFoundException: storage/emulated/0/Download/Pro Scanner/text_files/3pages.txt: open failed: EEXIST (File exists)
+    // Handle this error when file already exists
+    val textFile =
+        File("storage/emulated/0/Download/Pro Scanner/text_files/${nameOfTextFile.value}.txt")
+    if (!textFile.exists()) {
+        textFile.createNewFile()
+        textFile.writeText(finalText)
+    }
+
+    showProgressDialogBoxOfTextFile.value = false
+}

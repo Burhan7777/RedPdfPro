@@ -68,7 +68,7 @@ fun SingleRowScannerMainScreen(
     nameOfWordFile: MutableState<String>,
     pathOfPdfFile: MutableState<String>,
     showWordFIleSaveDialogBox: MutableState<Boolean>,
-    showProgressDialogBoxOfWordFile: MutableState<Boolean>
+    showTextFileSaveDialogBox: MutableState<Boolean>
 ) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
@@ -150,7 +150,10 @@ fun SingleRowScannerMainScreen(
                             tint = Color.Unspecified
                         )
                     }
-                    IconButton(onClick = { /*TODO*/ }) {
+                    IconButton(onClick = {
+                        pathOfPdfFile.value = modelScanner.path!!
+                        showTextFileSaveDialogBox.value = true
+                    }) {
                         Icon(
                             painterResource(id = R.drawable.text_scanner),
                             contentDescription = "Save as text file"

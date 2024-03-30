@@ -44,6 +44,7 @@ import com.pzbdownloaders.redpdfpro.core.presentation.MyViewModel
 import com.pzbdownloaders.scannerfeature.components.SaveFIleAsPdf
 import com.pzbdownloaders.scannerfeature.components.SavePdfAsDocxFile
 import com.pzbdownloaders.scannerfeature.components.SavePdfAsImage
+import com.pzbdownloaders.scannerfeature.components.SavePdfAsText
 import com.pzbdownloaders.scannerfeature.components.SingleRowScannerMainScreen
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -69,16 +70,22 @@ fun ScannerScreen(
         mutableStateOf(false) // When we press the save as image button this dialog box appears
     val showWordFIleSaveDialogBox =
         mutableStateOf(false) // When we press the save as docx button this dialog box appears can asks for name of save file
+    val showTextFileSaveDialogBox =
+        mutableStateOf(false) // // When we press the save as text button this dialog box appears can asks for name of save file
     val name =
         mutableStateOf("") // This is the name of the file which is to be saved as pdf when we return from scanner activity(Google's scanner activity)
     val nameOfWordFile =
         mutableStateOf("") // This is the name of docx file when we save pdf as docx file
+    val nameOfTextFile =
+        mutableStateOf("")// This is the name of txt file when we save pdf as txt file
     val pathOfPdfFile =
         mutableStateOf("") // Path of the word file. This is passed to the singleRow and it becomes equal to the path of the selected pdf. It is important since we save docx file in viewmodel so we need this path here in this screen.
     var message =
         mutableStateOf("Saving pdf as jpeg") // This is the message of progress dialog box when we save the pdf as images
     val messageSavingWordFIle =
         mutableStateOf("Saving pdf as docx") // This is the message of progress dialog box when we save the pdf as docx filer.
+    val messageSavingTextFile =
+        mutableStateOf("Saving pdf as txt") // This is the message of progress dialog box when we save the pdf as txt filer.
 
     //  Why isn't there equivalent for "showSaveDialogBox" for files converted in docx. Well the equivalent is "showProgressDialogBoxOfWordFile" and it comes from viewmodel. This is because this needs to be passed on to "DownloadPdfAsWord" file and that methods of that file are called in viewmodel
     val options = GmsDocumentScannerOptions.Builder()
@@ -141,6 +148,15 @@ fun ScannerScreen(
                 pathOfPdfFile,
                 messageSavingWordFIle
             )
+            SavePdfAsText(
+                nameOfTextFile = nameOfTextFile,
+                showTextFileSaveDialogBox = showTextFileSaveDialogBox,
+                viewModel = viewModel,
+                activity = activity,
+                pathOfPdfFile = pathOfPdfFile,
+                messageSavingTextFIle = messageSavingTextFile
+            )
+
 
 
 
@@ -156,7 +172,7 @@ fun ScannerScreen(
                         nameOfWordFile,
                         pathOfPdfFile,
                         showWordFIleSaveDialogBox,
-                        viewModel.showProgressDialogBoxOfWordFile
+                        showTextFileSaveDialogBox
                     )
                 }
             }
