@@ -22,6 +22,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -40,6 +41,9 @@ import com.pzbdownloaders.redpdfpro.R
 import com.pzbdownloaders.redpdfpro.core.presentation.Component.AlertDialogBox
 import com.pzbdownloaders.redpdfpro.core.presentation.Component.ProgressDialogBox
 import com.pzbdownloaders.redpdfpro.core.presentation.MyViewModel
+import com.pzbdownloaders.scannerfeature.components.SaveFIleAsPdf
+import com.pzbdownloaders.scannerfeature.components.SavePdfAsDocxFile
+import com.pzbdownloaders.scannerfeature.components.SavePdfAsImage
 import com.pzbdownloaders.scannerfeature.components.SingleRowScannerMainScreen
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -58,15 +62,23 @@ fun ScannerScreen(
 ) {
 
     var path: File? = null
-    var resultFromActivity: GmsDocumentScanningResult? = null
-    val showSaveDialogBox = mutableStateOf(false) //  When we return from the scanner activity this dialog shows to save the pdf
-    val showProgressDialogBox = mutableStateOf(false) // When we press the save as image button this dialog box appears
-    val showWordFIleSaveDialogBox = mutableStateOf(false) // When we press the save as docx button this dialog box appears can asks for name of save file
-    val name = mutableStateOf("") // This is the name of the file which is to be saved as pdf when we return from scanner activity(Google's scanner activity)
-    val nameOfWordFile = mutableStateOf("") // This is the name of docx file when we save pdf as docx file
-    val pathOfPdfFile = mutableStateOf("") // Path of the word file. This is passed to the singleRow and it becomes equal to the path of the selected pdf. It is important since we save docx file in viewmodel so we need this path here in this screen.
-    var message = mutableStateOf("Saving pdf as jpeg") // This is the message of progress dialog box when we save the pdf as images
-    val messageSavingWordFIle = mutableStateOf("Saving pdf as docx") // This is the message of progress dialog box when we save the pdf as docx filer.
+    var resultFromActivity: MutableState<GmsDocumentScanningResult?> = mutableStateOf(null)
+    val showSaveDialogBox =
+        mutableStateOf(false) //  When we return from the scanner activity this dialog shows to save the pdf
+    val showProgressDialogBox =
+        mutableStateOf(false) // When we press the save as image button this dialog box appears
+    val showWordFIleSaveDialogBox =
+        mutableStateOf(false) // When we press the save as docx button this dialog box appears can asks for name of save file
+    val name =
+        mutableStateOf("") // This is the name of the file which is to be saved as pdf when we return from scanner activity(Google's scanner activity)
+    val nameOfWordFile =
+        mutableStateOf("") // This is the name of docx file when we save pdf as docx file
+    val pathOfPdfFile =
+        mutableStateOf("") // Path of the word file. This is passed to the singleRow and it becomes equal to the path of the selected pdf. It is important since we save docx file in viewmodel so we need this path here in this screen.
+    var message =
+        mutableStateOf("Saving pdf as jpeg") // This is the message of progress dialog box when we save the pdf as images
+    val messageSavingWordFIle =
+        mutableStateOf("Saving pdf as docx") // This is the message of progress dialog box when we save the pdf as docx filer.
 
     //  Why isn't there equivalent for "showSaveDialogBox" for files converted in docx. Well the equivalent is "showProgressDialogBoxOfWordFile" and it comes from viewmodel. This is because this needs to be passed on to "DownloadPdfAsWord" file and that methods of that file are called in viewmodel
     val options = GmsDocumentScannerOptions.Builder()
@@ -90,7 +102,8 @@ fun ScannerScreen(
         onResult = {
 
             if (it.resultCode == RESULT_OK) {
-                resultFromActivity = GmsDocumentScanningResult.fromActivityResultIntent(it.data)
+                resultFromActivity.value =
+                    GmsDocumentScanningResult.fromActivityResultIntent(it.data)
                 showSaveDialogBox.value = true
             }
 
@@ -117,55 +130,20 @@ fun ScannerScreen(
                 .background(MaterialTheme.colorScheme.secondary),
         ) {
 
-            if (showProgressDialogBox.value) {
-                ProgressDialogBox(message = message)
-            }
+
+            SaveFIleAsPdf(showSaveDialogBox, name, resultFromActivity, activity, viewModel)
+            SavePdfAsImage(showProgressDialogBox = showProgressDialogBox, message = message)
+            SavePdfAsDocxFile(
+                showWordFIleSaveDialogBox,
+                nameOfWordFile,
+                viewModel,
+                activity,
+                pathOfPdfFile,
+                messageSavingWordFIle
+            )
 
 
-            if (showWordFIleSaveDialogBox.value) {
-                AlertDialogBox(
-                    name = nameOfWordFile,
-                    onDismiss = {
-                        showWordFIleSaveDialogBox.value = !showWordFIleSaveDialogBox.value
-                    }) {
-                    viewModel.showProgressDialogBoxOfWordFile.value = true
-                    viewModel.convertPdfIntoAWordFIle(
-                        activity.applicationContext,
-                        pathOfPdfFile.value,
-                        nameOfWordFile
-                    )
-                }
-            }
-            if (viewModel.showProgressDialogBoxOfWordFile.value) {
-                ProgressDialogBox(message = messageSavingWordFIle)
-            }
-            if (showSaveDialogBox.value) {
-                AlertDialogBox(
-                    name = name,
-                    onDismiss = { showSaveDialogBox.value = !showSaveDialogBox.value }) {
-                    resultFromActivity?.pdf?.let { pdf ->
-                        var externalDIr =
-                            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-                        var file = File("$externalDIr/Pro Scanner/Pdfs")
-                        if (!file.exists()) {
-                            file.mkdirs()
-                        }
-                        var path =
-                            File("$externalDIr/Pro Scanner/Pdfs/${name.value}.pdf")
-                        if (!path.exists()) {
-                            path.createNewFile()
-                        }
-                        var fos = FileOutputStream(
-                            path
-                        )
-                        activity.contentResolver.openInputStream(pdf.uri).use { inputStream ->
-                            inputStream?.copyTo(fos)
-                        }
-                        viewModel.listOfFiles.add(path!!)
-                        viewModel.addItem()
-                    }
-                }
-            }
+
 
             LazyColumn(
             ) {
@@ -185,3 +163,8 @@ fun ScannerScreen(
         }
     }
 }
+
+
+
+
+
