@@ -80,7 +80,9 @@ fun ScannerScreen(
         mutableStateOf(false) // When we press the save as docx button this dialog box appears can asks for name of save file
     val showTextFileSaveDialogBox =
         mutableStateOf(false) // // When we press the save as text button this dialog box appears can asks for name of save file
+    val showRenameSaveDialogBox = mutableStateOf(false)
     val showDeleteDialogBox = mutableStateOf(false)
+    val rename = mutableStateOf("")
     val name =
         mutableStateOf("") // This is the name of the file which is to be saved as pdf when we return from scanner activity(Google's scanner activity)
     val nameOfWordFile =
@@ -173,10 +175,12 @@ fun ScannerScreen(
                 showDeleteDialogBox = showDeleteDialogBox,
                 viewModel = viewModel,
                 activity = activity,
-                navHostController =navHostController ,
+                navHostController = navHostController,
                 pathOfPdfFile = pathOfPdfFile,
                 nameOfPdfFIle = nameOfPdfFIle,
-                bitmapOfPdfFile =bitmapOfPdfFile
+                bitmapOfPdfFile = bitmapOfPdfFile,
+                showRenameSaveDialogBox = showRenameSaveDialogBox,
+                rename = rename
             )
 
 

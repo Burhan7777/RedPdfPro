@@ -29,4 +29,7 @@
     <string name="deletePdf">Delete PDF</string>
     <string name="deleteFile">Delete FIle?</string>
     <string name="areYouSure">Are you sure you want to delete this.It will permanently delete the file forever.</string>
+    <string name="renamePDF">Rename PDF</string>
+    <string name="rename">Rename</string>
+    <string name="renameAs">Rename as...</string>
 </resources>
