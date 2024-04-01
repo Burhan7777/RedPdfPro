@@ -51,6 +51,7 @@ import com.google.mlkit.vision.documentscanner.GmsDocumentScanningResult
 import com.pzbdownloaders.redpdfpro.MainActivity
 import com.pzbdownloaders.redpdfpro.R
 import com.pzbdownloaders.redpdfpro.core.presentation.MyViewModel
+import com.pzbdownloaders.scannerfeature.components.BottomSheet.BottomSheet
 import com.pzbdownloaders.scannerfeature.components.DeleteNoteAlertBox
 import com.pzbdownloaders.scannerfeature.components.SaveFIleAsPdf
 import com.pzbdownloaders.scannerfeature.components.SavePdfAsDocxFile
@@ -167,44 +168,18 @@ fun ScannerScreen(
                 pathOfPdfFile = pathOfPdfFile,
                 messageSavingTextFIle = messageSavingTextFile
             )
+            BottomSheet(
+                showBottomSheet = showBottomSheet,
+                showDeleteDialogBox = showDeleteDialogBox,
+                viewModel = viewModel,
+                activity = activity,
+                navHostController =navHostController ,
+                pathOfPdfFile = pathOfPdfFile,
+                nameOfPdfFIle = nameOfPdfFIle,
+                bitmapOfPdfFile =bitmapOfPdfFile
+            )
 
-            if (showBottomSheet.value) {
-                ModalBottomSheet(
-                    onDismissRequest = { showBottomSheet.value = false },
-                    dragHandle = {
-                        BottomSheetDefaults.DragHandle(
 
-                        )
-                    },
-                    windowInsets = BottomSheetDefaults.windowInsets,
-                    modifier = Modifier.height(300.dp)
-                ) {
-                    BottomSheetItem(
-                        showDeleteDialogBox,
-                        viewModel,
-                        activity,
-                        navHostController,
-                        Icons.Default.Delete,
-                        R.string.deletePdf,
-                        R.string.delete
-                    ) {
-                        val file = File(pathOfPdfFile.value)
-                        var uri = FileProvider.getUriForFile(
-                            activity,
-                            activity.applicationContext.packageName + ".provider",
-                            File(pathOfPdfFile.value)
-                        );
-                        activity.contentResolver.delete(uri, null, null)
-                        viewModel.modelScanner.remove(
-                            ScannerModel(
-                                nameOfPdfFIle.value,
-                                bitmapOfPdfFile.value,
-                                pathOfPdfFile.value
-                            )
-                        )
-                    }
-                }
-            }
             LazyColumn(
             ) {
                 items(
@@ -228,54 +203,6 @@ fun ScannerScreen(
     }
 }
 
-@Composable
-fun BottomSheetItem(
-    showDeleteDialogBox: MutableState<Boolean>,
-    viewModel: MyViewModel,
-    activity: MainActivity,
-    navHostController: NavHostController,
-    imageVector: ImageVector,
-    contentDescriptionId: Int,
-    nameId: Int,
-    deleteFile: () -> Unit
-) {
-    if (showDeleteDialogBox.value) {
-        DeleteNoteAlertBox(
-            viewModel = viewModel,
-            activity = activity,
-            navHostController = navHostController,
-            onDismiss = { showDeleteDialogBox.value = false }) {
-            deleteFile()
-            showDeleteDialogBox.value = false
-        }
-    }
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = Modifier
-            .clickable { showDeleteDialogBox.value = true }
-            .padding(top = 7.dp, bottom = 7.dp)
-    ) {
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(15.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                imageVector = imageVector,
-                contentDescription = stringResource(id = contentDescriptionId),
-                modifier = Modifier.padding(
-                    start = 30.dp, top = 10.dp
-                )
-            )
-            Text(
-                text = stringResource(id = nameId),
-                fontSize = 18.sp,
-                modifier = Modifier
-                    .padding(top = 10.dp)
-                    .fillMaxWidth()
-                    .wrapContentHeight(align = Alignment.CenterVertically)
-            )
-        }
-    }
-}
+
 
 
