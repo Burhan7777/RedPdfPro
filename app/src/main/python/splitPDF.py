@@ -12,17 +12,17 @@ def total_pages(file, password=""):
 
 
 def split(file, list, name):
-    if len(unlocked_pdfreader.pages) > 0:
-        reader = unlocked_pdfreader
-    else:
-        reader = PdfReader(file)
+#    if len(unlocked_pdfreader.pages) > 0:
+  #      reader = unlocked_pdfreader
+   # else:
+    reader = PdfReader(file)
     writer = PdfWriter()
     pages = reader.pages
     for i in list:
         writer.add_page(pages[i])
 
     try:
-        writer.write(f"/storage/emulated/0/Download/{name}.pdf")
+        writer.write(f"/storage/emulated/0/Download/Pro Scanner/Pdfs/{name}.pdf")
         return "Success"
     except Exception:
         return "Failure"

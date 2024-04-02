@@ -95,7 +95,7 @@ fun BottomSheet(
                         activity,
                         activity.applicationContext.packageName + ".provider",
                         File(pathOfPdfFile.value)
-                    );
+                    )
                     activity.contentResolver.delete(uri, null, null)
                     viewModel.modelScanner.remove(
                         ScannerModel(
@@ -106,6 +106,13 @@ fun BottomSheet(
                     )
                 }
             }
+            BottomSheetSplitItem(
+                navHostController,
+                painterResource(id = R.drawable.split_bottom_sheet),
+                R.string.splitThePDF,
+                R.string.splitPdf,
+                pathOfPdfFile
+            )
         }
     }
 }

@@ -2,8 +2,10 @@ package com.pzbdownloaders.redpdfpro.splitpdffeature.screens
 
 import android.content.Context
 import android.graphics.pdf.PdfRenderer
+import android.os.Environment
 import android.os.ParcelFileDescriptor
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -29,6 +31,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -50,6 +53,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavHostController
+import com.chaquo.python.PyObject
 import com.chaquo.python.Python
 import com.pzbdownloaders.redpdfpro.MainActivity
 import com.pzbdownloaders.redpdfpro.R
@@ -66,7 +70,12 @@ import java.io.File
 
 
 @Composable
-fun SplitPdf(navHostController: NavHostController, activity: MainActivity, viewModel: MyViewModel) {
+fun SplitPdf(
+    navHostController: NavHostController,
+    activity: MainActivity,
+    viewModel: MyViewModel,
+    filePath: String?
+) {
 
     val context = LocalContext.current
     var pageNumbersSelected = remember { mutableStateOf(ArrayList<Int>()) }
@@ -92,15 +101,18 @@ fun SplitPdf(navHostController: NavHostController, activity: MainActivity, viewM
         mutableStateOf("")
     }
 
+
     var totalPages by remember { mutableStateOf(0) }
     lateinit var pdfRenderer: PdfRenderer
     lateinit var parcelFileDescriptor: ParcelFileDescriptor
     var file by remember { mutableStateOf<File?>(null) }
+    var fileFromFilePath by remember { mutableStateOf<File?>(null) }
 
     val stroke = Stroke(
         width = 2f,
         pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 10f), 0f)
     )
+
 
     var result = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
@@ -137,7 +149,6 @@ fun SplitPdf(navHostController: NavHostController, activity: MainActivity, viewM
         })
 
     Box(modifier = Modifier.fillMaxSize()) {
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -145,42 +156,81 @@ fun SplitPdf(navHostController: NavHostController, activity: MainActivity, viewM
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            if (totalPages == 0) {
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(150.dp)
-                        .padding(start = 20.dp, end = 20.dp)
-                        .clickable {
-                            result.launch("application/pdf")
+            if (filePath != "") {
+                var totalPagesPathFile by remember {
+                    mutableStateOf(0)
+                }
+                var pdfRenderer1: MutableState<PdfRenderer?> = mutableStateOf(null)
+
+                var showLazyColumn by remember { mutableStateOf(false) }
+                val scope1 = rememberCoroutineScope()
+                scope1.launch(Dispatchers.Default) {
+                    val python = Python.getInstance()
+                    val module = python.getModule("splitPDF")
+                    totalPagesPathFile =
+                        module.callAttr("total_pages", filePath).toString().toInt()
+
+                    if (totalPagesPathFile > 0 && filePath != null) {
+                        withContext(Dispatchers.Main) {
+                            showLazyColumn = true
                         }
-                        .drawBehind {
-                            drawRoundRect(
-                                color = Color.Red,
-                                style = stroke,
-                                cornerRadius = CornerRadius(10.dp.toPx())
-                            )
-                        },
-                    colors = CardDefaults.cardColors(
-                        containerColor = Color.Transparent
-                    ),
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.upload),
-                        contentDescription = stringResource(
-                            id = R.string.upload
+                    }
+                }
+                if (showLazyColumn) {
+                    fileFromFilePath = File(filePath!!)
+                    parcelFileDescriptor =
+                        ParcelFileDescriptor.open(
+                            fileFromFilePath,
+                            ParcelFileDescriptor.MODE_READ_ONLY
+                        )
+                    pdfRenderer1.value = PdfRenderer(parcelFileDescriptor)
+                    LazyColumnVer(
+                        totalPages = totalPagesPathFile.toString().toInt(),
+                        context = context,
+                        file = fileFromFilePath!!,
+                        pdfRenderer1.value!!,
+                        pageNumbersSelected.value,
+                        viewModel
+                    )
+                }
+            } else {
+                if (totalPages == 0) {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(150.dp)
+                            .padding(start = 20.dp, end = 20.dp)
+                            .clickable {
+                                result.launch("application/pdf")
+                            }
+                            .drawBehind {
+                                drawRoundRect(
+                                    color = Color.Red,
+                                    style = stroke,
+                                    cornerRadius = CornerRadius(10.dp.toPx())
+                                )
+                            },
+                        colors = CardDefaults.cardColors(
+                            containerColor = Color.Transparent
                         ),
-                        modifier = Modifier
-                            .align(Alignment.CenterHorizontally)
-                            .padding(top = 20.dp)
-                    )
-                    Text(
-                        text = stringResource(id = R.string.addPDF),
-                        fontSize = 20.sp,
-                        modifier = Modifier
-                            .align(Alignment.CenterHorizontally)
-                            .padding(top = 10.dp)
-                    )
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.upload),
+                            contentDescription = stringResource(
+                                id = R.string.upload
+                            ),
+                            modifier = Modifier
+                                .align(Alignment.CenterHorizontally)
+                                .padding(top = 20.dp)
+                        )
+                        Text(
+                            text = stringResource(id = R.string.addPDF),
+                            fontSize = 20.sp,
+                            modifier = Modifier
+                                .align(Alignment.CenterHorizontally)
+                                .padding(top = 10.dp)
+                        )
+                    }
                 }
             }
             Box(contentAlignment = Alignment.Center) {
@@ -210,7 +260,7 @@ fun SplitPdf(navHostController: NavHostController, activity: MainActivity, viewM
                 }
             }
         }
-        if (file != null) {
+        if (file != null || fileFromFilePath != null) {
             Button(
                 onClick = {
                     if (pageNumbersSelected.value.isEmpty()) {
@@ -239,15 +289,25 @@ fun SplitPdf(navHostController: NavHostController, activity: MainActivity, viewM
             name = name,
             featureExecution = {
                 scope.launch(Dispatchers.IO) {
+                    lateinit var result: PyObject
                     showProgress = true
                     val python = Python.getInstance()
                     val module = python.getModule("splitPDF")
-                    var result = module.callAttr(
-                        "split",
-                        path,
-                        pageNumbersSelected.value.toArray(),
-                        name.value
-                    )
+                    if (filePath == "") {
+                        result = module.callAttr(
+                            "split",
+                            path,
+                            pageNumbersSelected.value.toArray(),
+                            name.value
+                        )
+                    } else {
+                        result = module.callAttr(
+                            "split",
+                            filePath,
+                            pageNumbersSelected.value.toArray(),
+                            name.value
+                        )
+                    }
                     withContext(Dispatchers.Main) {
                         if (result.toString() == "Success") {
                             withContext(Dispatchers.Main) {
@@ -255,9 +315,13 @@ fun SplitPdf(navHostController: NavHostController, activity: MainActivity, viewM
                             }
                             Toast.makeText(
                                 context,
-                                "Filed saved in /storage/emulated/0/Download/RedPdf/pdfs/${name}.pdf",
+                                "File Saved",
                                 Toast.LENGTH_SHORT
                             ).show()
+                            val externalDir =
+                                "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)}/Pro Scanner/Pdfs"
+                            viewModel.listOfFiles.add(File("$externalDir/${name.value}.pdf"))
+                            viewModel.addItem()
                         } else if (result.toString() == "Failure") {
                             showProgress = false
                             Toast.makeText(context, "Operation Failed", Toast.LENGTH_SHORT).show()
@@ -304,6 +368,7 @@ fun LazyColumnVer(
 
 
 
+
     LazyVerticalGrid(
         columns = GridCells.Adaptive(100.dp),
         modifier = Modifier.padding(10.dp),
@@ -316,5 +381,44 @@ fun LazyColumnVer(
 
     }
 }
+/*
+@Composable
+fun LazyColumnVerFilePath(
+    totalPages: Int,
+    context: Context,
+    file: File,
+    pdfRenderer: PdfRenderer,
+    pageNoSelected: ArrayList<Int>,
+    viewModel: MyViewModel
+) {
 
+
+    var scope = rememberCoroutineScope()
+    scope.launch(Dispatchers.IO) {
+        for (i in 0 until totalPages) {
+            var bitmap = loadPage(
+                i,
+                pdfRenderer
+            )
+            withContext(Dispatchers.Main) {
+                if (viewModel.modelList.size < totalPages)
+                    viewModel.modelList.add(
+                        modelBitmap(
+                            bitmap,
+                            isSelected = mutableStateOf(false)
+                        )
+                    )
+            }
+        }
+    }
+    LazyVerticalGrid(
+        columns = GridCells.Adaptive(100.dp),
+        modifier = Modifier.padding(10.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp),
+        horizontalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
+        itemsIndexed(items = viewModel.modelList) { index, item ->
+            SingleRow(model = item, pageNo = index, pageNoSelected)
+        }
+    }*/
 

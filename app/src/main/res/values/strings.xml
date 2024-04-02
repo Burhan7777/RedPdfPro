@@ -32,4 +32,5 @@
     <string name="renamePDF">Rename PDF</string>
     <string name="rename">Rename</string>
     <string name="renameAs">Rename as...</string>
+    <string name="splitThePDF">Split the PDF</string>
 </resources>

@@ -3,7 +3,9 @@ package com.pzbdownloaders.redpdfpro.core.presentation
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import com.pzbdownloaders.docstopdffeature.DocsToPdf
 import com.pzbdownloaders.redpdfpro.MainActivity
@@ -30,8 +32,11 @@ fun NavGraphBuilder.toolsGraph(
         composable(route = ScreensBottomNavigation.HomePageTools.route) {
             HomePage(navHostController, viewModel)
         }
-        composable(route = Screens.SplitPdf.route) {
-            SplitPdf(navHostController, activity, viewModel)
+        composable(route = Screens.SplitPdf.route, arguments = listOf(navArgument("filePath") {
+            type = NavType.StringType
+            defaultValue = ""
+        })) {
+            SplitPdf(navHostController, activity, viewModel, it.arguments?.getString("filePath"))
         }
         composable(Screens.MergePdf.route) {
             MergePdf(activity = activity, viewModel)

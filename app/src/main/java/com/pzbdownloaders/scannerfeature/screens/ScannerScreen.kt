@@ -29,6 +29,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.toMutableStateList
@@ -107,8 +108,13 @@ fun ScannerScreen(
         .setResultFormats(RESULT_FORMAT_JPEG, RESULT_FORMAT_PDF)
         .setGalleryImportAllowed(true).build()
 
-    val scanner = GmsDocumentScanning.getClient(options)
 
+        viewModel.modelList.clear()
+       //viewModel.listOfFiles.clear()
+      //  viewModel.modelScanner.clear()
+    println(viewModel.modelScanner.size)
+
+    val scanner = GmsDocumentScanning.getClient(options)
     val file = File("storage/emulated/0/Download/Pro Scanner/Pdfs")
     if (viewModel.listOfFiles.size < (file.listFiles()?.size ?: 0)) {
 

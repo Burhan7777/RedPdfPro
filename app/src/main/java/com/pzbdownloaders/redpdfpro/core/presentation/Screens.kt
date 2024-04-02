@@ -5,7 +5,12 @@ const val SCANNER_GRAPH = "scanner_graph_route"
 
 sealed class Screens(var route: String) {
     object HomePage : Screens("home_page_screen")
-    object SplitPdf : Screens("split_pdf_screen")
+    object SplitPdf : Screens("split_pdf_screen?filePath={filePath}") {
+        fun splitPdfPassFilePath(filePath: String): String {
+            return "split_pdf_screen?filePath=$filePath"
+        }
+    }
+
     object MergePdf : Screens("merge_pdf_screen")
     object CompressPDf : Screens("compress_pdf_screen")
     object ExtractText : Screens("extract_text_screen")
