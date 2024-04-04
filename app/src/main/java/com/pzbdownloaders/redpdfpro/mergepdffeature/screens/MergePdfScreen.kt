@@ -1,6 +1,7 @@
 package com.pzbdownloaders.redpdfpro.mergepdffeature.screens
 
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -26,6 +27,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -48,6 +50,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
+import androidx.navigation.NavHostController
 import com.chaquo.python.Python
 import com.pzbdownloaders.redpdfpro.MainActivity
 import com.pzbdownloaders.redpdfpro.R
@@ -63,7 +66,13 @@ import kotlinx.coroutines.withContext
 import java.io.File
 
 @Composable
-fun MergePdf(activity: MainActivity, viewModel: MyViewModel) {
+fun MergePdf(
+    activity: MainActivity,
+    viewModel: MyViewModel,
+    fileName: String?,
+    filePath: String?,
+    navHostController: NavHostController
+) {
 
     var showAlertBox = remember {
         mutableStateOf(false)
@@ -73,11 +82,24 @@ fun MergePdf(activity: MainActivity, viewModel: MyViewModel) {
         contract = ActivityResultContracts.GetContent(),
         onResult = {
             if (it != null) {
-                viewModel.pdfNames.add(getFileName(it!!, activity))
+                viewModel.pdfNames.add(getFileName(it, activity))
                 viewModel.listOfPdfToMerge.add(getFilePathFromContentUri(it, activity = activity)!!)
             }
         })
 
+    BackHandler {
+        viewModel.pdfNames.clear()
+        viewModel.listOfPdfToMerge.clear()
+        navHostController.popBackStack()
+    }
+
+    LaunchedEffect(key1 = true) {
+        if (fileName != "")
+            viewModel.pdfNames.add(fileName!!)
+
+        if (filePath != "")
+            viewModel.listOfPdfToMerge.add(filePath!!)
+    }
 
     var name = remember {
         mutableStateOf("")

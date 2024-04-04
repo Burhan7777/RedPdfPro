@@ -60,6 +60,7 @@ fun MyBottomBar(navHostController: NavHostController) {
     BottomAppBar {
         screens.forEach {
             NavigationBarItem(selected = currentDestination?.route == it.route, onClick = {
+                navHostController.popBackStack()
                 navHostController.navigate(it.route)
             }, icon = {
                 Icon(

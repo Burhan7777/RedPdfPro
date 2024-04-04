@@ -113,6 +113,14 @@ fun BottomSheet(
                 R.string.splitPdf,
                 pathOfPdfFile
             )
+            BottomSheetMergeItem(
+                contentDescriptionId = R.string.mergePdf,
+                nameId = R.string.mergePdf,
+                painter = painterResource(id = R.drawable.merge_bottom_sheet),
+                navHostController = navHostController,
+                pathOfPdf = pathOfPdfFile,
+                nameOfPdf = nameOfPdfFIle
+            )
         }
     }
 }

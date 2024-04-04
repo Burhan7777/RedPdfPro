@@ -109,9 +109,11 @@ fun ScannerScreen(
         .setGalleryImportAllowed(true).build()
 
 
-        viewModel.modelList.clear()
-       //viewModel.listOfFiles.clear()
-      //  viewModel.modelScanner.clear()
+    viewModel.modelList.clear()
+    //viewModel.listOfFiles.clear()
+    //  viewModel.modelScanner.clear()
+   // viewModel.pdfNames.clear()
+    //viewModel.listOfPdfToMerge.clear()
     println(viewModel.modelScanner.size)
 
     val scanner = GmsDocumentScanning.getClient(options)

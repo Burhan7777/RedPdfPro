@@ -11,7 +11,12 @@ sealed class Screens(var route: String) {
         }
     }
 
-    object MergePdf : Screens("merge_pdf_screen")
+    object MergePdf : Screens("merge_pdf_screen?fileName={fileName}?filePath={filePath}") {
+        fun mergePDfWithArguments(fileName: String, filePath: String): String {
+            return "merge_pdf_screen?fileName=$fileName?filePath=$filePath"
+        }
+    }
+
     object CompressPDf : Screens("compress_pdf_screen")
     object ExtractText : Screens("extract_text_screen")
     object RotatePdf : Screens("rotate_pdf_screen")

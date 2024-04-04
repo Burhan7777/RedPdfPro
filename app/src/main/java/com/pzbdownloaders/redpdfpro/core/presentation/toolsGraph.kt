@@ -38,8 +38,22 @@ fun NavGraphBuilder.toolsGraph(
         })) {
             SplitPdf(navHostController, activity, viewModel, it.arguments?.getString("filePath"))
         }
-        composable(Screens.MergePdf.route) {
-            MergePdf(activity = activity, viewModel)
+        composable(Screens.MergePdf.route, arguments = listOf(navArgument("fileName") {
+            type = NavType.StringType
+            defaultValue = ""
+        },
+            navArgument("filePath") {
+                type = NavType.StringType
+                defaultValue = ""
+            }
+        )) {
+            MergePdf(
+                activity = activity,
+                viewModel,
+                it.arguments?.getString("fileName"),
+                it.arguments?.getString("filePath"),
+                navHostController
+            )
         }
         composable(Screens.CompressPDf.route) {
             CompressPDF(mainActivity = activity)
