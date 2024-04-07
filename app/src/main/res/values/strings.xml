@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Red Pdf</string>
+    <string name="app_name">Pro Scanner</string>
     <string name="splitPdf">Split PDF</string>
     <string name="mergePdf">Merge PDF</string>
     <string name="addPDF">Add PDF</string>
