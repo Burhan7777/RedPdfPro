@@ -60,6 +60,11 @@ fun ScannerScreen(
         mutableStateOf(false) // // When we press the save as text button this dialog box appears can asks for name of save file
     val showRenameSaveDialogBox = mutableStateOf(false)
     val showDeleteDialogBox = mutableStateOf(false)
+    val showPasswordDialogBox =
+        mutableStateOf(false)//  When we press "lock PDF" in bottom sheet this is first dialog box which appears asking for a password
+
+    val showSaveAsLockPdfBox =
+        mutableStateOf(false) // When we press "lock PDF" in bottom sheet this is the second dialog box which appears asking for name of the file
     val rename = mutableStateOf("")
     val name =
         mutableStateOf("") // This is the name of the file which is to be saved as pdf when we return from scanner activity(Google's scanner activity)
@@ -89,7 +94,7 @@ fun ScannerScreen(
     viewModel.modelList.clear()
     //viewModel.listOfFiles.clear()
     //  viewModel.modelScanner.clear()
-   // viewModel.pdfNames.clear()
+    // viewModel.pdfNames.clear()
     //viewModel.listOfPdfToMerge.clear()
     println(viewModel.modelScanner.size)
 
@@ -165,7 +170,9 @@ fun ScannerScreen(
                 nameOfPdfFIle = nameOfPdfFIle,
                 bitmapOfPdfFile = bitmapOfPdfFile,
                 showRenameSaveDialogBox = showRenameSaveDialogBox,
-                rename = rename
+                rename = rename,
+                showPasswordDialogBox = showPasswordDialogBox,
+                showSaveAsLockPdfBox = showSaveAsLockPdfBox
             )
 
 

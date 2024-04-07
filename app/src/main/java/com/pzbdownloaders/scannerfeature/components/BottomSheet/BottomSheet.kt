@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
 import androidx.navigation.NavHostController
@@ -33,7 +34,9 @@ fun BottomSheet(
     nameOfPdfFIle: MutableState<String?>,
     bitmapOfPdfFile: MutableState<Bitmap?>,
     showRenameSaveDialogBox: MutableState<Boolean>,
-    rename: MutableState<String>
+    rename: MutableState<String>,
+    showPasswordDialogBox: MutableState<Boolean>,
+    showSaveAsLockPdfBox: MutableState<Boolean>
 ) {
     if (showBottomSheet.value) {
         ModalBottomSheet(
@@ -119,6 +122,14 @@ fun BottomSheet(
                 navHostController = navHostController,
                 pathOfPdf = pathOfPdfFile,
                 nameOfPdf = nameOfPdfFIle
+            )
+            BottomSheetLockItem(
+                painter = painterResource(id = R.drawable.lock_bottom_sheet),
+                contentDescriptionId = R.string.lockPDF,
+                nameId = R.string.lockPDF,
+                showPasswordDialogBox = showPasswordDialogBox,
+                showSaveAsLockPdfBox = showSaveAsLockPdfBox,
+                pathOfPdfFile = pathOfPdfFile
             )
         }
     }

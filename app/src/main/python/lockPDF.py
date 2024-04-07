@@ -14,7 +14,7 @@ def lock_pdf(file, password, name):
 
     # Save the new PDF to a file
     try:
-        with open(f"/storage/emulated/0/Download/{name}.pdf", "wb") as f:
+        with open(f"/storage/emulated/0/Download/Pro Scanner/Pdfs/{name}.pdf", "wb") as f:
             writer.write(f)
         return "Success"
     except Exception:

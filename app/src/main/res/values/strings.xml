@@ -33,4 +33,5 @@
     <string name="rename">Rename</string>
     <string name="renameAs">Rename as...</string>
     <string name="splitThePDF">Split the PDF</string>
+    <string name="setPassword">Set Password</string>
 </resources>
