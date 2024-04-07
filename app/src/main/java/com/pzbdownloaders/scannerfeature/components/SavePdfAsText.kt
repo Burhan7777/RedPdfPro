@@ -2,7 +2,7 @@ package com.pzbdownloaders.scannerfeature.components
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import com.pzbdownloaders.redpdfpro.MainActivity
+import com.pzbdownloaders.redpdfpro.core.presentation.MainActivity
 import com.pzbdownloaders.redpdfpro.R
 import com.pzbdownloaders.redpdfpro.core.presentation.Component.AlertDialogBox
 import com.pzbdownloaders.redpdfpro.core.presentation.Component.ProgressDialogBox

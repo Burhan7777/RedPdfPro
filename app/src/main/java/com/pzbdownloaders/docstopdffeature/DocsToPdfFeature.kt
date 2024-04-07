@@ -25,12 +25,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.chaquo.python.Python
-import com.googlecode.tesseract.android.TessBaseAPI
-import com.pzbdownloaders.redpdfpro.MainActivity
+import com.pzbdownloaders.redpdfpro.core.presentation.MainActivity
 import com.pzbdownloaders.redpdfpro.R
-import com.pzbdownloaders.redpdfpro.splitpdffeature.utils.getFilePathFromContentUri
-import java.io.File
-import java.io.FileOutputStream
 
 @Composable
 fun DocsToPdf(mainActivity: MainActivity) {
