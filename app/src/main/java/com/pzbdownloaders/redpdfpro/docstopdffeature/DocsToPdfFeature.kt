@@ -1,4 +1,4 @@
-package com.pzbdownloaders.docstopdffeature
+package com.pzbdownloaders.redpdfpro.docstopdffeature
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts

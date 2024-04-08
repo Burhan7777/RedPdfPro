@@ -1,4 +1,4 @@
-package com.pzbdownloaders.scannerfeature.util
+package com.pzbdownloaders.redpdfpro.scannerfeature.util
 
 import android.graphics.Bitmap
 import androidx.compose.runtime.MutableState

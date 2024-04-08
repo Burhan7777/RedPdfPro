@@ -15,9 +15,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pzbdownloaders.redpdfpro.splitpdffeature.components.modelBitmap
 import com.pzbdownloaders.redpdfpro.splitpdffeature.utils.loadPage
-import com.pzbdownloaders.scannerfeature.util.ScannerModel
-import com.pzbdownloaders.scannerfeature.util.convertPdfToImage
-import com.pzbdownloaders.scannerfeature.util.getImagesForTextFiles
+import com.pzbdownloaders.redpdfpro.scannerfeature.util.ScannerModel
+import com.pzbdownloaders.redpdfpro.scannerfeature.util.convertPdfToImage
+import com.pzbdownloaders.redpdfpro.scannerfeature.util.getImagesForTextFiles
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext

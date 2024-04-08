@@ -1,4 +1,4 @@
-package com.pzbdownloaders.scannerfeature.components.BottomSheet
+package com.pzbdownloaders.redpdfpro.scannerfeature.components.BottomSheet
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -17,33 +17,30 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.pzbdownloaders.redpdfpro.R
-import com.pzbdownloaders.redpdfpro.core.presentation.Component.AlertDialogBox
+import androidx.navigation.NavHostController
+import com.pzbdownloaders.redpdfpro.core.presentation.Screens
 
 @Composable
-fun BottomSheetRenameItem(
-    rename: MutableState<String>,
-    showRenameSaveAsBox: MutableState<Boolean>,
-    painter: Painter,
+fun BottomSheetMergeItem(
     contentDescriptionId: Int,
     nameId: Int,
-    showBottomSheet: MutableState<Boolean>,
-    renameFile: () -> Unit
+    painter: Painter,
+    navHostController: NavHostController,
+    pathOfPdf: MutableState<String>,
+    nameOfPdf: MutableState<String?>
+
 ) {
-    if (showRenameSaveAsBox.value) {
-        AlertDialogBox(
-            id = R.string.renameAs,
-            name = rename,
-            onDismiss = { showRenameSaveAsBox.value = false }) {
-            renameFile()
-            showRenameSaveAsBox.value = false
-            showBottomSheet.value = false
-        }
-    }
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier
-            .clickable { showRenameSaveAsBox.value = true }
+            .clickable {
+                navHostController.navigate(
+                    Screens.MergePdf.mergePDfWithArguments(
+                        nameOfPdf.value!!,
+                        pathOfPdf.value
+                    )
+                )
+            }
             .padding(top = 7.dp, bottom = 7.dp)
     ) {
         Row(

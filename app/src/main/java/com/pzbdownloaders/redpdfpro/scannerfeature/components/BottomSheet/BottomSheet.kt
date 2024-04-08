@@ -1,4 +1,4 @@
-package com.pzbdownloaders.scannerfeature.components.BottomSheet
+package com.pzbdownloaders.redpdfpro.scannerfeature.components.BottomSheet
 
 import android.graphics.Bitmap
 import android.os.Environment
@@ -19,7 +19,7 @@ import androidx.navigation.NavHostController
 import com.pzbdownloaders.redpdfpro.core.presentation.MainActivity
 import com.pzbdownloaders.redpdfpro.R
 import com.pzbdownloaders.redpdfpro.core.presentation.MyViewModel
-import com.pzbdownloaders.scannerfeature.util.ScannerModel
+import com.pzbdownloaders.redpdfpro.scannerfeature.util.ScannerModel
 import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)

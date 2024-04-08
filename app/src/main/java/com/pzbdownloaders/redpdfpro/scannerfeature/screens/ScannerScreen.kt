@@ -1,4 +1,4 @@
-package com.pzbdownloaders.scannerfeature.screens
+package com.pzbdownloaders.redpdfpro.scannerfeature.screens
 
 import android.app.Activity.RESULT_OK
 import android.graphics.Bitmap
@@ -35,12 +35,12 @@ import com.google.mlkit.vision.documentscanner.GmsDocumentScanningResult
 import com.pzbdownloaders.redpdfpro.core.presentation.MainActivity
 import com.pzbdownloaders.redpdfpro.R
 import com.pzbdownloaders.redpdfpro.core.presentation.MyViewModel
-import com.pzbdownloaders.scannerfeature.components.BottomSheet.BottomSheet
-import com.pzbdownloaders.scannerfeature.components.SaveFIleAsPdf
-import com.pzbdownloaders.scannerfeature.components.SavePdfAsDocxFile
-import com.pzbdownloaders.scannerfeature.components.SavePdfAsImage
-import com.pzbdownloaders.scannerfeature.components.SavePdfAsText
-import com.pzbdownloaders.scannerfeature.components.SingleRowScannerMainScreen
+import com.pzbdownloaders.redpdfpro.scannerfeature.components.BottomSheet.BottomSheet
+import com.pzbdownloaders.redpdfpro.scannerfeature.components.SaveFIleAsPdf
+import com.pzbdownloaders.redpdfpro.scannerfeature.components.SavePdfAsDocxFile
+import com.pzbdownloaders.redpdfpro.scannerfeature.components.SavePdfAsImage
+import com.pzbdownloaders.redpdfpro.scannerfeature.components.SavePdfAsText
+import com.pzbdownloaders.redpdfpro.scannerfeature.components.SingleRowScannerMainScreen
 import java.io.File
 
 

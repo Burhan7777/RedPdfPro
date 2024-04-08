@@ -1,4 +1,4 @@
-package com.pzbdownloaders.scannerfeature.components
+package com.pzbdownloaders.redpdfpro.scannerfeature.components
 
 import android.os.Environment
 import androidx.compose.runtime.Composable

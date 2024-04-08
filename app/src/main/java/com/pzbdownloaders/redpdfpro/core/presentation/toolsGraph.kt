@@ -6,7 +6,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
-import com.pzbdownloaders.docstopdffeature.DocsToPdf
+import com.pzbdownloaders.redpdfpro.docstopdffeature.DocsToPdf
 import com.pzbdownloaders.redpdfpro.compresspdffeature.screens.CompressPDF
 import com.pzbdownloaders.redpdfpro.extractimagefeature.ExtractImage
 import com.pzbdownloaders.redpdfpro.extracttextfeature.ExtractText

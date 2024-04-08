@@ -1,4 +1,4 @@
-package com.pzbdownloaders.scannerfeature.components
+package com.pzbdownloaders.redpdfpro.scannerfeature.components
 
 import android.content.Intent
 import android.graphics.Bitmap
@@ -41,8 +41,8 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.pzbdownloaders.redpdfpro.core.presentation.MainActivity
 import com.pzbdownloaders.redpdfpro.R
-import com.pzbdownloaders.scannerfeature.util.ScannerModel
-import com.pzbdownloaders.scannerfeature.util.downloadPdfAsJpeg
+import com.pzbdownloaders.redpdfpro.scannerfeature.util.ScannerModel
+import com.pzbdownloaders.redpdfpro.scannerfeature.util.downloadPdfAsJpeg
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

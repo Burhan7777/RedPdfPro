@@ -1,4 +1,4 @@
-package com.pzbdownloaders.scannerfeature.components.BottomSheet
+package com.pzbdownloaders.redpdfpro.scannerfeature.components.BottomSheet
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -13,32 +13,42 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.pzbdownloaders.redpdfpro.core.presentation.Screens
+import com.pzbdownloaders.redpdfpro.core.presentation.MainActivity
+import com.pzbdownloaders.redpdfpro.core.presentation.MyViewModel
+import com.pzbdownloaders.redpdfpro.scannerfeature.components.DeleteNoteAlertBox
 
 @Composable
-fun BottomSheetSplitItem(
+fun BottomSheetDeleteItem(
+    showDeleteDialogBox: MutableState<Boolean>,
+    viewModel: MyViewModel,
+    activity: MainActivity,
     navHostController: NavHostController,
-    painter: Painter,
+    imageVector: ImageVector,
     contentDescriptionId: Int,
     nameId: Int,
-    pathOfPdfFile: MutableState<String>
+    showBottomSheet: MutableState<Boolean>,
+    deleteFile: () -> Unit
 ) {
-
+    if (showDeleteDialogBox.value) {
+        DeleteNoteAlertBox(
+            viewModel = viewModel,
+            activity = activity,
+            navHostController = navHostController,
+            onDismiss = { showDeleteDialogBox.value = false }) {
+            deleteFile()
+            showDeleteDialogBox.value = false
+            showBottomSheet.value = false
+        }
+    }
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier
-            .clickable {
-                navHostController.navigate(
-                    Screens.SplitPdf.splitPdfPassFilePath(
-                        pathOfPdfFile.value
-                    )
-                )
-            }
+            .clickable { showDeleteDialogBox.value = true }
             .padding(top = 7.dp, bottom = 7.dp)
     ) {
         Row(
@@ -46,7 +56,7 @@ fun BottomSheetSplitItem(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
-                painter = painter,
+                imageVector = imageVector,
                 contentDescription = stringResource(id = contentDescriptionId),
                 modifier = Modifier.padding(
                     start = 30.dp, top = 10.dp

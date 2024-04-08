@@ -37,4 +37,5 @@
     <string name="ocr">OCR</string>
     <string name="scanToDocx">Scan to .docx</string>
     <string name="scan">Scan</string>
+    <string name="savingFileAsDocx">Saving file as .docx</string>
 </resources>

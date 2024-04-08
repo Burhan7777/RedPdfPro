@@ -1,4 +1,4 @@
-package com.pzbdownloaders.scannerfeature.util
+package com.pzbdownloaders.redpdfpro.scannerfeature.util
 
 import android.content.Context
 import android.graphics.Bitmap

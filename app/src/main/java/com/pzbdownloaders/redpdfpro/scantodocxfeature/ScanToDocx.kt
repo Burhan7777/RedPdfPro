@@ -99,7 +99,7 @@ fun ScanToDocx(activity: MainActivity, viewModel: MyViewModel) {
             }
         }
         if (viewModel.showProgressDialogBoxOfWordFile.value) {
-            ProgressDialogBox(message = mutableStateOf("Saving file as .docx"))
+            ProgressDialogBox(message = mutableStateOf(stringResource(id = R.string.savingFileAsDocx)))
         }
         if (showSaveDialogBox.value) {
             AlertDialogBox(name = name, onDismiss = { showSaveDialogBox.value = false }) {

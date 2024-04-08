@@ -1,4 +1,4 @@
-package com.pzbdownloaders.scannerfeature.components.BottomSheet
+package com.pzbdownloaders.redpdfpro.scannerfeature.components.BottomSheet
 
 import android.widget.Toast
 import androidx.compose.foundation.clickable

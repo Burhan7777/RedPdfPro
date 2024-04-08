@@ -1,4 +1,4 @@
-package com.pzbdownloaders.scannerfeature.components
+package com.pzbdownloaders.redpdfpro.scannerfeature.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.shape.CornerSize

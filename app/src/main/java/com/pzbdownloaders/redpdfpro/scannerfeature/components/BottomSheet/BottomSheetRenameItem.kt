@@ -1,4 +1,4 @@
-package com.pzbdownloaders.scannerfeature.components.BottomSheet
+package com.pzbdownloaders.redpdfpro.scannerfeature.components.BottomSheet
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -13,42 +13,37 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
-import com.pzbdownloaders.redpdfpro.core.presentation.MainActivity
-import com.pzbdownloaders.redpdfpro.core.presentation.MyViewModel
-import com.pzbdownloaders.scannerfeature.components.DeleteNoteAlertBox
+import com.pzbdownloaders.redpdfpro.R
+import com.pzbdownloaders.redpdfpro.core.presentation.Component.AlertDialogBox
 
 @Composable
-fun BottomSheetDeleteItem(
-    showDeleteDialogBox: MutableState<Boolean>,
-    viewModel: MyViewModel,
-    activity: MainActivity,
-    navHostController: NavHostController,
-    imageVector: ImageVector,
+fun BottomSheetRenameItem(
+    rename: MutableState<String>,
+    showRenameSaveAsBox: MutableState<Boolean>,
+    painter: Painter,
     contentDescriptionId: Int,
     nameId: Int,
     showBottomSheet: MutableState<Boolean>,
-    deleteFile: () -> Unit
+    renameFile: () -> Unit
 ) {
-    if (showDeleteDialogBox.value) {
-        DeleteNoteAlertBox(
-            viewModel = viewModel,
-            activity = activity,
-            navHostController = navHostController,
-            onDismiss = { showDeleteDialogBox.value = false }) {
-            deleteFile()
-            showDeleteDialogBox.value = false
+    if (showRenameSaveAsBox.value) {
+        AlertDialogBox(
+            id = R.string.renameAs,
+            name = rename,
+            onDismiss = { showRenameSaveAsBox.value = false }) {
+            renameFile()
+            showRenameSaveAsBox.value = false
             showBottomSheet.value = false
         }
     }
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier
-            .clickable { showDeleteDialogBox.value = true }
+            .clickable { showRenameSaveAsBox.value = true }
             .padding(top = 7.dp, bottom = 7.dp)
     ) {
         Row(
@@ -56,7 +51,7 @@ fun BottomSheetDeleteItem(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
-                imageVector = imageVector,
+                painter = painter,
                 contentDescription = stringResource(id = contentDescriptionId),
                 modifier = Modifier.padding(
                     start = 30.dp, top = 10.dp

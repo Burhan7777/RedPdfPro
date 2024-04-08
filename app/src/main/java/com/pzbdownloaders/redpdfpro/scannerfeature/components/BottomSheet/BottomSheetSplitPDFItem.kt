@@ -1,4 +1,4 @@
-package com.pzbdownloaders.scannerfeature.components.BottomSheet
+package com.pzbdownloaders.redpdfpro.scannerfeature.components.BottomSheet
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -21,23 +21,21 @@ import androidx.navigation.NavHostController
 import com.pzbdownloaders.redpdfpro.core.presentation.Screens
 
 @Composable
-fun BottomSheetMergeItem(
+fun BottomSheetSplitItem(
+    navHostController: NavHostController,
+    painter: Painter,
     contentDescriptionId: Int,
     nameId: Int,
-    painter: Painter,
-    navHostController: NavHostController,
-    pathOfPdf: MutableState<String>,
-    nameOfPdf: MutableState<String?>
-
+    pathOfPdfFile: MutableState<String>
 ) {
+
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier
             .clickable {
                 navHostController.navigate(
-                    Screens.MergePdf.mergePDfWithArguments(
-                        nameOfPdf.value!!,
-                        pathOfPdf.value
+                    Screens.SplitPdf.splitPdfPassFilePath(
+                        pathOfPdfFile.value
                     )
                 )
             }
