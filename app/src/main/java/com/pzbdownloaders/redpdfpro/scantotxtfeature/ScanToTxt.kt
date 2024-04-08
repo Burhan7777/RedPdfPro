@@ -1,4 +1,4 @@
-package com.pzbdownloaders.redpdfpro.scantodocxfeature
+package com.pzbdownloaders.redpdfpro.scantotxtfeature
 
 import android.app.Activity
 import android.os.Environment
@@ -33,7 +33,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.FileProvider
-import androidx.lifecycle.ViewModel
 import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanning
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanningResult
@@ -46,8 +45,7 @@ import java.io.File
 import java.io.FileOutputStream
 
 @Composable
-fun ScanToDocx(activity: MainActivity, viewModel: MyViewModel) {
-
+fun ScanToTxt(activity: MainActivity, viewModel: MyViewModel) {
     val showSaveDialogBox = remember { mutableStateOf(false) }
     val name = remember { mutableStateOf("") }
     var resultFromActivity: MutableState<GmsDocumentScanningResult?> =
@@ -86,7 +84,7 @@ fun ScanToDocx(activity: MainActivity, viewModel: MyViewModel) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        if (!viewModel.showProgressDialogBoxOfWordFile.value) {
+        if (!viewModel.showProgressDialogBoxOfTextFile.value) {
             var externalDIr =
                 Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
             if (File("$externalDIr/Pro Scanner/Pdfs/${name.value}.pdf").exists()) {
@@ -98,8 +96,8 @@ fun ScanToDocx(activity: MainActivity, viewModel: MyViewModel) {
                 activity.contentResolver.delete(uri, null, null)
             }
         }
-        if (viewModel.showProgressDialogBoxOfWordFile.value) {
-            ProgressDialogBox(message = mutableStateOf(stringResource(id = R.string.savingFileAsDocx)))
+        if (viewModel.showProgressDialogBoxOfTextFile.value) {
+            ProgressDialogBox(message = mutableStateOf(stringResource(id = R.string.savingFIleAsTxt)))
         }
         if (showSaveDialogBox.value) {
             AlertDialogBox(name = name, onDismiss = { showSaveDialogBox.value = false }) {
@@ -121,13 +119,12 @@ fun ScanToDocx(activity: MainActivity, viewModel: MyViewModel) {
                     activity.contentResolver.openInputStream(pdf.uri).use { inputStream ->
                         inputStream?.copyTo(fos)
                     }
-                    viewModel.showProgressDialogBoxOfWordFile.value = true
-                    viewModel.convertPdfIntoAWordFIle(
+                    viewModel.showProgressDialogBoxOfTextFile.value = true
+                    viewModel.convertPdfIntoTextFile(
                         context,
                         "$externalDIr/Pro Scanner/Pdfs/${name.value}.pdf",
                         name
                     )
-
                     //   viewModel.listOfFiles.add(path)
                     //  viewModel.addItem()
                 }

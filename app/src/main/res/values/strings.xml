@@ -38,4 +38,6 @@
     <string name="scanToDocx">Scan to .docx</string>
     <string name="scan">Scan</string>
     <string name="savingFileAsDocx">Saving file as .docx</string>
+    <string name="scanToTxt">Scan to .txt</string>
+    <string name="savingFIleAsTxt">Saving file as .txt</string>
 </resources>

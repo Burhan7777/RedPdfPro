@@ -26,5 +26,6 @@ sealed class Screens(var route: String) {
     object ImageToPdf : Screens("image_to_pdf_screen")
     object DocsToPdf : Screens("docs_to_pdf_screen")
     object ScanToDocx : Screens("scan_to_docx_screen")
+    object ScanToTxt : Screens("scan_to_txt_screen")
 
 }

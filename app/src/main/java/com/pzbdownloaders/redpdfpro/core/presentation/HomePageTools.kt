@@ -101,6 +101,13 @@ fun HomePage(navHostController: NavHostController, viewModel: MyViewModel) {
                 navHostController,
                 Screens.ScanToDocx.route,
             )
+            FeatureBox(
+                stringId = R.string.scanToTxt,
+                drawableId = R.drawable.scan,
+                contentDescription = stringResource(id = R.string.scanToTxt),
+                navHostController,
+                Screens.ScanToTxt.route,
+            )
         }
 
         Spacer(modifier = Modifier.height(30.dp))
