@@ -34,4 +34,7 @@
     <string name="renameAs">Rename as...</string>
     <string name="splitThePDF">Split the PDF</string>
     <string name="setPassword">Set Password</string>
+    <string name="ocr">OCR</string>
+    <string name="scanToDocx">Scan to .docx</string>
+    <string name="scan">Scan</string>
 </resources>

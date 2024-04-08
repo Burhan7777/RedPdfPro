@@ -14,6 +14,7 @@ import com.pzbdownloaders.redpdfpro.imagetopdffeature.ImageToPdf
 import com.pzbdownloaders.redpdfpro.lockpdffeature.LockPdf
 import com.pzbdownloaders.redpdfpro.mergepdffeature.screens.MergePdf
 import com.pzbdownloaders.redpdfpro.rotatepdffeature.screens.RotatePDf
+import com.pzbdownloaders.redpdfpro.scantodocxfeature.ScanToDocx
 import com.pzbdownloaders.redpdfpro.splitpdffeature.screens.SplitPdf
 import com.pzbdownloaders.redpdfpro.unlockpdffeature.UnlockPdf
 
@@ -76,6 +77,9 @@ fun NavGraphBuilder.toolsGraph(
         }
         composable(Screens.DocsToPdf.route) {
             DocsToPdf(activity)
+        }
+        composable(Screens.ScanToDocx.route) {
+            ScanToDocx(activity,viewModel)
         }
     }
 }

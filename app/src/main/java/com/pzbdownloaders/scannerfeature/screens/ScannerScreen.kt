@@ -7,7 +7,10 @@ import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -21,6 +24,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions
 import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions.RESULT_FORMAT_JPEG
@@ -122,14 +126,18 @@ fun ScannerScreen(
     )
     Scaffold(
         floatingActionButton = {
-            FloatingActionButton(onClick = {
-                scanner.getStartScanIntent(activity).addOnSuccessListener {
-                    result.launch(IntentSenderRequest.Builder(it).build())
-                }
-            }) {
+            FloatingActionButton(
+                onClick = {
+                    scanner.getStartScanIntent(activity).addOnSuccessListener {
+                        result.launch(IntentSenderRequest.Builder(it).build())
+                    }
+                },
+                containerColor = MaterialTheme.colorScheme.tertiary
+            ) {
                 Icon(
                     painter = painterResource(id = R.drawable.camera),
-                    contentDescription = "Scan pages"
+                    contentDescription = "Scan pages",
+                    tint = MaterialTheme.colorScheme.onSecondary
                 )
             }
         }
@@ -177,6 +185,7 @@ fun ScannerScreen(
 
 
             LazyColumn(
+                contentPadding = PaddingValues(bottom = 70.dp)
             ) {
                 items(
                     items = viewModel.modelScanner
