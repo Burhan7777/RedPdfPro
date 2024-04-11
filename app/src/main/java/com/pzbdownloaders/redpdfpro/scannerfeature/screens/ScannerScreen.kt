@@ -1,8 +1,17 @@
 package com.pzbdownloaders.redpdfpro.scannerfeature.screens
 
 import android.app.Activity.RESULT_OK
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.net.Uri
+import android.os.Build
+import android.os.Environment
+import android.provider.MediaStore
+import android.provider.Settings
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -14,17 +23,21 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
 import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions
 import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions.RESULT_FORMAT_JPEG
@@ -95,6 +108,8 @@ fun ScannerScreen(
         .setGalleryImportAllowed(true).build()
 
 
+
+
     viewModel.modelList.clear()
     //viewModel.listOfFiles.clear()
     //  viewModel.modelScanner.clear()
@@ -102,16 +117,53 @@ fun ScannerScreen(
     //viewModel.listOfPdfToMerge.clear()
     println(viewModel.modelScanner.size)
 
-    val scanner = GmsDocumentScanning.getClient(options)
-    val file = File("storage/emulated/0/Download/Pro Scanner/Pdfs")
-    if (viewModel.listOfFiles.size < (file.listFiles()?.size ?: 0)) {
+    if (ContextCompat.checkSelfPermission(
+            activity,
+            android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+        ) == PackageManager.PERMISSION_GRANTED &&
+        ContextCompat.checkSelfPermission(
+            activity,
+            android.Manifest.permission.READ_EXTERNAL_STORAGE
+        ) == PackageManager.PERMISSION_GRANTED
+    ) {
 
-        viewModel.listOfFiles =
-            file.listFiles()?.toCollection(ArrayList()) ?: ArrayList<File>()
-        viewModel.listOfFiles.reverse()
-        viewModel.getImage()
+        /*  val file = File("$externalDir/Pro Scanner/Pdfs")
+          if (!file.exists()) {
+              file.mkdirs()
+          }*/
+
+
+    }
+    var externalDir =
+        Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+    val file = File("$externalDir/Pro Scanner/Pdfs")
+    if (!file.exists()) {
+        file.mkdirs()
     }
 
+    // println(file.listFiles().size)
+    //println(file.absolutePath)
+    if (Build.VERSION.SDK_INT >= 30) {
+        if (Environment.isExternalStorageManager()) {
+            if (viewModel.listOfFiles.size < (file.listFiles()?.size ?: 0)) {
+                viewModel.listOfFiles =
+                    file.listFiles()?.toCollection(ArrayList()) ?: ArrayList<File>()
+                viewModel.listOfFiles.reverse()
+                viewModel.getImage()
+            }
+        }
+    } else {
+        if (viewModel.listOfFiles.size < (file.listFiles()?.size ?: 0)) {
+            viewModel.listOfFiles =
+                file.listFiles()?.toCollection(ArrayList()) ?: ArrayList<File>()
+            viewModel.listOfFiles.reverse()
+            viewModel.getImage()
+        }
+    }
+
+    val scanner = GmsDocumentScanning.getClient(options)
+
+    // println(viewModel.modelScanner.size)
     val result = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult(),
         onResult = {
@@ -124,6 +176,11 @@ fun ScannerScreen(
 
         }
     )
+    val context = LocalContext.current
+
+
+// launch the above intent.
+
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(
@@ -148,7 +205,6 @@ fun ScannerScreen(
                 .padding(it)
                 .background(MaterialTheme.colorScheme.secondary),
         ) {
-
 
             SaveFIleAsPdf(showSaveDialogBox, name, resultFromActivity, activity, viewModel)
             SavePdfAsImage(showProgressDialogBox = showProgressDialogBox, message = message)

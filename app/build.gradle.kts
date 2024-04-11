@@ -122,5 +122,8 @@ dependencies {
     //TESSERACT
     implementation ("cz.adaptech.tesseract4android:tesseract4android-openmp:4.7.0")
 
+    //DOCUMENT TREE
+    implementation ("androidx.documentfile:documentfile:1.0.1")
+
 
 }

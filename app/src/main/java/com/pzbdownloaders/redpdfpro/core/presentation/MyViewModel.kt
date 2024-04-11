@@ -40,7 +40,7 @@ class MyViewModel : ViewModel() {
                         ScannerModel(
                             listOfFiles[i].name,
                             null,
-                            "storage/emulated/0/Download/Pro Scanner/Pdfs/${listOfFiles[i].name}"
+                            listOfFiles[i].absolutePath
                         )
                     )
 
@@ -68,7 +68,7 @@ class MyViewModel : ViewModel() {
                     modelScanner[i] = ScannerModel(
                         listOfFiles[i].name,
                         bitmap,
-                        "storage/emulated/0/Download/Pro Scanner/Pdfs/${listOfFiles[i].name}"
+                        listOfFiles[i].absolutePath
                     )
                 }
             }
