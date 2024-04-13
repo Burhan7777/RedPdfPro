@@ -2,6 +2,7 @@ package com.pzbdownloaders.redpdfpro.core.presentation
 
 const val TOOLS_GRAPH = "tools_graph_route"
 const val SCANNER_GRAPH = "scanner_graph_route"
+const val DOCUMENTS_GRAPH= "documents_graph_route"
 
 sealed class Screens(var route: String) {
     object HomePage : Screens("home_page_screen")
@@ -27,5 +28,6 @@ sealed class Screens(var route: String) {
     object DocsToPdf : Screens("docs_to_pdf_screen")
     object ScanToDocx : Screens("scan_to_docx_screen")
     object ScanToTxt : Screens("scan_to_txt_screen")
+    object Documents : Screens("document_screen")
 
 }

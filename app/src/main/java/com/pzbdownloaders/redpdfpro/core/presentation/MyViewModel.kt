@@ -3,6 +3,7 @@ package com.pzbdownloaders.redpdfpro.core.presentation
 import android.app.Application
 import android.content.Context
 import android.graphics.pdf.PdfRenderer
+import android.net.Uri
 import android.os.ParcelFileDescriptor
 import android.widget.Toast
 import androidx.compose.runtime.MutableState
@@ -29,6 +30,8 @@ class MyViewModel : ViewModel() {
     var pdfNames = mutableStateListOf<String>()
     var modelScanner: SnapshotStateList<ScannerModel> = mutableStateListOf()
     var listOfFiles: ArrayList<File> = ArrayList()
+    var mutableStateListOfPdfs = mutableStateListOf<Uri>()
+    var listOfPdfNames = ArrayList<String>()
     val showProgressDialogBoxOfWordFile = mutableStateOf(false)
     val showProgressDialogBoxOfTextFile = mutableStateOf(false)
 

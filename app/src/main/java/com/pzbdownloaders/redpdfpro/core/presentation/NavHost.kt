@@ -15,6 +15,7 @@ fun MyNavHost(
     ) {
         toolsGraph(navHostController, activity = activity, viewModel)
         scannerGraph(navHostController, activity, viewModel)
+        documentGraph(activity,viewModel,navHostController)
     }
 
 }

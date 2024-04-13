@@ -15,6 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 
@@ -49,6 +50,7 @@ fun MainScreen(
 fun MyBottomBar(navHostController: NavHostController) {
     val screens = listOf(
         ScreensBottomNavigation.ScannerScreen,
+        ScreensBottomNavigation.Documents,
         ScreensBottomNavigation.HomePageTools
     )
     val navBackStackEntry by navHostController.currentBackStackEntryAsState()
@@ -60,16 +62,23 @@ fun MyBottomBar(navHostController: NavHostController) {
                 navHostController.popBackStack()
                 navHostController.navigate(it.route)
             }, icon = {
-                Icon(
-                    imageVector = it.imageVector,
-                    contentDescription = "Scanner"
-                )
+                if (it == ScreensBottomNavigation.Documents) {
+                    Icon(
+                        painter = painterResource(id = it.painterId),
+                        contentDescription = "bottom_navigation_image"
+                    )
+                } else {
+                    Icon(
+                        imageVector = it.imageVector,
+                        contentDescription = "bottom_navigation_image"
+                    )
+                }
             },
                 label = {
                     Text(text = it.title)
                 },
                 colors = NavigationBarItemDefaults.colors(
-                   indicatorColor = MaterialTheme.colorScheme.tertiary,
+                    indicatorColor = MaterialTheme.colorScheme.tertiary,
                     selectedIconColor = MaterialTheme.colorScheme.onSecondary
                 )
             )
