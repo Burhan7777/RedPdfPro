@@ -21,6 +21,7 @@ import androidx.navigation.NavHostController
 import com.pzbdownloaders.redpdfpro.core.presentation.MainActivity
 import com.pzbdownloaders.redpdfpro.core.presentation.MyViewModel
 import com.pzbdownloaders.redpdfpro.documentfeature.components.SingleRowDocumentFeature
+import com.pzbdownloaders.redpdfpro.scannerfeature.components.SavePdfAsImage
 import com.pzbdownloaders.redpdfpro.splitpdffeature.utils.getFilePathFromContentUri
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -36,12 +37,17 @@ fun DocumentFeature(
 ) {
     var listOfPdfs = ArrayList<Uri>()
     var scope = rememberCoroutineScope()
-    val showLazyColumn = mutableStateOf(false)
+    val showProgressBarOfPdfSavedAsImage = mutableStateOf(false)
+
+
+    SavePdfAsImage(
+        showProgressDialogBox = showProgressBarOfPdfSavedAsImage,
+        message = mutableStateOf("Save pdf as image")
+    )
     scope.launch(Dispatchers.IO) {
         getPdfs(listOfPdfs, activity, viewModel.listOfPdfNames)
         withContext(Dispatchers.Main) {
             viewModel.mutableStateListOfPdfs = listOfPdfs.toMutableStateList()
-            println(viewModel.mutableStateListOfPdfs.size)
 
         }
     }
@@ -52,7 +58,8 @@ fun DocumentFeature(
                 SingleRowDocumentFeature(
                     uri = item,
                     nameOfPdfFile = viewModel.listOfPdfNames[index],
-                    activity = activity
+                    activity = activity,
+                    showProgressBarOfPdfSavedAsImage
                 )
             }
         }
@@ -102,7 +109,7 @@ fun getPdfs(
                 MediaStore.Files.getContentUri("external"),
                 cursor!!.getString(idCol)
             )
-            val name = cursor.getString(nameCol)
+            val name = cursor.getString(titleCol)
             list.add(fileUri)
             listOfPdfNames.add(name)
             // println(fileUri)

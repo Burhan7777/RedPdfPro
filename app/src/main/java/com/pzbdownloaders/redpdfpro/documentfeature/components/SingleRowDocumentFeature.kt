@@ -48,6 +48,7 @@ import com.pzbdownloaders.redpdfpro.core.presentation.MainActivity
 import com.pzbdownloaders.redpdfpro.R
 import com.pzbdownloaders.redpdfpro.scannerfeature.util.ScannerModel
 import com.pzbdownloaders.redpdfpro.scannerfeature.util.downloadPdfAsJpeg
+import com.pzbdownloaders.redpdfpro.splitpdffeature.utils.getFilePathFromContentUri
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -56,7 +57,7 @@ import java.io.File
 
 @Composable
 fun SingleRowDocumentFeature(
-    /*    showCircularProgress: MutableState<Boolean>,
+    /*
         showWordFIleSaveDialogBox: MutableState<Boolean>,
         showTextFileSaveDialogBox: MutableState<Boolean>,
 
@@ -64,6 +65,7 @@ fun SingleRowDocumentFeature(
     uri: Uri,
     nameOfPdfFile: String,
     activity: MainActivity,
+    showCircularProgress: MutableState<Boolean>,
 ) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
@@ -94,7 +96,8 @@ fun SingleRowDocumentFeature(
                 contentDescription = "Pdf",
             )
             Column(
-                modifier = Modifier.requiredHeight(100.dp)
+                modifier = Modifier
+                    .requiredHeight(100.dp)
                     .wrapContentHeight(align = Alignment.CenterVertically),
             ) {
                 Box(modifier = Modifier.fillMaxHeight()) {
@@ -128,19 +131,22 @@ fun SingleRowDocumentFeature(
                             )
                         }
                         IconButton(onClick = {
-                            /*    showCircularProgress.value = true
-                                scope.launch(Dispatchers.IO) {
-                                    val result = downloadPdfAsJpeg(modelScanner.path!!, context)
-                                    withContext(Dispatchers.Main) {
-                                        if (result == "Done")
-                                            Toast.makeText(
-                                                context,
-                                                " Images saved",
-                                                Toast.LENGTH_SHORT
-                                            ).show()
-                                        showCircularProgress.value = false
-                                    }
-                                }*/
+                            showCircularProgress.value = true
+                            scope.launch(Dispatchers.Default) {
+                                var file = getFilePathFromContentUri(uri, activity = activity)
+                                val result = downloadPdfAsJpeg(file!!, activity)
+                                withContext(Dispatchers.Main) {
+                                    if (result == "Done")
+                                        Toast.makeText(
+                                            context,
+                                            " Images saved",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    showCircularProgress.value = false
+                                }
+
+                            }
+
 
                         }) {
                             Icon(
