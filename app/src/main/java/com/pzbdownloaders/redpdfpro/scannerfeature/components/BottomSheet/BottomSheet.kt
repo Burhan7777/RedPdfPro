@@ -74,39 +74,41 @@ fun BottomSheet(
                     )
                 )
             }
-            BottomSheetRenameItem(
-                rename,
-                showRenameSaveDialogBox,
-                painterResource(id = R.drawable.rename),
-                R.string.renamePDF,
-                R.string.rename,
-                showBottomSheet
-            ) {
-                val externalDir =
-                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-                val pathWithName = "$externalDir/Pro Scanner/Pdfs/${nameOfPdfFIle.value}"
-                val pathWithoutName =
-                    "$externalDir/Pro Scanner/Pdfs/" // This is important so we can create a file in that directory. If we used pathWithName we would end up with new name which also has older name appended to it.
-                val file = File(pathWithName)
-                println(pathWithName)
-                if (file.exists()) {
-                    val renameFile = File(pathWithoutName, "${rename.value}.pdf")
-                    file.renameTo(renameFile)
-                    viewModel.listOfFiles.add(renameFile)
-                    viewModel.addItem()
-                    var uri = FileProvider.getUriForFile(
-                        activity,
-                        activity.applicationContext.packageName + ".provider",
-                        File(pathOfPdfFile.value)
-                    )
-                    activity.contentResolver.delete(uri, null, null)
-                    viewModel.modelScanner.remove(
-                        ScannerModel(
-                            nameOfPdfFIle.value,
-                            bitmapOfPdfFile.value,
-                            pathOfPdfFile.value
+            if (rename.value != "") {
+                BottomSheetRenameItem(
+                    rename,
+                    showRenameSaveDialogBox,
+                    painterResource(id = R.drawable.rename),
+                    R.string.renamePDF,
+                    R.string.rename,
+                    showBottomSheet
+                ) {
+                    val externalDir =
+                        Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                    val pathWithName = "$externalDir/Pro Scanner/Pdfs/${nameOfPdfFIle.value}"
+                    val pathWithoutName =
+                        "$externalDir/Pro Scanner/Pdfs/" // This is important so we can create a file in that directory. If we used pathWithName we would end up with new name which also has older name appended to it.
+                    val file = File(pathWithName)
+                    println(pathWithName)
+                    if (file.exists()) {
+                        val renameFile = File(pathWithoutName, "${rename.value}.pdf")
+                        file.renameTo(renameFile)
+                        viewModel.listOfFiles.add(renameFile)
+                        viewModel.addItem()
+                        var uri = FileProvider.getUriForFile(
+                            activity,
+                            activity.applicationContext.packageName + ".provider",
+                            File(pathOfPdfFile.value)
                         )
-                    )
+                        activity.contentResolver.delete(uri, null, null)
+                        viewModel.modelScanner.remove(
+                            ScannerModel(
+                                nameOfPdfFIle.value,
+                                bitmapOfPdfFile.value,
+                                pathOfPdfFile.value
+                            )
+                        )
+                    }
                 }
             }
             BottomSheetSplitItem(

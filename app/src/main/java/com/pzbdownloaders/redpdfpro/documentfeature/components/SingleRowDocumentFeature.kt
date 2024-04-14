@@ -72,7 +72,8 @@ fun SingleRowDocumentFeature(
     viewModel: MyViewModel,
     pathOfThePdfFile: MutableState<String>,
     saveWordFIleDialogBox: MutableState<Boolean>,
-    showBottomSheet: MutableState<Boolean>
+    showBottomSheet: MutableState<Boolean>,
+    nameOfPdfFileOutsideScope: MutableState<String?>
 ) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
@@ -191,6 +192,7 @@ fun SingleRowDocumentFeature(
                                   showBottomSheet.value = true*/
                             showBottomSheet.value = true
                             pathOfThePdfFile.value = getFilePathFromContentUri(uri, activity)!!
+                            nameOfPdfFileOutsideScope.value = nameOfPdfFile
                         }) {
                             Icon(
                                 imageVector = Icons.Default.MoreVert,

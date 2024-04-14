@@ -47,6 +47,7 @@ fun DocumentFeature(
     val showDeleteDialogBox = mutableStateOf(false)
     val showPasswordDialogBox = mutableStateOf(false)
     val showSaveDialogBox = mutableStateOf(false)
+    val nameOfThePdfFile = mutableStateOf<String?>("")
 
     scope.launch(Dispatchers.IO) {
         getPdfs(listOfPdfs, activity, viewModel.listOfPdfNames)
@@ -78,6 +79,7 @@ fun DocumentFeature(
         activity = activity,
         navHostController = navHostController,
         pathOfPdfFile = pathOfThePdfFile,
+        nameOfPdfFIle = nameOfThePdfFile,
         showPasswordDialogBox = showPasswordDialogBox,
         showSaveAsLockPdfBox = showSaveDialogBox
     )
@@ -94,7 +96,8 @@ fun DocumentFeature(
                     viewModel = viewModel,
                     pathOfThePdfFile = pathOfThePdfFile,
                     saveWordFIleDialogBox = saveWordFIleDialogBox,
-                    showBottomSheet = showBottomSheet
+                    showBottomSheet = showBottomSheet,
+                    nameOfPdfFileOutsideScope = nameOfThePdfFile
                 )
             }
         }
