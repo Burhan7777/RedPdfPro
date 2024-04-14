@@ -21,6 +21,7 @@ import androidx.navigation.NavHostController
 import com.pzbdownloaders.redpdfpro.core.presentation.MainActivity
 import com.pzbdownloaders.redpdfpro.core.presentation.MyViewModel
 import com.pzbdownloaders.redpdfpro.documentfeature.components.SingleRowDocumentFeature
+import com.pzbdownloaders.redpdfpro.scannerfeature.components.SavePdfAsDocxFile
 import com.pzbdownloaders.redpdfpro.scannerfeature.components.SavePdfAsImage
 import com.pzbdownloaders.redpdfpro.splitpdffeature.utils.getFilePathFromContentUri
 import kotlinx.coroutines.CoroutineScope
@@ -38,12 +39,10 @@ fun DocumentFeature(
     var listOfPdfs = ArrayList<Uri>()
     var scope = rememberCoroutineScope()
     val showProgressBarOfPdfSavedAsImage = mutableStateOf(false)
+    val nameOfTheWordFile = mutableStateOf("")
+    val saveWordFIleDialogBox = mutableStateOf(false)
+    val pathOfThePdfFile = mutableStateOf("")
 
-
-    SavePdfAsImage(
-        showProgressDialogBox = showProgressBarOfPdfSavedAsImage,
-        message = mutableStateOf("Save pdf as image")
-    )
     scope.launch(Dispatchers.IO) {
         getPdfs(listOfPdfs, activity, viewModel.listOfPdfNames)
         withContext(Dispatchers.Main) {
@@ -52,6 +51,20 @@ fun DocumentFeature(
         }
     }
 
+    SavePdfAsImage(
+        showProgressDialogBox = showProgressBarOfPdfSavedAsImage,
+        message = mutableStateOf("Save pdf as image")
+    )
+    SavePdfAsDocxFile(
+        showWordFIleSaveDialogBox = saveWordFIleDialogBox,
+        nameOfWordFile = nameOfTheWordFile,
+        viewModel = viewModel,
+        activity = activity,
+        pathOfPdfFile = pathOfThePdfFile,
+        messageSavingWordFIle = mutableStateOf("Saving pdf as .docx")
+    )
+
+
     Column(modifier = Modifier.fillMaxSize()) {
         LazyColumn() {
             itemsIndexed(items = viewModel.mutableStateListOfPdfs) { index, item ->
@@ -59,7 +72,10 @@ fun DocumentFeature(
                     uri = item,
                     nameOfPdfFile = viewModel.listOfPdfNames[index],
                     activity = activity,
-                    showProgressBarOfPdfSavedAsImage
+                    showCircularProgress = showProgressBarOfPdfSavedAsImage,
+                    viewModel = viewModel,
+                    pathOfThePdfFile = pathOfThePdfFile,
+                    saveWordFIleDialogBox = saveWordFIleDialogBox
                 )
             }
         }

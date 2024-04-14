@@ -63,11 +63,19 @@ fun getTextFromPdf(
     nameOfWordFIle: MutableState<String>,
     showProgressDialogBoxOfWordFile: MutableState<Boolean>
 ) {
-    /*    var assets = context.assets.open("eng.traineddata")
-        var fos = FileOutputStream("${context.filesDir}/tessdata/eng.traineddata")
-        assets.use {
-            it.copyTo(fos)
-        }*/
+    var assets = context.assets.open("eng.traineddata")
+    val folder = File("${context.filesDir}/tessdata/")
+    if (!folder.exists()) {
+        folder.mkdirs()
+    }
+    val file = File("${context.filesDir}/tessdata/eng.traineddata")
+    if (!file.exists()) {
+        file.createNewFile()
+    }
+    var fos = FileOutputStream("${context.filesDir}/tessdata/eng.traineddata")
+    assets.use {
+        it.copyTo(fos)
+    }
     var finalText = ""
     var tesseract = TessBaseAPI()
     var path = File("${context.filesDir}").absolutePath

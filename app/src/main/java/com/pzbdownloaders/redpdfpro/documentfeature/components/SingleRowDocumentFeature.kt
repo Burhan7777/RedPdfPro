@@ -30,6 +30,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,6 +47,8 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.pzbdownloaders.redpdfpro.core.presentation.MainActivity
 import com.pzbdownloaders.redpdfpro.R
+import com.pzbdownloaders.redpdfpro.core.presentation.MyViewModel
+import com.pzbdownloaders.redpdfpro.scannerfeature.components.SavePdfAsDocxFile
 import com.pzbdownloaders.redpdfpro.scannerfeature.util.ScannerModel
 import com.pzbdownloaders.redpdfpro.scannerfeature.util.downloadPdfAsJpeg
 import com.pzbdownloaders.redpdfpro.splitpdffeature.utils.getFilePathFromContentUri
@@ -66,6 +69,9 @@ fun SingleRowDocumentFeature(
     nameOfPdfFile: String,
     activity: MainActivity,
     showCircularProgress: MutableState<Boolean>,
+    viewModel: MyViewModel,
+    pathOfThePdfFile: MutableState<String>,
+    saveWordFIleDialogBox: MutableState<Boolean>
 ) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
@@ -156,9 +162,10 @@ fun SingleRowDocumentFeature(
                             )
                         }
                         IconButton(onClick = {
-                            println("hello")
-                            /* pathOfPdfFile.value = modelScanner.path!!
-                             showWordFIleSaveDialogBox.value = true*/
+                            var file = getFilePathFromContentUri(uri, activity = activity)
+                            pathOfThePdfFile.value = file!!
+                            saveWordFIleDialogBox.value = true
+
 
                         }) {
                             Icon(
