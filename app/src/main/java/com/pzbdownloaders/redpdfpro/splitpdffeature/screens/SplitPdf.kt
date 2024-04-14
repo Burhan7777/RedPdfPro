@@ -1,6 +1,7 @@
 package com.pzbdownloaders.redpdfpro.splitpdffeature.screens
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.pdf.PdfRenderer
 import android.os.Environment
 import android.os.ParcelFileDescriptor
@@ -98,7 +99,9 @@ fun SplitPdf(
 
 
     var totalPages by remember { mutableStateOf(0) }
-    lateinit var pdfRenderer: PdfRenderer
+    var pdfRenderer = remember {
+        mutableStateOf<PdfRenderer?>(null)
+    }
     lateinit var parcelFileDescriptor: ParcelFileDescriptor
     var file by remember { mutableStateOf<File?>(null) }
     var fileFromFilePath by remember { mutableStateOf<File?>(null) }
@@ -115,23 +118,27 @@ fun SplitPdf(
             if (it != null) {
                 path = getFilePathFromContentUri(it, activity)!!
                 file = File(path)
-                val python = Python.getInstance()
-                val module = python.getModule("splitPDF")
-                var response = module.callAttr("is_encrypted", path)
-                if (response.toString() == "True") {
-                    showPasswordAlertBox.value = true
-                    println(passwordOfLockedFile.value)
-                    if (passwordOfLockedFile.value.isNotEmpty()) {
-                        totalPages =
-                            module.callAttr("total_pages", path, passwordOfLockedFile.value)
-                                .toString()
-                                .toInt()
-                    }
-                } else if (response.toString() == "False") {
-                    totalPages =
-                        module.callAttr("total_pages", path).toString()
-                            .toInt()
-                }
+                parcelFileDescriptor =
+                    ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY)
+                pdfRenderer.value = PdfRenderer(parcelFileDescriptor)
+                totalPages = pdfRenderer.value!!.pageCount
+                /*      val python = Python.getInstance()
+                      val module = python.getModule("splitPDF")
+                      var response = module.callAttr("is_encrypted", path)
+                      if (response.toString() == "True") {
+                          showPasswordAlertBox.value = true
+                          println(passwordOfLockedFile.value)
+                          if (passwordOfLockedFile.value.isNotEmpty()) {
+                              totalPages =
+                                  module.callAttr("total_pages", path, passwordOfLockedFile.value)
+                                      .toString()
+                                      .toInt()
+                          }
+                      } else if (response.toString() == "False") {
+                          totalPages =
+                              module.callAttr("total_pages", path).toString()
+                                  .toInt()
+                      }*/
                 /*   if (response== "PDFlocked") {
                        showPasswordAlertBox.value = true
                        totalPages =
@@ -159,26 +166,19 @@ fun SplitPdf(
 
                 var showLazyColumn by remember { mutableStateOf(false) }
                 val scope1 = rememberCoroutineScope()
-                scope1.launch(Dispatchers.Default) {
-                    val python = Python.getInstance()
-                    val module = python.getModule("splitPDF")
-                    totalPagesPathFile =
-                        module.callAttr("total_pages", filePath).toString().toInt()
-
-                    if (totalPagesPathFile > 0 && filePath != null) {
-                        withContext(Dispatchers.Main) {
-                            showLazyColumn = true
-                        }
-                    }
+                fileFromFilePath = File(filePath!!)
+                parcelFileDescriptor =
+                    ParcelFileDescriptor.open(
+                        fileFromFilePath,
+                        ParcelFileDescriptor.MODE_READ_ONLY
+                    )
+                pdfRenderer1.value = PdfRenderer(parcelFileDescriptor)
+                totalPagesPathFile = pdfRenderer1.value!!.pageCount
+                if (totalPagesPathFile > 0) {
+                    showLazyColumn = true
                 }
                 if (showLazyColumn) {
-                    fileFromFilePath = File(filePath!!)
-                    parcelFileDescriptor =
-                        ParcelFileDescriptor.open(
-                            fileFromFilePath,
-                            ParcelFileDescriptor.MODE_READ_ONLY
-                        )
-                    pdfRenderer1.value = PdfRenderer(parcelFileDescriptor)
+
                     LazyColumnVer(
                         totalPages = totalPagesPathFile.toString().toInt(),
                         context = context,
@@ -241,14 +241,11 @@ fun SplitPdf(
 
 
                 if (totalPages > 0 && file != null) {
-                    parcelFileDescriptor =
-                        ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY)
-                    pdfRenderer = PdfRenderer(parcelFileDescriptor)
                     LazyColumnVer(
                         totalPages = totalPages.toString().toInt(),
                         context = context,
                         file = file!!,
-                        pdfRenderer,
+                        pdfRenderer.value!!,
                         pageNumbersSelected.value,
                         viewModel
                     )
@@ -348,12 +345,18 @@ fun LazyColumnVer(
 
 
     var scope = rememberCoroutineScope()
-    scope.launch(Dispatchers.IO) {
+    var bitmap: Bitmap? = null
+    scope.launch(Dispatchers.Default) {
         for (i in 0 until totalPages) {
-            var bitmap = loadPage(
-                i,
-                pdfRenderer
-            )
+            try {
+                bitmap = loadPage(
+                    i,
+                    pdfRenderer
+                )
+            } catch (exception: IllegalStateException) {
+
+            }
+
             withContext(Dispatchers.Main) {
                 if (viewModel.modelList.size < totalPages)
                     viewModel.modelList.add(modelBitmap(bitmap, isSelected = mutableStateOf(false)))

@@ -21,6 +21,7 @@ import androidx.navigation.NavHostController
 import com.pzbdownloaders.redpdfpro.core.presentation.MainActivity
 import com.pzbdownloaders.redpdfpro.core.presentation.MyViewModel
 import com.pzbdownloaders.redpdfpro.documentfeature.components.SingleRowDocumentFeature
+import com.pzbdownloaders.redpdfpro.scannerfeature.components.BottomSheet.BottomSheet
 import com.pzbdownloaders.redpdfpro.scannerfeature.components.SavePdfAsDocxFile
 import com.pzbdownloaders.redpdfpro.scannerfeature.components.SavePdfAsImage
 import com.pzbdownloaders.redpdfpro.splitpdffeature.utils.getFilePathFromContentUri
@@ -42,6 +43,10 @@ fun DocumentFeature(
     val nameOfTheWordFile = mutableStateOf("")
     val saveWordFIleDialogBox = mutableStateOf(false)
     val pathOfThePdfFile = mutableStateOf("")
+    val showBottomSheet = mutableStateOf(false)
+    val showDeleteDialogBox = mutableStateOf(false)
+    val showPasswordDialogBox = mutableStateOf(false)
+    val showSaveDialogBox = mutableStateOf(false)
 
     scope.launch(Dispatchers.IO) {
         getPdfs(listOfPdfs, activity, viewModel.listOfPdfNames)
@@ -50,6 +55,8 @@ fun DocumentFeature(
 
         }
     }
+
+    viewModel.modelList.clear()
 
     SavePdfAsImage(
         showProgressDialogBox = showProgressBarOfPdfSavedAsImage,
@@ -61,7 +68,18 @@ fun DocumentFeature(
         viewModel = viewModel,
         activity = activity,
         pathOfPdfFile = pathOfThePdfFile,
-        messageSavingWordFIle = mutableStateOf("Saving pdf as .docx")
+        messageSavingWordFIle = mutableStateOf("Saving pdf as .docx"),
+    )
+
+    BottomSheet(
+        showBottomSheet = showBottomSheet,
+        showDeleteDialogBox = showDeleteDialogBox,
+        viewModel = viewModel,
+        activity = activity,
+        navHostController = navHostController,
+        pathOfPdfFile = pathOfThePdfFile,
+        showPasswordDialogBox = showPasswordDialogBox,
+        showSaveAsLockPdfBox = showSaveDialogBox
     )
 
 
@@ -75,7 +93,8 @@ fun DocumentFeature(
                     showCircularProgress = showProgressBarOfPdfSavedAsImage,
                     viewModel = viewModel,
                     pathOfThePdfFile = pathOfThePdfFile,
-                    saveWordFIleDialogBox = saveWordFIleDialogBox
+                    saveWordFIleDialogBox = saveWordFIleDialogBox,
+                    showBottomSheet = showBottomSheet
                 )
             }
         }

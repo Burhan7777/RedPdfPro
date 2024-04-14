@@ -71,7 +71,8 @@ fun SingleRowDocumentFeature(
     showCircularProgress: MutableState<Boolean>,
     viewModel: MyViewModel,
     pathOfThePdfFile: MutableState<String>,
-    saveWordFIleDialogBox: MutableState<Boolean>
+    saveWordFIleDialogBox: MutableState<Boolean>,
+    showBottomSheet: MutableState<Boolean>
 ) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
@@ -188,6 +189,8 @@ fun SingleRowDocumentFeature(
                                   bitmapOfPdfFile.value = modelScanner.bitmap
                                   nameOfPdfFIle.value = modelScanner.name
                                   showBottomSheet.value = true*/
+                            showBottomSheet.value = true
+                            pathOfThePdfFile.value = getFilePathFromContentUri(uri, activity)!!
                         }) {
                             Icon(
                                 imageVector = Icons.Default.MoreVert,

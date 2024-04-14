@@ -35,17 +35,19 @@ fun SingleRow(model: modelBitmap, pageNo: Int, pageNoSelected: ArrayList<Int>) {
                 pageNoSelected.remove(pageNo)
             }
         }) {
-        Image(
-            bitmap = model.bitmap?.asImageBitmap()!!,
-            contentDescription = "pdf",
-            modifier = Modifier
-                .border(
-                    width = borderWidth,
-                    color = borderColor,
-                    shape = MaterialTheme.shapes.medium.copy(all = CornerSize(10.dp))
-                )
-                .clip(shape = MaterialTheme.shapes.medium.copy(all = CornerSize(10.dp)))
-        )
+        (model.bitmap?.asImageBitmap())?.let {
+            Image(
+                bitmap = it,
+                contentDescription = "pdf",
+                modifier = Modifier
+                    .border(
+                        width = borderWidth,
+                        color = borderColor,
+                        shape = MaterialTheme.shapes.medium.copy(all = CornerSize(10.dp))
+                    )
+                    .clip(shape = MaterialTheme.shapes.medium.copy(all = CornerSize(10.dp)))
+            )
+        }
         Text(
             text = "${pageNo + 1}",
             modifier = Modifier

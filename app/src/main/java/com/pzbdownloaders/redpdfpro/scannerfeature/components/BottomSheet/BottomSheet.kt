@@ -10,6 +10,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -31,10 +32,10 @@ fun BottomSheet(
     activity: MainActivity,
     navHostController: NavHostController,
     pathOfPdfFile: MutableState<String>,
-    nameOfPdfFIle: MutableState<String?>,
-    bitmapOfPdfFile: MutableState<Bitmap?>,
-    showRenameSaveDialogBox: MutableState<Boolean>,
-    rename: MutableState<String>,
+    nameOfPdfFIle: MutableState<String?> = mutableStateOf(null),
+    bitmapOfPdfFile: MutableState<Bitmap?> = mutableStateOf(null),
+    showRenameSaveDialogBox: MutableState<Boolean> = mutableStateOf(false),
+    rename: MutableState<String> = mutableStateOf(""),
     showPasswordDialogBox: MutableState<Boolean>,
     showSaveAsLockPdfBox: MutableState<Boolean>
 ) {
