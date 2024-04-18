@@ -12,7 +12,7 @@ def rotate_pdf(file, angle, pages_selected, name):
         writer.pages[page].rotate(angle)
 
     try:
-        writer.write(f"/storage/emulated/0/Download/{name}.pdf")
+        writer.write(f"/storage/emulated/0/Download/Pro Scanner/Pdfs/{name}.pdf")
         return "Success"
     except Exception:
         return "Failure"

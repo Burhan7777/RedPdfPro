@@ -1,5 +1,8 @@
 package com.pzbdownloaders.redpdfpro.mergepdffeature.screens
 
+import android.content.Context
+import android.media.MediaScannerConnection
+import android.os.Environment
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -227,9 +230,13 @@ fun MergePdf(
                             showProgress = false
                             Toast.makeText(
                                 context,
-                                "Successfully saved at /storage/emulated/0/Download/${name}.pdf",
+                                "Successfully saved",
                                 Toast.LENGTH_SHORT
                             ).show()
+                            val externalDIr =
+                                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                            val path = "${externalDIr}/Pro Scanner/Pdfs/${name.value}.pdf"
+                            scanFile(path, activity)
                         } else if (result.toString() == "Failure") {
                             showProgress = false
                             Toast.makeText(context, "Operation Failed", Toast.LENGTH_SHORT).show()
@@ -240,4 +247,15 @@ fun MergePdf(
         }
     }
 
+}
+
+fun scanFile(filePath: String, context: Context) {
+    MediaScannerConnection.scanFile(
+        context,
+        arrayOf(filePath),
+        null
+    ) { path, uri ->
+        // Callback invoked after scanning is complete
+        // You can perform any additional actions here if needed
+    }
 }
