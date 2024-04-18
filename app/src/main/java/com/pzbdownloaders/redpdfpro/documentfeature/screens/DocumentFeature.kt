@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
@@ -49,13 +50,22 @@ fun DocumentFeature(
     val showSaveDialogBox = mutableStateOf(false)
     val nameOfThePdfFile = mutableStateOf<String?>("")
 
-    scope.launch(Dispatchers.IO) {
+    LaunchedEffect(key1 = true) {
+        viewModel.mutableStateListOfPdfs.clear()
+        viewModel.listOfPdfNames.clear()
+    }
+
+    LaunchedEffect(key1 = true) {
         getPdfs(listOfPdfs, activity, viewModel.listOfPdfNames)
         withContext(Dispatchers.Main) {
             viewModel.mutableStateListOfPdfs = listOfPdfs.toMutableStateList()
 
         }
     }
+
+
+    println(viewModel.mutableStateListOfPdfs.size)
+    println(viewModel.listOfPdfNames.size)
 
     viewModel.modelList.clear()
 
@@ -122,7 +132,7 @@ fun getPdfs(
     val mimeType = "application/pdf"
 
     val whereClause = MediaStore.Files.FileColumns.MIME_TYPE + " IN ('" + mimeType + "')"
-    val orderBy = MediaStore.Files.FileColumns.SIZE + " DESC"
+    val orderBy = MediaStore.Files.FileColumns.DATE_MODIFIED + " DESC"
 
     val cursor: Cursor? = activity.contentResolver.query(
         MediaStore.Files.getContentUri("external"),

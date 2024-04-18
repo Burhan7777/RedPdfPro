@@ -3,6 +3,7 @@ package com.pzbdownloaders.redpdfpro.splitpdffeature.screens
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.pdf.PdfRenderer
+import android.media.MediaScannerConnection
 import android.os.Environment
 import android.os.ParcelFileDescriptor
 import android.widget.Toast
@@ -48,6 +49,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
+import androidx.core.content.FileProvider
 import androidx.navigation.NavHostController
 import com.chaquo.python.PyObject
 import com.chaquo.python.Python
@@ -314,6 +316,13 @@ fun SplitPdf(
                                 "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)}/Pro Scanner/Pdfs"
                             viewModel.listOfFiles.add(File("$externalDir/${name.value}.pdf"))
                             viewModel.addItem()
+                            /*  var contentUri = FileProvider.getUriForFile(
+                                  activity,
+                                  activity.packageName + ".provider",
+                                  File("$externalDir/${name.value}.pdf")
+                              )
+                              activity.contentResolver.notifyChange(contentUri, null)*/
+                            scanFile("$externalDir/${name.value}.pdf", activity)
                         } else if (result.toString() == "Failure") {
                             showProgress = false
                             Toast.makeText(context, "Operation Failed", Toast.LENGTH_SHORT).show()
@@ -379,6 +388,7 @@ fun LazyColumnVer(
 
     }
 }
+
 /*
 @Composable
 fun LazyColumnVerFilePath(
@@ -419,4 +429,13 @@ fun LazyColumnVerFilePath(
             SingleRow(model = item, pageNo = index, pageNoSelected)
         }
     }*/
-
+fun scanFile(filePath: String, context: Context) {
+    MediaScannerConnection.scanFile(
+        context,
+        arrayOf(filePath),
+        null
+    ) { path, uri ->
+        // Callback invoked after scanning is complete
+        // You can perform any additional actions here if needed
+    }
+}
