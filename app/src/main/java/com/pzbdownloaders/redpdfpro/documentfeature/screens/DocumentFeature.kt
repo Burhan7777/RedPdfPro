@@ -49,6 +49,7 @@ fun DocumentFeature(
     val showPasswordDialogBox = mutableStateOf(false)
     val showSaveDialogBox = mutableStateOf(false)
     val nameOfThePdfFile = mutableStateOf<String?>("")
+    val uriOfFile = mutableStateOf<Uri>(Uri.EMPTY)
 
     LaunchedEffect(key1 = true) {
         viewModel.mutableStateListOfPdfs.clear()
@@ -91,7 +92,9 @@ fun DocumentFeature(
         pathOfPdfFile = pathOfThePdfFile,
         nameOfPdfFIle = nameOfThePdfFile,
         showPasswordDialogBox = showPasswordDialogBox,
-        showSaveAsLockPdfBox = showSaveDialogBox
+        showSaveAsLockPdfBox = showSaveDialogBox,
+        uriOfFile = uriOfFile,
+        listOfPdfs = viewModel.mutableStateListOfPdfs
     )
 
 
@@ -107,7 +110,8 @@ fun DocumentFeature(
                     pathOfThePdfFile = pathOfThePdfFile,
                     saveWordFIleDialogBox = saveWordFIleDialogBox,
                     showBottomSheet = showBottomSheet,
-                    nameOfPdfFileOutsideScope = nameOfThePdfFile
+                    nameOfPdfFileOutsideScope = nameOfThePdfFile,
+                    uriOfFile = uriOfFile
                 )
             }
         }

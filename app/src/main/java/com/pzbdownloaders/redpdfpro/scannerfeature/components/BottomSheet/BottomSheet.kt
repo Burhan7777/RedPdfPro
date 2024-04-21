@@ -1,6 +1,7 @@
 package com.pzbdownloaders.redpdfpro.scannerfeature.components.BottomSheet
 
 import android.graphics.Bitmap
+import android.net.Uri
 import android.os.Environment
 import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
@@ -10,7 +11,9 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -37,7 +40,10 @@ fun BottomSheet(
     showRenameSaveDialogBox: MutableState<Boolean> = mutableStateOf(false),
     rename: MutableState<String> = mutableStateOf(""),
     showPasswordDialogBox: MutableState<Boolean>,
-    showSaveAsLockPdfBox: MutableState<Boolean>
+    showSaveAsLockPdfBox: MutableState<Boolean>,
+    uriOfFile: MutableState<Uri> = mutableStateOf(Uri.EMPTY),
+    listOfPdfs: SnapshotStateList<Uri> = mutableStateListOf()
+
 ) {
     if (showBottomSheet.value) {
         ModalBottomSheet(
@@ -60,20 +66,27 @@ fun BottomSheet(
                 R.string.delete,
                 showBottomSheet
             ) {
-                var uri = FileProvider.getUriForFile(
-                    activity,
-                    activity.applicationContext.packageName + ".provider",
-                    File(pathOfPdfFile.value)
-                );
-                activity.contentResolver.delete(uri, null, null)
-                viewModel.modelScanner.remove(
-                    ScannerModel(
-                        nameOfPdfFIle.value,
-                        bitmapOfPdfFile.value,
-                        pathOfPdfFile.value
+                if (uriOfFile.value == Uri.EMPTY) {
+                    var uri = FileProvider.getUriForFile(
+                        activity,
+                        activity.applicationContext.packageName + ".provider",
+                        File(pathOfPdfFile.value)
+                    );
+                    activity.contentResolver.delete(uri, null, null)
+                    viewModel.modelScanner.remove(
+                        ScannerModel(
+                            nameOfPdfFIle.value,
+                            bitmapOfPdfFile.value,
+                            pathOfPdfFile.value
+                        )
                     )
-                )
+                } else {
+                    activity.contentResolver.delete(uriOfFile.value, null, null)
+                    viewModel.mutableStateListOfPdfs.remove(uriOfFile.value)
+                    viewModel.listOfPdfNames.remove(nameOfPdfFIle.value)
+                }
             }
+
             if (rename.value != "") {
                 BottomSheetRenameItem(
                     rename,
