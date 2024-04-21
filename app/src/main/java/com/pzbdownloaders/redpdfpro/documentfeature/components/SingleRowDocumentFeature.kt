@@ -42,6 +42,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.content.FileProvider
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
@@ -74,7 +75,8 @@ fun SingleRowDocumentFeature(
     saveWordFIleDialogBox: MutableState<Boolean>,
     showBottomSheet: MutableState<Boolean>,
     nameOfPdfFileOutsideScope: MutableState<String?>,
-    uriOfFile: MutableState<Uri>
+    uriOfFile: MutableState<Uri>,
+    size: String
 ) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
@@ -110,15 +112,25 @@ fun SingleRowDocumentFeature(
                     .wrapContentHeight(align = Alignment.CenterVertically),
             ) {
                 Box(modifier = Modifier.fillMaxHeight()) {
-                    Text(
-                        text = nameOfPdfFile,
-                        modifier = Modifier
-                            .padding(start = 10.dp, top = 10.dp, end = 10.dp)
-                            .align(Alignment.TopStart),
-                        fontWeight = FontWeight.Bold,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
+                    Column(modifier = Modifier.align(Alignment.TopStart)) {
+                        Text(
+                            text = nameOfPdfFile,
+                            modifier = Modifier
+                                .padding(start = 10.dp, top = 10.dp, end = 10.dp),
+                            fontWeight = FontWeight.Bold,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        Text(
+                            text = size,
+                            modifier = Modifier
+                                .padding(start = 10.dp, end = 10.dp),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            fontSize = 12.sp
+                        )
+                    }
+
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(5.dp),
                         modifier = Modifier

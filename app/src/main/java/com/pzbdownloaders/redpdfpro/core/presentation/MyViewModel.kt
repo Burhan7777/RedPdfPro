@@ -32,6 +32,7 @@ class MyViewModel : ViewModel() {
     var listOfFiles: ArrayList<File> = ArrayList()
     var mutableStateListOfPdfs = mutableStateListOf<Uri>()
     var listOfPdfNames = ArrayList<String>()
+    var listOfSize= ArrayList<String>()
     val showProgressDialogBoxOfWordFile = mutableStateOf(false)
     val showProgressDialogBoxOfTextFile = mutableStateOf(false)
 

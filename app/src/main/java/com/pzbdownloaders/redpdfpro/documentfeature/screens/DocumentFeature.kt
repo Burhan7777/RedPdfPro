@@ -7,13 +7,9 @@ import android.provider.OpenableColumns
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.toMutableStateList
@@ -25,11 +21,11 @@ import com.pzbdownloaders.redpdfpro.documentfeature.components.SingleRowDocument
 import com.pzbdownloaders.redpdfpro.scannerfeature.components.BottomSheet.BottomSheet
 import com.pzbdownloaders.redpdfpro.scannerfeature.components.SavePdfAsDocxFile
 import com.pzbdownloaders.redpdfpro.scannerfeature.components.SavePdfAsImage
-import com.pzbdownloaders.redpdfpro.splitpdffeature.utils.getFilePathFromContentUri
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.text.DateFormat
+import java.text.SimpleDateFormat
+import java.util.Calendar
 
 
 @Composable
@@ -57,7 +53,7 @@ fun DocumentFeature(
     }
 
     LaunchedEffect(key1 = true) {
-        getPdfs(listOfPdfs, activity, viewModel.listOfPdfNames)
+        getPdfs(listOfPdfs, activity, viewModel.listOfPdfNames, viewModel.listOfSize)
         withContext(Dispatchers.Main) {
             viewModel.mutableStateListOfPdfs = listOfPdfs.toMutableStateList()
 
@@ -111,7 +107,8 @@ fun DocumentFeature(
                     saveWordFIleDialogBox = saveWordFIleDialogBox,
                     showBottomSheet = showBottomSheet,
                     nameOfPdfFileOutsideScope = nameOfThePdfFile,
-                    uriOfFile = uriOfFile
+                    uriOfFile = uriOfFile,
+                    size = viewModel.listOfSize[index]
                 )
             }
         }
@@ -121,7 +118,8 @@ fun DocumentFeature(
 fun getPdfs(
     list: ArrayList<Uri>,
     activity: MainActivity,
-    listOfPdfNames: ArrayList<String>
+    listOfPdfNames: ArrayList<String>,
+    listOfDateAdded: ArrayList<String>
 ): Boolean {
     val projection = arrayOf(
         MediaStore.Files.FileColumns._ID,
@@ -164,6 +162,17 @@ fun getPdfs(
             val name = cursor.getString(titleCol)
             list.add(fileUri)
             listOfPdfNames.add(name)
+            val size = cursor.getString(sizeCol)
+            if (size.toDouble() / 1000000 <= 1) {
+                val floatValue = size.toDouble() / 1000
+                val sizeInKBs: Double = String.format("%.2f", floatValue).toDouble()
+                listOfDateAdded.add("$sizeInKBs KB")
+            } else if (size.toDouble() / 1000000 > 1) {
+                val floatValue = size.toDouble() / 1000000
+                val sizeInMbs: Double = String.format("%.2f", floatValue).toDouble()
+                listOfDateAdded.add("$sizeInMbs MB")
+            }
+
             // println(fileUri)
             val mimeType = cursor!!.getString(mimeCol)
             val dateAdded = cursor!!.getLong(addedCol)
