@@ -120,10 +120,16 @@ dependencies {
     implementation("androidx.compose.material:material-icons-extended:1.6.4")
 
     //TESSERACT
-    implementation ("cz.adaptech.tesseract4android:tesseract4android-openmp:4.7.0")
+    implementation("cz.adaptech.tesseract4android:tesseract4android-openmp:4.7.0")
 
     //DOCUMENT TREE
-    implementation ("androidx.documentfile:documentfile:1.0.1")
+    implementation("androidx.documentfile:documentfile:1.0.1")
+
+
+    //PDF READER
+    implementation("io.github.grizzi91:bouquet:1.1.2")
+
+    implementation ("io.github.afreakyelf:Pdf-Viewer:2.1.1")
 
 
 }

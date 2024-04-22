@@ -61,8 +61,8 @@ fun DocumentFeature(
     }
 
 
-    println(viewModel.mutableStateListOfPdfs.size)
-    println(viewModel.listOfPdfNames.size)
+  //  println(viewModel.mutableStateListOfPdfs.size)
+//    println(viewModel.listOfPdfNames.size)
 
     viewModel.modelList.clear()
 
@@ -108,7 +108,8 @@ fun DocumentFeature(
                     showBottomSheet = showBottomSheet,
                     nameOfPdfFileOutsideScope = nameOfThePdfFile,
                     uriOfFile = uriOfFile,
-                    size = viewModel.listOfSize[index]
+                    size = viewModel.listOfSize[index],
+                    navHostController = navHostController
                 )
             }
         }
