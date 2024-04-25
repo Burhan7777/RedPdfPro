@@ -6,6 +6,8 @@ import android.graphics.pdf.PdfRenderer
 import android.net.Uri
 import android.os.ParcelFileDescriptor
 import android.widget.Toast
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -32,7 +34,7 @@ class MyViewModel : ViewModel() {
     var listOfFiles: ArrayList<File> = ArrayList()
     var mutableStateListOfPdfs = mutableStateListOf<Uri>()
     var listOfPdfNames = ArrayList<String>()
-    var listOfSize= ArrayList<String>()
+    var listOfSize = ArrayList<String>()
     val showProgressDialogBoxOfWordFile = mutableStateOf(false)
     val showProgressDialogBoxOfTextFile = mutableStateOf(false)
 

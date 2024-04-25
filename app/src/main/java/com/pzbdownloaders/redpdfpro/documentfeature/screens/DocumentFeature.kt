@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -47,21 +48,19 @@ fun DocumentFeature(
     val nameOfThePdfFile = mutableStateOf<String?>("")
     val uriOfFile = mutableStateOf<Uri>(Uri.EMPTY)
 
-    LaunchedEffect(key1 = true) {
-        viewModel.mutableStateListOfPdfs.clear()
-        viewModel.listOfPdfNames.clear()
-    }
+    val lazyListState = rememberLazyListState()
 
     LaunchedEffect(key1 = true) {
-        getPdfs(listOfPdfs, activity, viewModel.listOfPdfNames, viewModel.listOfSize)
-        withContext(Dispatchers.Main) {
-            viewModel.mutableStateListOfPdfs = listOfPdfs.toMutableStateList()
-
+        if (viewModel.mutableStateListOfPdfs.size == 0 && viewModel.listOfPdfNames.size == 0) {
+            getPdfs(listOfPdfs, activity, viewModel.listOfPdfNames, viewModel.listOfSize)
+            withContext(Dispatchers.Main) {
+                viewModel.mutableStateListOfPdfs = listOfPdfs.toMutableStateList()
+            }
         }
     }
 
 
-  //  println(viewModel.mutableStateListOfPdfs.size)
+    //  println(viewModel.mutableStateListOfPdfs.size)
 //    println(viewModel.listOfPdfNames.size)
 
     viewModel.modelList.clear()
@@ -95,7 +94,7 @@ fun DocumentFeature(
 
 
     Column(modifier = Modifier.fillMaxSize()) {
-        LazyColumn() {
+        LazyColumn(state = lazyListState) {
             itemsIndexed(items = viewModel.mutableStateListOfPdfs) { index, item ->
                 SingleRowDocumentFeature(
                     uri = item,
