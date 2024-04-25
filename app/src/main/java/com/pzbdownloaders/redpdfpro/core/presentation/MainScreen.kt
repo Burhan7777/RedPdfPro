@@ -25,10 +25,14 @@ fun MainScreen(
     viewModel: MyViewModel,
     activity: MainActivity
 ) {
+    val navBackStackEntry by navHostController.currentBackStackEntryAsState()
+    val currentDestination = navBackStackEntry?.destination
+
     Scaffold(bottomBar = {
-        BottomAppBar {
-            MyBottomBar(navHostController = navHostController)
-        }
+        if (currentDestination?.route == "scanner_tools_screen" || currentDestination?.route == "homepage_tools_screen" || currentDestination?.route == Screens.Documents.route)
+            BottomAppBar {
+                MyBottomBar(navHostController = navHostController)
+            }
     }) {
         Column(
             modifier = Modifier
