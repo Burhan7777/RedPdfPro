@@ -4,18 +4,25 @@ import android.database.Cursor
 import android.net.Uri
 import android.provider.MediaStore
 import android.provider.OpenableColumns
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
+import com.pzbdownloaders.redpdfpro.R
+import com.pzbdownloaders.redpdfpro.core.presentation.Component.AlertDialogBox
 import com.pzbdownloaders.redpdfpro.core.presentation.MainActivity
 import com.pzbdownloaders.redpdfpro.core.presentation.MyViewModel
 import com.pzbdownloaders.redpdfpro.documentfeature.components.SingleRowDocumentFeature
@@ -47,6 +54,10 @@ fun DocumentFeature(
     val showSaveDialogBox = mutableStateOf(false)
     val nameOfThePdfFile = mutableStateOf<String?>("")
     val uriOfFile = mutableStateOf<Uri>(Uri.EMPTY)
+    val showShareDialogBox = remember { mutableStateOf(false) }
+    val shareFIleAsPdf = remember { mutableStateOf(false) }
+    val shareFileAsImages = remember { mutableStateOf(false) }
+    var currentUri = remember { mutableStateOf<Uri?>(null) }
 
     val lazyListState = rememberLazyListState()
 
@@ -94,6 +105,22 @@ fun DocumentFeature(
 
 
     Column(modifier = Modifier.fillMaxSize()) {
+        if (showShareDialogBox.value) {
+            AlertDialog(onDismissRequest = { showShareDialogBox.value = false },
+                confirmButton = {},
+                title = {
+                    Column {
+                        Text(text = stringResource(id = R.string.shareAsPdf), Modifier.clickable {
+                            shareFIleAsPdf.value = true
+                        })
+                        Text(
+                            text = stringResource(id = R.string.shareAsImages),
+                            Modifier.clickable {
+                                shareFileAsImages.value = true
+                            })
+                    }
+                })
+        }
         LazyColumn(state = lazyListState) {
             itemsIndexed(items = viewModel.mutableStateListOfPdfs) { index, item ->
                 SingleRowDocumentFeature(
@@ -108,7 +135,11 @@ fun DocumentFeature(
                     nameOfPdfFileOutsideScope = nameOfThePdfFile,
                     uriOfFile = uriOfFile,
                     size = viewModel.listOfSize[index],
-                    navHostController = navHostController
+                    navHostController = navHostController,
+                    showShareDialogBox = showShareDialogBox,
+                    shareFIleAsPdf = shareFIleAsPdf,
+                    shareFileAsImage = shareFileAsImages,
+                    currentUri = currentUri
                 )
             }
         }

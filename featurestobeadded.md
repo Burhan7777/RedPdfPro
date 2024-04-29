@@ -18,3 +18,4 @@ FEATURES TO BE ADDED
 15) Add tabs which will show images created , split , merge etc pdf , word files, tables (excel), powerpoint files:
 16) Create folders in images with the name of the file and store converted images:
 17) Options to download the files from the internet for language conversion of OCR:
+18) Search option to search pdfs:

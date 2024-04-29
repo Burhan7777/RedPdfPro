@@ -32,6 +32,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -80,10 +81,15 @@ fun SingleRowDocumentFeature(
     nameOfPdfFileOutsideScope: MutableState<String?>,
     uriOfFile: MutableState<Uri>,
     size: String,
-    navHostController: NavHostController
+    navHostController: NavHostController,
+    showShareDialogBox: MutableState<Boolean>,
+    shareFIleAsPdf: MutableState<Boolean>,
+    shareFileAsImage: MutableState<Boolean>,
+    currentUri: MutableState<Uri?>
 ) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -144,20 +150,29 @@ fun SingleRowDocumentFeature(
                             .align(Alignment.BottomCenter)
                             .padding(bottom = 5.dp, top = 5.dp)
                     ) {
-                        IconButton(onClick = {
-                            Intent(Intent.ACTION_SEND).apply {
-                                type = "application/pdf"
-                                var uri = uri
-                                putExtra(Intent.EXTRA_STREAM, uri)
-                                activity.startActivity(this)
 
-                            }
+                        IconButton(onClick = {
+                            showShareDialogBox.value = true
+                            currentUri.value = uri
+                            println(currentUri.value)
                         }) {
                             Icon(
                                 imageVector = Icons.Default.Share,
                                 contentDescription = "Share file"
                             )
                         }
+
+                        if (shareFIleAsPdf.value) {
+                            println(currentUri.value)
+                            Intent(Intent.ACTION_SEND).apply {
+                                type = "application/pdf"
+                                // var uri = uriCurrent
+                                putExtra(Intent.EXTRA_STREAM, currentUri.value)
+                                activity.startActivity(this)
+                                shareFIleAsPdf.value = false
+                            }
+                        }
+
                         IconButton(onClick = {
                             showCircularProgress.value = true
                             scope.launch(Dispatchers.Default) {

@@ -40,4 +40,6 @@
     <string name="savingFileAsDocx">Saving file as .docx</string>
     <string name="scanToTxt">Scan to .txt</string>
     <string name="savingFIleAsTxt">Saving file as .txt</string>
+    <string name="shareAsPdf">Share as pdf</string>
+    <string name="shareAsImages">Share as images</string>
 </resources>
