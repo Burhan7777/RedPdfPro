@@ -1,7 +1,7 @@
 FEATURES TO BE ADDED
 --------------------------------------------
 
-1) Share pdf as pdf and images:
+1) Share pdf as pdf and images: DONE
 2) Export pdf as word , excel and powerpoint file:
 3) Convert pdf into word , excel and powerpoint:
 4) Convert images in pdf:

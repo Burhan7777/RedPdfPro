@@ -119,7 +119,7 @@ fun SingleRowScannerMainScreen(
                                     context,
                                     context.applicationContext.packageName + ".provider",
                                     File(modelScanner.path!!)
-                                );
+                                )
                                 putExtra(Intent.EXTRA_STREAM, uri)
                                 activity.startActivity(this)
 

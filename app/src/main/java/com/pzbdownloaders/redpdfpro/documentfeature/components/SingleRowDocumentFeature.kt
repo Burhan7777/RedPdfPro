@@ -53,6 +53,7 @@ import com.pzbdownloaders.redpdfpro.core.presentation.MainActivity
 import com.pzbdownloaders.redpdfpro.R
 import com.pzbdownloaders.redpdfpro.core.presentation.MyViewModel
 import com.pzbdownloaders.redpdfpro.core.presentation.Screens
+import com.pzbdownloaders.redpdfpro.documentfeature.util.savePdfAsImageInTempFolder
 import com.pzbdownloaders.redpdfpro.scannerfeature.components.SavePdfAsDocxFile
 import com.pzbdownloaders.redpdfpro.scannerfeature.util.ScannerModel
 import com.pzbdownloaders.redpdfpro.scannerfeature.util.downloadPdfAsJpeg
@@ -170,6 +171,28 @@ fun SingleRowDocumentFeature(
                                 putExtra(Intent.EXTRA_STREAM, currentUri.value)
                                 activity.startActivity(this)
                                 shareFIleAsPdf.value = false
+                            }
+                        }
+                        if (shareFileAsImage.value) {
+                            var path = getFilePathFromContentUri(currentUri.value!!, activity)
+                            var listOfBitmaps = savePdfAsImageInTempFolder(path!!)
+                            var listOfUris = ArrayList<Uri>()
+                            for (i in listOfBitmaps.indices) {
+                                listOfUris.add(
+                                    FileProvider.getUriForFile(
+                                        context,
+                                        context.applicationContext.packageName + ".provider",
+                                        File(listOfBitmaps[i])
+                                    )
+                                )
+                            }
+                            Intent(Intent.ACTION_SEND_MULTIPLE).apply {
+                                flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+                                type = "image/*"
+                                println(listOfUris)
+                                putParcelableArrayListExtra(Intent.EXTRA_STREAM, listOfUris)
+                                activity.startActivity(this)
+                                shareFileAsImage.value = false
                             }
                         }
 
