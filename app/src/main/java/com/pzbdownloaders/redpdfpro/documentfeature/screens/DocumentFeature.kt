@@ -14,6 +14,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -23,6 +24,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import com.pzbdownloaders.redpdfpro.R
 import com.pzbdownloaders.redpdfpro.core.presentation.Component.AlertDialogBox
+import com.pzbdownloaders.redpdfpro.core.presentation.Component.ProgressDialogBox
 import com.pzbdownloaders.redpdfpro.core.presentation.MainActivity
 import com.pzbdownloaders.redpdfpro.core.presentation.MyViewModel
 import com.pzbdownloaders.redpdfpro.documentfeature.components.SingleRowDocumentFeature
@@ -58,6 +60,7 @@ fun DocumentFeature(
     val shareFIleAsPdf = remember { mutableStateOf(false) }
     val shareFileAsImages = remember { mutableStateOf(false) }
     var currentUri = remember { mutableStateOf<Uri?>(null) }
+    val showConvertingIntoImagesProgressDialogBox = remember { mutableStateOf(false) }
 
     val lazyListState = rememberLazyListState()
 
@@ -121,6 +124,9 @@ fun DocumentFeature(
                     }
                 })
         }
+        if (showConvertingIntoImagesProgressDialogBox.value) {
+            ProgressDialogBox(message = mutableStateOf(stringResource(id = R.string.convertingIntoImages)))
+        }
         LazyColumn(state = lazyListState) {
             itemsIndexed(items = viewModel.mutableStateListOfPdfs) { index, item ->
                 SingleRowDocumentFeature(
@@ -139,7 +145,8 @@ fun DocumentFeature(
                     showShareDialogBox = showShareDialogBox,
                     shareFIleAsPdf = shareFIleAsPdf,
                     shareFileAsImage = shareFileAsImages,
-                    currentUri = currentUri
+                    currentUri = currentUri,
+                    showConvertingIntoImagesProgressDialogBox = showConvertingIntoImagesProgressDialogBox
                 )
             }
         }

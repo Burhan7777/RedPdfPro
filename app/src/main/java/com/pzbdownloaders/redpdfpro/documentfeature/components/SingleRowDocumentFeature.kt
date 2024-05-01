@@ -30,6 +30,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -86,7 +87,8 @@ fun SingleRowDocumentFeature(
     showShareDialogBox: MutableState<Boolean>,
     shareFIleAsPdf: MutableState<Boolean>,
     shareFileAsImage: MutableState<Boolean>,
-    currentUri: MutableState<Uri?>
+    currentUri: MutableState<Uri?>,
+    showConvertingIntoImagesProgressDialogBox: MutableState<Boolean>
 ) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
@@ -164,7 +166,7 @@ fun SingleRowDocumentFeature(
                         }
 
                         if (shareFIleAsPdf.value) {
-                            println(currentUri.value)
+                            showShareDialogBox.value = false
                             Intent(Intent.ACTION_SEND).apply {
                                 type = "application/pdf"
                                 // var uri = uriCurrent
@@ -173,28 +175,38 @@ fun SingleRowDocumentFeature(
                                 shareFIleAsPdf.value = false
                             }
                         }
+                        var listOfUris = ArrayList<Uri>()
+                        var listOfBitmaps: ArrayList<String>
+
                         if (shareFileAsImage.value) {
-                            var path = getFilePathFromContentUri(currentUri.value!!, activity)
-                            var listOfBitmaps = savePdfAsImageInTempFolder(path!!)
-                            var listOfUris = ArrayList<Uri>()
-                            for (i in listOfBitmaps.indices) {
-                                listOfUris.add(
-                                    FileProvider.getUriForFile(
-                                        context,
-                                        context.applicationContext.packageName + ".provider",
-                                        File(listOfBitmaps[i])
+                            scope.launch(Dispatchers.IO) {
+                                showShareDialogBox.value = false
+                                showConvertingIntoImagesProgressDialogBox.value = true
+                                var path =
+                                    getFilePathFromContentUri(currentUri.value!!, activity)
+                                listOfBitmaps = savePdfAsImageInTempFolder(path!!)
+
+                                for (i in listOfBitmaps.indices) {
+                                    listOfUris.add(
+                                        FileProvider.getUriForFile(
+                                            context,
+                                            context.applicationContext.packageName + ".provider",
+                                            File(listOfBitmaps[i])
+                                        )
                                     )
-                                )
-                            }
-                            Intent(Intent.ACTION_SEND_MULTIPLE).apply {
-                                flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
-                                type = "image/*"
-                                println(listOfUris)
-                                putParcelableArrayListExtra(Intent.EXTRA_STREAM, listOfUris)
-                                activity.startActivity(this)
-                                shareFileAsImage.value = false
+                                }
+                                showConvertingIntoImagesProgressDialogBox.value = false
+                                Intent(Intent.ACTION_SEND_MULTIPLE).apply {
+                                    flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+                                    type = "image/*"
+                                    putParcelableArrayListExtra(Intent.EXTRA_STREAM, listOfUris)
+                                    activity.startActivity(this)
+                                    println(shareFileAsImage.value)
+                                }
                             }
                         }
+                        shareFileAsImage.value = false
+                  //      }
 
                         IconButton(onClick = {
                             showCircularProgress.value = true
