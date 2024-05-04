@@ -33,9 +33,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
@@ -47,7 +49,9 @@ import com.google.mlkit.vision.documentscanner.GmsDocumentScanning
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanningResult
 import com.pzbdownloaders.redpdfpro.core.presentation.MainActivity
 import com.pzbdownloaders.redpdfpro.R
+import com.pzbdownloaders.redpdfpro.core.presentation.Component.ProgressDialogBox
 import com.pzbdownloaders.redpdfpro.core.presentation.MyViewModel
+import com.pzbdownloaders.redpdfpro.documentfeature.util.ShareAsPdfOrImage
 import com.pzbdownloaders.redpdfpro.scannerfeature.components.BottomSheet.BottomSheet
 import com.pzbdownloaders.redpdfpro.scannerfeature.components.SaveFIleAsPdf
 import com.pzbdownloaders.redpdfpro.scannerfeature.components.SavePdfAsDocxFile
@@ -100,7 +104,11 @@ fun ScannerScreen(
     val messageSavingTextFile =
         mutableStateOf("Saving pdf as txt") // This is the message of progress dialog box when we save the pdf as txt filer.
     val showBottomSheet = mutableStateOf(false)
-
+    val showShareDialogBox = mutableStateOf(false)
+    val shareFileAsPdf = mutableStateOf(false)
+    val shareFileAsImage = mutableStateOf(false)
+    val rememberFilePathSoThatItCanBeShared = remember { mutableStateOf("") }
+    val showConvertingIntoImagesProgressDialogBox = mutableStateOf(false)
     //  Why isn't there equivalent for "showSaveDialogBox" for files converted in docx. Well the equivalent is "showProgressDialogBoxOfWordFile" and it comes from viewmodel. This is because this needs to be passed on to "DownloadPdfAsWord" file and that methods of that file are called in viewmodel
     val options = GmsDocumentScannerOptions.Builder()
         .setScannerMode(SCANNER_MODE_FULL)
@@ -239,6 +247,18 @@ fun ScannerScreen(
                 showSaveAsLockPdfBox = showSaveAsLockPdfBox
             )
 
+            if (showShareDialogBox.value) {
+                ShareAsPdfOrImage(
+                    shareFIleAsPdf = shareFileAsPdf,
+                    shareFileAsImages = shareFileAsImage,
+                    showShareDialogBox = showShareDialogBox
+                )
+            }
+
+            if (showConvertingIntoImagesProgressDialogBox.value) {
+                ProgressDialogBox(message = mutableStateOf(stringResource(id = R.string.convertingIntoImages)))
+            }
+
 
             LazyColumn(
                 contentPadding = PaddingValues(bottom = 70.dp)
@@ -256,7 +276,12 @@ fun ScannerScreen(
                         activity,
                         showBottomSheet,
                         bitmapOfPdfFile,
-                        nameOfPdfFIle
+                        nameOfPdfFIle,
+                        showShareDialogBox,
+                        shareFileAsPdf,
+                        shareFileAsImage,
+                        rememberFilePathSoThatItCanBeShared,
+                        showConvertingIntoImagesProgressDialogBox
                     )
                 }
             }

@@ -2,6 +2,7 @@ package com.pzbdownloaders.redpdfpro.scannerfeature.components
 
 import android.content.Intent
 import android.graphics.Bitmap
+import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -41,8 +42,10 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.pzbdownloaders.redpdfpro.core.presentation.MainActivity
 import com.pzbdownloaders.redpdfpro.R
+import com.pzbdownloaders.redpdfpro.documentfeature.util.savePdfAsImageInTempFolder
 import com.pzbdownloaders.redpdfpro.scannerfeature.util.ScannerModel
 import com.pzbdownloaders.redpdfpro.scannerfeature.util.downloadPdfAsJpeg
+import com.pzbdownloaders.redpdfpro.splitpdffeature.utils.getFilePathFromContentUri
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -60,7 +63,12 @@ fun SingleRowScannerMainScreen(
     activity: MainActivity,
     showBottomSheet: MutableState<Boolean>,
     bitmapOfPdfFile: MutableState<Bitmap?>,
-    nameOfPdfFIle: MutableState<String?>
+    nameOfPdfFIle: MutableState<String?>,
+    showShareDialogBox: MutableState<Boolean>,
+    shareFileAsPdf: MutableState<Boolean>,
+    shareFileAsImage: MutableState<Boolean>,
+    rememberFilePath: MutableState<String>,
+    showConvertingIntoImagesProgressDialogBox: MutableState<Boolean>
 ) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
@@ -112,18 +120,52 @@ fun SingleRowScannerMainScreen(
                             .align(Alignment.BottomCenter)
                             .padding(bottom = 5.dp)
                     ) {
-                        IconButton(onClick = {
+                        if (shareFileAsPdf.value) {
                             Intent(Intent.ACTION_SEND).apply {
                                 type = "application/pdf"
                                 var uri = FileProvider.getUriForFile(
                                     context,
                                     context.applicationContext.packageName + ".provider",
-                                    File(modelScanner.path!!)
+                                    File(rememberFilePath.value)
                                 )
                                 putExtra(Intent.EXTRA_STREAM, uri)
                                 activity.startActivity(this)
-
+                                shareFileAsPdf.value = false
                             }
+                        }
+                        var listOfUris = ArrayList<Uri>()
+                        var listOfBitmaps: ArrayList<String>
+
+                        if (shareFileAsImage.value) {
+                            scope.launch(Dispatchers.IO) {
+                                showShareDialogBox.value = false
+                                showConvertingIntoImagesProgressDialogBox.value = true
+                                listOfBitmaps = savePdfAsImageInTempFolder(rememberFilePath.value)
+
+                                for (i in listOfBitmaps.indices) {
+                                    listOfUris.add(
+                                        FileProvider.getUriForFile(
+                                            context,
+                                            context.applicationContext.packageName + ".provider",
+                                            File(listOfBitmaps[i])
+                                        )
+                                    )
+                                }
+                                showConvertingIntoImagesProgressDialogBox.value = false
+                                Intent(Intent.ACTION_SEND_MULTIPLE).apply {
+                                    flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+                                    type = "image/*"
+                                    putParcelableArrayListExtra(Intent.EXTRA_STREAM, listOfUris)
+                                    activity.startActivity(this)
+                                    //println(shareFileAsImage.value)
+                                }
+                            }
+                        }
+                        shareFileAsImage.value = false
+                        IconButton(onClick = {
+                            showShareDialogBox.value = true
+                            rememberFilePath.value = modelScanner.path!!
+
                         }) {
                             Icon(
                                 imageVector = Icons.Default.Share,
