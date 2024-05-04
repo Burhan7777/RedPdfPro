@@ -4,12 +4,18 @@ import android.database.Cursor
 import android.net.Uri
 import android.provider.MediaStore
 import android.provider.OpenableColumns
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,7 +26,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.pzbdownloaders.redpdfpro.R
 import com.pzbdownloaders.redpdfpro.core.presentation.Component.AlertDialogBox
@@ -28,6 +39,7 @@ import com.pzbdownloaders.redpdfpro.core.presentation.Component.ProgressDialogBo
 import com.pzbdownloaders.redpdfpro.core.presentation.MainActivity
 import com.pzbdownloaders.redpdfpro.core.presentation.MyViewModel
 import com.pzbdownloaders.redpdfpro.documentfeature.components.SingleRowDocumentFeature
+import com.pzbdownloaders.redpdfpro.documentfeature.util.ShareAsPdfOrImage
 import com.pzbdownloaders.redpdfpro.scannerfeature.components.BottomSheet.BottomSheet
 import com.pzbdownloaders.redpdfpro.scannerfeature.components.SavePdfAsDocxFile
 import com.pzbdownloaders.redpdfpro.scannerfeature.components.SavePdfAsImage
@@ -109,20 +121,7 @@ fun DocumentFeature(
 
     Column(modifier = Modifier.fillMaxSize()) {
         if (showShareDialogBox.value) {
-            AlertDialog(onDismissRequest = { showShareDialogBox.value = false },
-                confirmButton = {},
-                title = {
-                    Column {
-                        Text(text = stringResource(id = R.string.shareAsPdf), Modifier.clickable {
-                            shareFIleAsPdf.value = true
-                        })
-                        Text(
-                            text = stringResource(id = R.string.shareAsImages),
-                            Modifier.clickable {
-                                shareFileAsImages.value = true
-                            })
-                    }
-                })
+           ShareAsPdfOrImage(shareFIleAsPdf = shareFIleAsPdf, shareFileAsImages = shareFileAsImages, showShareDialogBox =showShareDialogBox )
         }
         if (showConvertingIntoImagesProgressDialogBox.value) {
             ProgressDialogBox(message = mutableStateOf(stringResource(id = R.string.convertingIntoImages)))
