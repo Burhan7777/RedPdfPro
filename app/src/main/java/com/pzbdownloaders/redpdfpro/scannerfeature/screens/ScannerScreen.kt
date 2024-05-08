@@ -104,10 +104,10 @@ fun ScannerScreen(
     val messageSavingTextFile =
         mutableStateOf("Saving pdf as txt") // This is the message of progress dialog box when we save the pdf as txt filer.
     val showBottomSheet = mutableStateOf(false)
-    val showShareDialogBox = mutableStateOf(false)
-    val shareFileAsPdf = mutableStateOf(false)
-    val shareFileAsImage = mutableStateOf(false)
-    val rememberFilePathSoThatItCanBeShared = remember { mutableStateOf("") }
+    val showShareDialogBox = mutableStateOf(false) // This shows the share as pdf or image dialog box
+    val shareFileAsPdf = mutableStateOf(false) // Shares the file as pdf
+    val shareFileAsImage = mutableStateOf(false) // Shares the file as images
+    val rememberFilePathSoThatItCanBeShared = remember { mutableStateOf("") } // remembers the path of the file because due to recomposition scannermodel.path resets to top  pdf
     val showConvertingIntoImagesProgressDialogBox = mutableStateOf(false)
     //  Why isn't there equivalent for "showSaveDialogBox" for files converted in docx. Well the equivalent is "showProgressDialogBoxOfWordFile" and it comes from viewmodel. This is because this needs to be passed on to "DownloadPdfAsWord" file and that methods of that file are called in viewmodel
     val options = GmsDocumentScannerOptions.Builder()

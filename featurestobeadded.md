@@ -19,3 +19,7 @@ FEATURES TO BE ADDED
 16) Create folders in images with the name of the file and store converted images:
 17) Options to download the files from the internet for language conversion of OCR:
 18) Search option to search pdfs:
+19) Images to pdf (OCR):
+20) Images to word(OCR):
+21) Images to txt(OCR):
+22) Refresh pdf list
