@@ -43,4 +43,5 @@
     <string name="shareAsPdf">Share as pdf</string>
     <string name="shareAsImages">Share as images</string>
     <string name="convertingIntoImages">Converting into images</string>
+    <string name="searchPdf">Search here...</string>
 </resources>

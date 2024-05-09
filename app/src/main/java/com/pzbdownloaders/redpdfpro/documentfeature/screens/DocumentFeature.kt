@@ -17,10 +17,13 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -50,6 +53,7 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DocumentFeature(
     activity: MainActivity,
@@ -73,6 +77,9 @@ fun DocumentFeature(
     val shareFileAsImages = remember { mutableStateOf(false) }
     var currentUri = remember { mutableStateOf<Uri?>(null) }
     val showConvertingIntoImagesProgressDialogBox = remember { mutableStateOf(false) }
+    val queryForSearch = remember { mutableStateOf("") }
+    val searchActiveBoolean = remember { mutableStateOf(false) }
+
 
     val lazyListState = rememberLazyListState()
 
@@ -120,8 +127,26 @@ fun DocumentFeature(
 
 
     Column(modifier = Modifier.fillMaxSize()) {
+
+
+        SearchBar(
+            query = queryForSearch.value,
+            onQueryChange = { queryForSearch.value = it },
+            onSearch = {},
+            active = false,
+            onActiveChange = { searchActiveBoolean.value = !searchActiveBoolean.value },
+            modifier = Modifier.padding(10.dp),
+            placeholder = { Text(text = stringResource(id = R.string.searchPdf)) }
+        ) {
+        }
+
+
         if (showShareDialogBox.value) {
-           ShareAsPdfOrImage(shareFIleAsPdf = shareFIleAsPdf, shareFileAsImages = shareFileAsImages, showShareDialogBox =showShareDialogBox )
+            ShareAsPdfOrImage(
+                shareFIleAsPdf = shareFIleAsPdf,
+                shareFileAsImages = shareFileAsImages,
+                showShareDialogBox = showShareDialogBox
+            )
         }
         if (showConvertingIntoImagesProgressDialogBox.value) {
             ProgressDialogBox(message = mutableStateOf(stringResource(id = R.string.convertingIntoImages)))

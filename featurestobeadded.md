@@ -1,10 +1,10 @@
-FEATURES TO BE ADDED
+FEATURES TO BE ADDED (2/25)
 --------------------------------------------
 
 1) Share pdf as pdf and images: DONE
 2) Export pdf as word , excel and powerpoint file:
 3) Convert pdf into word , excel and powerpoint:
-4) Convert images in pdf:
+4) Convert images in pdf: DONE
 5) Convert word into pdf:
 6) Convert excel into pdf:
 7) Convert powerpoint into pdf:
@@ -22,4 +22,7 @@ FEATURES TO BE ADDED
 19) Images to pdf (OCR):
 20) Images to word(OCR):
 21) Images to txt(OCR):
-22) Refresh pdf list
+22) Refresh pdf list:
+23) Add list of pdfs  in all pdf tools feature:
+24) Add search to each pdf tools:
+25) Add finish screen to each tool with share an open document feature:
