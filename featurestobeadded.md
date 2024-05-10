@@ -25,4 +25,4 @@ FEATURES TO BE ADDED (2/25)
 22) Refresh pdf list:
 23) Add list of pdfs  in all pdf tools feature:
 24) Add search to each pdf tools:
-25) Add finish screen to each tool with share an open document feature:
+25) Add finish screen to each tool with share and open document feature:

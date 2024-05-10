@@ -1,5 +1,6 @@
 package com.pzbdownloaders.redpdfpro.core.presentation
 
+import androidx.navigation.NavArgument
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -17,6 +18,7 @@ import com.pzbdownloaders.redpdfpro.rotatepdffeature.screens.RotatePDf
 import com.pzbdownloaders.redpdfpro.scantodocxfeature.ScanToDocx
 import com.pzbdownloaders.redpdfpro.scantotxtfeature.ScanToTxt
 import com.pzbdownloaders.redpdfpro.splitpdffeature.screens.SplitPdf
+import com.pzbdownloaders.redpdfpro.splitpdffeature.screens.ViewSplitPdfScreen
 import com.pzbdownloaders.redpdfpro.unlockpdffeature.UnlockPdf
 
 
@@ -80,10 +82,21 @@ fun NavGraphBuilder.toolsGraph(
             DocsToPdf(activity)
         }
         composable(Screens.ScanToDocx.route) {
-            ScanToDocx(activity,viewModel)
+            ScanToDocx(activity, viewModel)
         }
-        composable(Screens.ScanToTxt.route){
-            ScanToTxt(activity,viewModel)
+        composable(Screens.ScanToTxt.route) {
+            ScanToTxt(activity, viewModel)
+        }
+        composable(Screens.ViewSplitPdfScreen.route, arguments = listOf(navArgument("path") {
+            type = NavType.StringType
+            defaultValue = ""
+        })) {
+            ViewSplitPdfScreen(
+                activity,
+                viewModel,
+                navHostController,
+                it.arguments?.getString("path") ?: ""
+            )
         }
     }
 }

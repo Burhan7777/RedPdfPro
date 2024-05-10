@@ -1,12 +1,16 @@
 package com.pzbdownloaders.redpdfpro.splitpdffeature.screens
 
 import android.content.Context
+import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.pdf.PdfRenderer
 import android.media.MediaScannerConnection
+import android.net.Uri
 import android.os.Environment
 import android.os.ParcelFileDescriptor
+import android.provider.MediaStore
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -14,28 +18,35 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -49,7 +60,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
-import androidx.core.content.FileProvider
 import androidx.navigation.NavHostController
 import com.chaquo.python.PyObject
 import com.chaquo.python.Python
@@ -57,8 +67,10 @@ import com.pzbdownloaders.redpdfpro.core.presentation.MainActivity
 import com.pzbdownloaders.redpdfpro.R
 import com.pzbdownloaders.redpdfpro.core.presentation.MyViewModel
 import com.pzbdownloaders.redpdfpro.core.presentation.Component.AlertDialogBox
+import com.pzbdownloaders.redpdfpro.core.presentation.Screens
 import com.pzbdownloaders.redpdfpro.splitpdffeature.components.SingleRow
 import com.pzbdownloaders.redpdfpro.splitpdffeature.components.modelBitmap
+import com.pzbdownloaders.redpdfpro.splitpdffeature.components.SingleRowSplitFeature
 import com.pzbdownloaders.redpdfpro.splitpdffeature.utils.getFilePathFromContentUri
 import com.pzbdownloaders.redpdfpro.splitpdffeature.utils.loadPage
 import kotlinx.coroutines.Dispatchers
@@ -67,6 +79,7 @@ import kotlinx.coroutines.withContext
 import java.io.File
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SplitPdf(
     navHostController: NavHostController,
@@ -75,43 +88,38 @@ fun SplitPdf(
     filePath: String?
 ) {
 
-    val context = LocalContext.current
-    var pageNumbersSelected = remember { mutableStateOf(ArrayList<Int>()) }
+    var listOfPdfs = ArrayList<Uri>()
     var path by remember {
         mutableStateOf(" ")
     }
 
-    var name = remember {
-        mutableStateOf("")
-    }
-    var showAlertBox by remember { mutableStateOf(false) }
 
-    var scope = rememberCoroutineScope()
-
-    var showProgress by remember {
-        mutableStateOf(false)
+    BackHandler {
+        viewModel.mutableStateListOfPdfs.clear()
+        viewModel.listOfPdfNames.clear()
+        navHostController.popBackStack()
     }
 
-    val showPasswordAlertBox = remember {
-        mutableStateOf(false)
-    }
-    val passwordOfLockedFile = remember {
-        mutableStateOf("")
-    }
+    val queryForSearch = remember { mutableStateOf("") }
+    val searchActiveBoolean = remember { mutableStateOf(false) }
 
-
-    var totalPages by remember { mutableStateOf(0) }
-    var pdfRenderer = remember {
-        mutableStateOf<PdfRenderer?>(null)
-    }
-    lateinit var parcelFileDescriptor: ParcelFileDescriptor
-    var file by remember { mutableStateOf<File?>(null) }
-    var fileFromFilePath by remember { mutableStateOf<File?>(null) }
 
     val stroke = Stroke(
         width = 2f,
         pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 10f), 0f)
     )
+
+    LaunchedEffect(key1 = true) {
+        getPdfs(
+            listOfPdfs,
+            activity,
+            viewModel.listOfPdfNames,
+            viewModel.listOfSize
+        )
+        withContext(Dispatchers.Main) {
+            viewModel.mutableStateListOfPdfs = listOfPdfs.toMutableStateList()
+        }
+    }
 
 
     var result = rememberLauncherForActivityResult(
@@ -119,11 +127,8 @@ fun SplitPdf(
         onResult = {
             if (it != null) {
                 path = getFilePathFromContentUri(it, activity)!!
-                file = File(path)
-                parcelFileDescriptor =
-                    ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY)
-                pdfRenderer.value = PdfRenderer(parcelFileDescriptor)
-                totalPages = pdfRenderer.value!!.pageCount
+                viewModel.modelList.clear()
+                navHostController.navigate(Screens.ViewSplitPdfScreen.viewSplitPdfScreen(path))
                 /*      val python = Python.getInstance()
                       val module = python.getModule("splitPDF")
                       var response = module.callAttr("is_encrypted", path)
@@ -157,46 +162,29 @@ fun SplitPdf(
             modifier = Modifier
                 .fillMaxSize()
                 .align(Alignment.TopCenter),
-            verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            if (filePath != "") {
-                var totalPagesPathFile by remember {
-                    mutableStateOf(0)
-                }
-                var pdfRenderer1: MutableState<PdfRenderer?> = mutableStateOf(null)
+            SearchBar(
+                query = queryForSearch.value,
+                onQueryChange = { queryForSearch.value = it },
+                onSearch = {},
+                active = false,
+                onActiveChange = {
+                    searchActiveBoolean.value = !searchActiveBoolean.value
+                },
+                modifier = Modifier.padding(10.dp),
+                placeholder = { Text(text = stringResource(id = R.string.searchPdf)) }
+            ) {
+            }
 
-                var showLazyColumn by remember { mutableStateOf(false) }
-                val scope1 = rememberCoroutineScope()
-                fileFromFilePath = File(filePath!!)
-                parcelFileDescriptor =
-                    ParcelFileDescriptor.open(
-                        fileFromFilePath,
-                        ParcelFileDescriptor.MODE_READ_ONLY
-                    )
-                pdfRenderer1.value = PdfRenderer(parcelFileDescriptor)
-                totalPagesPathFile = pdfRenderer1.value!!.pageCount
-                if (totalPagesPathFile > 0) {
-                    showLazyColumn = true
-                }
-                if (showLazyColumn) {
 
-                    LazyColumnVer(
-                        totalPages = totalPagesPathFile.toString().toInt(),
-                        context = context,
-                        file = fileFromFilePath!!,
-                        pdfRenderer1.value!!,
-                        pageNumbersSelected.value,
-                        viewModel
-                    )
-                }
-            } else {
-                if (totalPages == 0) {
+            LazyColumn() {
+                item {
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(150.dp)
-                            .padding(start = 20.dp, end = 20.dp)
+                            .height(100.dp)
+                            .padding(start = 20.dp, end = 20.dp, top = 10.dp)
                             .clickable {
                                 result.launch("application/pdf")
                             }
@@ -211,231 +199,109 @@ fun SplitPdf(
                             containerColor = Color.Transparent
                         ),
                     ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.upload),
-                            contentDescription = stringResource(
-                                id = R.string.upload
-                            ),
-                            modifier = Modifier
-                                .align(Alignment.CenterHorizontally)
-                                .padding(top = 20.dp)
-                        )
-                        Text(
-                            text = stringResource(id = R.string.addPDF),
-                            fontSize = 20.sp,
-                            modifier = Modifier
-                                .align(Alignment.CenterHorizontally)
-                                .padding(top = 10.dp)
-                        )
-                    }
-                }
-            }
-            Box(contentAlignment = Alignment.Center) {
-                if (showProgress) {
-                    CircularProgressIndicator(
-                        modifier = Modifier
-                            .height(40.dp)
-                            .width(40.dp)
-                            .zIndex(10f),
-                        color = Color.Red
-                    )
-                }
-
-
-                if (totalPages > 0 && file != null) {
-                    LazyColumnVer(
-                        totalPages = totalPages.toString().toInt(),
-                        context = context,
-                        file = file!!,
-                        pdfRenderer.value!!,
-                        pageNumbersSelected.value,
-                        viewModel
-                    )
-                }
-            }
-        }
-        if (file != null || fileFromFilePath != null) {
-            Button(
-                onClick = {
-                    if (pageNumbersSelected.value.isEmpty()) {
-                        Toast.makeText(
-                            context,
-                            "Please select pages to be split",
-                            Toast.LENGTH_SHORT
-                        )
-                            .show()
-                    } else
-                        showAlertBox = !showAlertBox
-                }, modifier = Modifier
-                    .fillMaxWidth()
-                    .height(60.dp)
-                    .align(Alignment.BottomCenter),
-                shape = MaterialTheme.shapes.medium.copy(
-                    all = CornerSize(10.dp)
-                )
-            ) {
-                Text(text = stringResource(id = R.string.splitPdf))
-            }
-        }
-    }
-    if (showAlertBox)
-        AlertDialogBox(
-            name = name,
-            featureExecution = {
-                scope.launch(Dispatchers.IO) {
-                    lateinit var result: PyObject
-                    showProgress = true
-                    val python = Python.getInstance()
-                    val module = python.getModule("splitPDF")
-                    if (filePath == "") {
-                        result = module.callAttr(
-                            "split",
-                            path,
-                            pageNumbersSelected.value.toArray(),
-                            name.value
-                        )
-                    } else {
-                        result = module.callAttr(
-                            "split",
-                            filePath,
-                            pageNumbersSelected.value.toArray(),
-                            name.value
-                        )
-                    }
-                    withContext(Dispatchers.Main) {
-                        if (result.toString() == "Success") {
-                            withContext(Dispatchers.Main) {
-                                showProgress = false
-                            }
-                            Toast.makeText(
-                                context,
-                                "File Saved",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            val externalDir =
-                                "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)}/Pro Scanner/Pdfs"
-                            viewModel.listOfFiles.add(File("$externalDir/${name.value}.pdf"))
-                            viewModel.addItem()
-                            /*  var contentUri = FileProvider.getUriForFile(
-                                  activity,
-                                  activity.packageName + ".provider",
-                                  File("$externalDir/${name.value}.pdf")
-                              )
-                              activity.contentResolver.notifyChange(contentUri, null)*/
-                            scanFile("$externalDir/${name.value}.pdf", activity)
-                        } else if (result.toString() == "Failure") {
-                            showProgress = false
-                            Toast.makeText(context, "Operation Failed", Toast.LENGTH_SHORT).show()
+                        Row(
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Image(
+                                painter = painterResource(id = R.drawable.upload),
+                                contentDescription = stringResource(
+                                    id = R.string.upload
+                                ),
+                                modifier = Modifier
+                                    .padding(top = 20.dp)
+                            )
+                            Text(
+                                text = stringResource(id = R.string.addPDF),
+                                fontSize = 20.sp,
+                                modifier = Modifier
+                                    .padding(top = 10.dp)
+                            )
                         }
                     }
                 }
-            },
-            onDismiss = { showAlertBox = false })
+                itemsIndexed(items = viewModel.mutableStateListOfPdfs) { index, item ->
 
-    if (showPasswordAlertBox.value) {
-        AlertDialogBox(
-            name = passwordOfLockedFile,
-            id = R.string.enterPassword,
-            onDismiss = { showPasswordAlertBox.value = false }) {
-
-        }
-    }
-}
-
-@Composable
-fun LazyColumnVer(
-    totalPages: Int,
-    context: Context,
-    file: File,
-    pdfRenderer: PdfRenderer,
-    pageNoSelected: ArrayList<Int>,
-    viewModel: MyViewModel
-) {
-
-
-    var scope = rememberCoroutineScope()
-    var bitmap: Bitmap? = null
-    scope.launch(Dispatchers.Default) {
-        for (i in 0 until totalPages) {
-            try {
-                bitmap = loadPage(
-                    i,
-                    pdfRenderer
-                )
-            } catch (exception: IllegalStateException) {
-
-            }
-
-            withContext(Dispatchers.Main) {
-                if (viewModel.modelList.size < totalPages)
-                    viewModel.modelList.add(modelBitmap(bitmap, isSelected = mutableStateOf(false)))
-            }
-        }
-    }
-
-
-
-
-    LazyVerticalGrid(
-        columns = GridCells.Adaptive(100.dp),
-        modifier = Modifier.padding(10.dp),
-        verticalArrangement = Arrangement.spacedBy(10.dp),
-        horizontalArrangement = Arrangement.spacedBy(10.dp)
-    ) {
-        itemsIndexed(items = viewModel.modelList) { index, item ->
-            SingleRow(model = item, pageNo = index, pageNoSelected)
-        }
-
-    }
-}
-
-/*
-@Composable
-fun LazyColumnVerFilePath(
-    totalPages: Int,
-    context: Context,
-    file: File,
-    pdfRenderer: PdfRenderer,
-    pageNoSelected: ArrayList<Int>,
-    viewModel: MyViewModel
-) {
-
-
-    var scope = rememberCoroutineScope()
-    scope.launch(Dispatchers.IO) {
-        for (i in 0 until totalPages) {
-            var bitmap = loadPage(
-                i,
-                pdfRenderer
-            )
-            withContext(Dispatchers.Main) {
-                if (viewModel.modelList.size < totalPages)
-                    viewModel.modelList.add(
-                        modelBitmap(
-                            bitmap,
-                            isSelected = mutableStateOf(false)
-                        )
+                    SingleRowSplitFeature(
+                        uri = item,
+                        nameOfPdfFile = viewModel.listOfPdfNames[index],
+                        activity = activity,
+                        navHostController = navHostController,
+                        viewModel = viewModel
                     )
+                }
             }
         }
     }
-    LazyVerticalGrid(
-        columns = GridCells.Adaptive(100.dp),
-        modifier = Modifier.padding(10.dp),
-        verticalArrangement = Arrangement.spacedBy(10.dp),
-        horizontalArrangement = Arrangement.spacedBy(10.dp)
-    ) {
-        itemsIndexed(items = viewModel.modelList) { index, item ->
-            SingleRow(model = item, pageNo = index, pageNoSelected)
-        }
-    }*/
-fun scanFile(filePath: String, context: Context) {
-    MediaScannerConnection.scanFile(
-        context,
-        arrayOf(filePath),
-        null
-    ) { path, uri ->
-        // Callback invoked after scanning is complete
-        // You can perform any additional actions here if needed
+}
+
+
+fun getPdfs(
+    list: ArrayList<Uri>,
+    activity: MainActivity,
+    listOfPdfNames: ArrayList<String>,
+    listOfDateAdded: ArrayList<String>
+): Boolean {
+    val projection = arrayOf(
+        MediaStore.Files.FileColumns._ID,
+        MediaStore.Files.FileColumns.MIME_TYPE,
+        MediaStore.Files.FileColumns.DATE_ADDED,
+        MediaStore.Files.FileColumns.DATE_MODIFIED,
+        MediaStore.Files.FileColumns.DISPLAY_NAME,
+        MediaStore.Files.FileColumns.TITLE,
+        MediaStore.Files.FileColumns.SIZE
+    )
+
+    val mimeType = "application/pdf"
+
+    val whereClause = MediaStore.Files.FileColumns.MIME_TYPE + " IN ('" + mimeType + "')"
+    val orderBy = MediaStore.Files.FileColumns.DATE_MODIFIED + " DESC"
+
+    val cursor: Cursor? = activity.contentResolver.query(
+        MediaStore.Files.getContentUri("external"),
+        projection,
+        whereClause,
+        null,
+        orderBy
+    )
+
+    val idCol = cursor!!.getColumnIndexOrThrow(MediaStore.Files.FileColumns._ID)
+    val mimeCol = cursor!!.getColumnIndexOrThrow(MediaStore.Files.FileColumns.MIME_TYPE)
+    val addedCol = cursor!!.getColumnIndexOrThrow(MediaStore.Files.FileColumns.DATE_ADDED)
+    val modifiedCol =
+        cursor!!.getColumnIndexOrThrow(MediaStore.Files.FileColumns.DATE_MODIFIED)
+    val nameCol = cursor!!.getColumnIndexOrThrow(MediaStore.Files.FileColumns.DISPLAY_NAME)
+    val titleCol = cursor!!.getColumnIndexOrThrow(MediaStore.Files.FileColumns.TITLE)
+    val sizeCol = cursor!!.getColumnIndexOrThrow(MediaStore.Files.FileColumns.SIZE)
+
+    if (cursor!!.moveToFirst()) {
+        do {
+            val fileUri = Uri.withAppendedPath(
+                MediaStore.Files.getContentUri("external"),
+                cursor!!.getString(idCol)
+            )
+            val name = cursor.getString(titleCol)
+            list.add(fileUri)
+            listOfPdfNames.add(name)
+            val size = cursor.getString(sizeCol)
+            if (size.toDouble() / 1000000 <= 1) {
+                val floatValue = size.toDouble() / 1000
+                val sizeInKBs: Double = String.format("%.2f", floatValue).toDouble()
+                listOfDateAdded.add("$sizeInKBs KB")
+            } else if (size.toDouble() / 1000000 > 1) {
+                val floatValue = size.toDouble() / 1000000
+                val sizeInMbs: Double = String.format("%.2f", floatValue).toDouble()
+                listOfDateAdded.add("$sizeInMbs MB")
+            }
+
+            // println(fileUri)
+            val mimeType = cursor!!.getString(mimeCol)
+            val dateAdded = cursor!!.getLong(addedCol)
+            val dateModified = cursor!!.getLong(modifiedCol)
+            // ...
+        } while (cursor!!.moveToNext())
     }
+    return true
+
 }

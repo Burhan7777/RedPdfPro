@@ -37,4 +37,10 @@ sealed class Screens(var route: String) {
         }
     }
 
+    object ViewSplitPdfScreen : Screens("view_split_pdf_screen/?path={path}") {
+        fun viewSplitPdfScreen(path: String): String {
+            return "view_split_pdf_screen/?path=$path"
+        }
+    }
+
 }
