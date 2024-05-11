@@ -23,11 +23,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.pzbdownloaders.redpdfpro.R
 
 
 @Composable
-fun FinalScreenOfPdfOperations(path: String) {
+fun FinalScreenOfPdfOperations(navHostController: NavHostController, path: String) {
     Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
         Spacer(modifier = Modifier.height(50.dp))
         Text(
@@ -81,5 +82,41 @@ fun FinalScreenOfPdfOperations(path: String) {
                 color = Color.Black
             )
         }
+        Spacer(modifier = Modifier.height(10.dp))
+        OutlinedButton(
+            onClick = { /*TODO*/ },
+            modifier = Modifier
+                .width(250.dp)
+                .height(60.dp),
+            colors = ButtonDefaults.outlinedButtonColors(
+                containerColor = Color.Transparent,
+            )
+        ) {
+            Text(
+                text = stringResource(id = R.string.shareAsImages),
+                color = Color.Black
+            )
+        }
+        Spacer(modifier = Modifier.height(100.dp))
+        Button(
+            onClick = {
+                navHostController.popBackStack()
+                navHostController.popBackStack()
+            },
+            modifier = Modifier
+                .height(60.dp),
+            colors = ButtonDefaults.outlinedButtonColors(
+                containerColor = Color.White,
+            )
+        ) {
+
+            Image(
+                painter = painterResource(id = R.drawable.close),
+                contentDescription = stringResource(
+                    id = R.string.closeScreen
+                )
+            )
+        }
+
     }
 }

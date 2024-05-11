@@ -105,7 +105,10 @@ fun NavGraphBuilder.toolsGraph(
                 defaultValue = ""
             })
         ) {
-            FinalScreenOfPdfOperations(path = it.arguments?.getString("path") ?: "")
+            FinalScreenOfPdfOperations(
+                navHostController,
+                path = it.arguments?.getString("path") ?: ""
+            )
         }
     }
 }

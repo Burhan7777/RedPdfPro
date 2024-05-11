@@ -50,4 +50,5 @@
     <string name="openDocument">Open Document</string>
     <string name="shareDocument">Share Document</string>
     <string name="success">Success</string>
+    <string name="closeScreen">Close Screen</string>
 </resources>

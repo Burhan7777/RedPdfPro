@@ -43,12 +43,15 @@ fun HomePage(navHostController: NavHostController, viewModel: MyViewModel) {
         Spacer(modifier = Modifier.height(10.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
 
+            // viewModel.mutableStateListOfPdfs.clear()
+            //viewModel.listOfPdfNames.clear()
+
             FeatureBox(
                 stringId = R.string.splitPdf,
                 drawableId = R.drawable.split,
                 contentDescription = stringResource(id = R.string.splitPdf),
                 navHostController,
-                Screens.FinalScreenOfPdfOperations.finalScreen("/storage/emulated/0/Download/Pro Scanner/pdfs/texting.pdf"),
+                Screens.SplitPdf.route,
             )
 
             FeatureBox(
