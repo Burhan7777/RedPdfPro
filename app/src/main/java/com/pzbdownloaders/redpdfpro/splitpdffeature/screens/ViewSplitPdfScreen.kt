@@ -44,6 +44,7 @@ import com.pzbdownloaders.redpdfpro.R
 import com.pzbdownloaders.redpdfpro.core.presentation.Component.AlertDialogBox
 import com.pzbdownloaders.redpdfpro.core.presentation.MainActivity
 import com.pzbdownloaders.redpdfpro.core.presentation.MyViewModel
+import com.pzbdownloaders.redpdfpro.core.presentation.Screens
 import com.pzbdownloaders.redpdfpro.splitpdffeature.components.SingleRow
 import com.pzbdownloaders.redpdfpro.splitpdffeature.components.modelBitmap
 import com.pzbdownloaders.redpdfpro.splitpdffeature.utils.loadPage
@@ -147,11 +148,6 @@ fun ViewSplitPdfScreen(
                                     withContext(Dispatchers.Main) {
                                         showProgress.value = false
                                     }
-                                    Toast.makeText(
-                                        activity,
-                                        "File Saved",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
                                     val externalDir =
                                         "${
                                             Environment.getExternalStoragePublicDirectory(
@@ -167,6 +163,11 @@ fun ViewSplitPdfScreen(
                                       )
                                       activity.contentResolver.notifyChange(contentUri, null)*/
                                     scanFile("$externalDir/${name.value}.pdf", activity)
+                                    navHostController.navigate(
+                                        Screens.FinalScreenOfPdfOperations.finalScreen(
+                                            "$externalDir/${name.value}.pdf"
+                                        )
+                                    )
                                 } else if (result.toString() == "Failure") {
                                     showProgress.value = false
                                     Toast.makeText(

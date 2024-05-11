@@ -43,4 +43,10 @@ sealed class Screens(var route: String) {
         }
     }
 
+    object FinalScreenOfPdfOperations : Screens("final_screen_of_pdf_operations/?path={path}") {
+        fun finalScreen(path: String): String {
+            return "final_screen_of_pdf_operations/?path=$path"
+        }
+    }
+
 }

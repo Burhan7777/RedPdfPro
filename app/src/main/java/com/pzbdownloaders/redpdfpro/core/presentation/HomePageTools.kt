@@ -48,7 +48,7 @@ fun HomePage(navHostController: NavHostController, viewModel: MyViewModel) {
                 drawableId = R.drawable.split,
                 contentDescription = stringResource(id = R.string.splitPdf),
                 navHostController,
-                Screens.SplitPdf.route,
+                Screens.FinalScreenOfPdfOperations.finalScreen("/storage/emulated/0/Download/Pro Scanner/pdfs/texting.pdf"),
             )
 
             FeatureBox(

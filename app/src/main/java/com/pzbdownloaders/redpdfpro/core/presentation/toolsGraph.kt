@@ -98,5 +98,14 @@ fun NavGraphBuilder.toolsGraph(
                 it.arguments?.getString("path") ?: ""
             )
         }
+        composable(
+            Screens.FinalScreenOfPdfOperations.route,
+            arguments = listOf(navArgument("path") {
+                type = NavType.StringType
+                defaultValue = ""
+            })
+        ) {
+            FinalScreenOfPdfOperations(path = it.arguments?.getString("path") ?: "")
+        }
     }
 }

@@ -45,4 +45,9 @@
     <string name="convertingIntoImages">Converting into images</string>
     <string name="searchPdf">Search here...</string>
     <string name="failedToGetTheFIle">Failed to get the file</string>
+    <string name="successImage">Success image</string>
+    <string name="folder">Folder image</string>
+    <string name="openDocument">Open Document</string>
+    <string name="shareDocument">Share Document</string>
+    <string name="success">Success</string>
 </resources>
