@@ -90,12 +90,16 @@ fun NavGraphBuilder.toolsGraph(
         composable(Screens.ViewSplitPdfScreen.route, arguments = listOf(navArgument("path") {
             type = NavType.StringType
             defaultValue = ""
+        }, navArgument("uri") {
+            type = NavType.StringType
+            defaultValue = ""
         })) {
             ViewSplitPdfScreen(
                 activity,
                 viewModel,
                 navHostController,
-                it.arguments?.getString("path") ?: ""
+                it.arguments?.getString("path") ?: "",
+                it.arguments?.getString("uri") ?: ""
             )
         }
         composable(
@@ -103,11 +107,15 @@ fun NavGraphBuilder.toolsGraph(
             arguments = listOf(navArgument("path") {
                 type = NavType.StringType
                 defaultValue = ""
+            }, navArgument("uri") {
+                type = NavType.StringType
+                defaultValue = ""
             })
         ) {
             FinalScreenOfPdfOperations(
                 navHostController,
-                path = it.arguments?.getString("path") ?: ""
+                path = it.arguments?.getString("path") ?: "",
+                uri = it.arguments?.getString("uri") ?: ""
             )
         }
     }

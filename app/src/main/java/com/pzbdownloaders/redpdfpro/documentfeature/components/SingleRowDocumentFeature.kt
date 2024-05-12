@@ -98,7 +98,7 @@ fun SingleRowDocumentFeature(
             .fillMaxWidth()
             .padding(10.dp)
             .clickable {
-                navHostController.navigate(Screens.PdfReader.pdfReaderWithUri(uri.toString()))
+                navHostController.navigate(Screens.PdfReader.pdfReaderWithUri(uri.toString(), ""))
             },
         shape = RoundedCornerShape(10.dp),
         colors = CardDefaults.cardColors(
@@ -206,7 +206,7 @@ fun SingleRowDocumentFeature(
                             }
                         }
                         shareFileAsImage.value = false
-                  //      }
+                        //      }
 
                         IconButton(onClick = {
                             showCircularProgress.value = true

@@ -59,7 +59,8 @@ fun ViewSplitPdfScreen(
     activity: MainActivity,
     viewModel: MyViewModel,
     navHostController: NavHostController,
-    path: String
+    path: String,
+    uri: String
 ) {
 
     var pageNumbersSelected = remember { mutableStateOf(ArrayList<Int>()) }
@@ -165,8 +166,10 @@ fun ViewSplitPdfScreen(
                                     scanFile("$externalDir/${name.value}.pdf", activity)
                                     navHostController.navigate(
                                         Screens.FinalScreenOfPdfOperations.finalScreen(
-                                            "$externalDir/${name.value}.pdf"
-                                        )
+                                            "$externalDir/${name.value}.pdf",
+                                            "$externalDir/${name.value}.pdf",
+
+                                            )
                                     )
                                 } else if (result.toString() == "Failure") {
                                     showProgress.value = false

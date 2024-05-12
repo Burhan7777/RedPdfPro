@@ -128,7 +128,7 @@ fun SplitPdf(
             if (it != null) {
                 path = getFilePathFromContentUri(it, activity)!!
                 viewModel.modelList.clear()
-                navHostController.navigate(Screens.ViewSplitPdfScreen.viewSplitPdfScreen(path))
+                navHostController.navigate(Screens.ViewSplitPdfScreen.viewSplitPdfScreen(path, it.toString()))
                 /*      val python = Python.getInstance()
                       val module = python.getModule("splitPDF")
                       var response = module.callAttr("is_encrypted", path)

@@ -41,14 +41,23 @@ fun PdfReader(
     activity: MainActivity,
     viewModel: MyViewModel,
     navHostController: NavHostController,
-    uri: String
+    uri: String,
+    file: String
 ) {
     val listOfBitmaps = mutableStateListOf<Bitmap>()
 
-    PdfRendererViewCompose(
-        uri = Uri.parse(uri),
-        lifecycleOwner = LocalLifecycleOwner.current
-    )
+
+    if (file == "") {
+        PdfRendererViewCompose(
+            uri = Uri.parse(uri),
+            lifecycleOwner = LocalLifecycleOwner.current
+        )
+    } else {
+        PdfRendererViewCompose(
+            file = File(file),
+            lifecycleOwner = LocalLifecycleOwner.current
+        )
+    }
 
     /*   var showCircularProgressIndicator = mutableStateOf(true)
        if (showCircularProgressIndicator.value) {

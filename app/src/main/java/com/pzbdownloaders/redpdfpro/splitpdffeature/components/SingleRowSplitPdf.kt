@@ -61,7 +61,8 @@ fun SingleRowSplitFeature(
                 viewModel.modelList.clear()
                 navHostController.navigate(
                     Screens.ViewSplitPdfScreen.viewSplitPdfScreen(
-                        path ?: ""
+                        path ?: "",
+                        uri.toString()
                     )
                 )
             },

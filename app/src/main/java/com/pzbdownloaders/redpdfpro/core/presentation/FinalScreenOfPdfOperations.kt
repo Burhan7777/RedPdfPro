@@ -1,5 +1,7 @@
 package com.pzbdownloaders.redpdfpro.core.presentation
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -18,18 +20,24 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.FileProvider
 import androidx.navigation.NavHostController
 import com.pzbdownloaders.redpdfpro.R
+import com.rajat.pdfviewer.compose.PdfRendererViewCompose
+import java.io.File
 
 
 @Composable
-fun FinalScreenOfPdfOperations(navHostController: NavHostController, path: String) {
+fun FinalScreenOfPdfOperations(navHostController: NavHostController, path: String, uri: String) {
     Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
+        val context = LocalContext.current
         Spacer(modifier = Modifier.height(50.dp))
         Text(
             text = stringResource(id = R.string.success),
@@ -58,7 +66,9 @@ fun FinalScreenOfPdfOperations(navHostController: NavHostController, path: Strin
         }
         Spacer(modifier = Modifier.height(10.dp))
         Button(
-            onClick = { /*TODO*/ }, colors = ButtonDefaults.buttonColors(
+            onClick = {
+                navHostController.navigate(Screens.PdfReader.pdfReaderWithUri("", uri))
+            }, colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.tertiary
             ),
             modifier = Modifier
@@ -69,7 +79,19 @@ fun FinalScreenOfPdfOperations(navHostController: NavHostController, path: Strin
         }
         Spacer(modifier = Modifier.height(10.dp))
         OutlinedButton(
-            onClick = { /*TODO*/ },
+            onClick = {
+                Intent(Intent.ACTION_SEND).apply {
+                    type = "application/pdf"
+                    // var uri = uriCurrent
+                    val uri = FileProvider.getUriForFile(
+                        context,
+                        context.applicationContext.packageName + ".provider",
+                        File(path)
+                    )
+                    putExtra(Intent.EXTRA_STREAM, uri)
+                    context.startActivity(this)
+                }
+            },
             modifier = Modifier
                 .width(250.dp)
                 .height(60.dp),

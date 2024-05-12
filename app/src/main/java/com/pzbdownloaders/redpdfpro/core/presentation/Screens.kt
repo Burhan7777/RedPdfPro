@@ -31,21 +31,22 @@ sealed class Screens(var route: String) {
     object ScanToDocx : Screens("scan_to_docx_screen")
     object ScanToTxt : Screens("scan_to_txt_screen")
     object Documents : Screens("document_screen")
-    object PdfReader : Screens("pdf_reader_screen/?uri={uri}") {
-        fun pdfReaderWithUri(uri: String): String {
-            return "pdf_reader_screen/?uri=$uri"
+    object PdfReader : Screens("pdf_reader_screen/?uri={uri}/?file={file}") {
+        fun pdfReaderWithUri(uri: String,file:String): String {
+            return "pdf_reader_screen/?uri=$uri/?file=$file"
         }
     }
 
-    object ViewSplitPdfScreen : Screens("view_split_pdf_screen/?path={path}") {
-        fun viewSplitPdfScreen(path: String): String {
-            return "view_split_pdf_screen/?path=$path"
+    object ViewSplitPdfScreen : Screens("view_split_pdf_screen/?path={path}/?uri={uri}") {
+        fun viewSplitPdfScreen(path: String, uri: String): String {
+            return "view_split_pdf_screen/?path=$path/?uri=$uri"
         }
     }
 
-    object FinalScreenOfPdfOperations : Screens("final_screen_of_pdf_operations/?path={path}") {
-        fun finalScreen(path: String): String {
-            return "final_screen_of_pdf_operations/?path=$path"
+    object FinalScreenOfPdfOperations :
+        Screens("final_screen_of_pdf_operations/?path={path}/?uri={uri}") {
+        fun finalScreen(path: String, uri: String): String {
+            return "final_screen_of_pdf_operations/?path=$path/?uri=$uri"
         }
     }
 

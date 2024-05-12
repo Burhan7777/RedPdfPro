@@ -21,8 +21,17 @@ fun NavGraphBuilder.documentGraph(
         composable(Screens.PdfReader.route, arguments = listOf(navArgument("uri") {
             type = NavType.StringType
             defaultValue = ""
+        }, navArgument("file") {
+            type = NavType.StringType
+            defaultValue = ""
         })) {
-            PdfReader(activity, viewModel, navHostController, it.arguments?.getString("uri")!!)
+            PdfReader(
+                activity,
+                viewModel,
+                navHostController,
+                it.arguments?.getString("uri")!!,
+                it.arguments?.getString("file") ?: ""
+            )
         }
     }
 }
