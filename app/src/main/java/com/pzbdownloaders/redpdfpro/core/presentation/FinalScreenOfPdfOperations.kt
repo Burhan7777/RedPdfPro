@@ -17,6 +17,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -30,14 +33,25 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.FileProvider
 import androidx.navigation.NavHostController
 import com.pzbdownloaders.redpdfpro.R
+import com.pzbdownloaders.redpdfpro.core.presentation.Component.ProgressDialogBox
+import com.pzbdownloaders.redpdfpro.documentfeature.util.savePdfAsImageInTempFolder
 import com.rajat.pdfviewer.compose.PdfRendererViewCompose
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 
 
 @Composable
 fun FinalScreenOfPdfOperations(navHostController: NavHostController, path: String, uri: String) {
+    var scope = rememberCoroutineScope()
     Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
         val context = LocalContext.current
+        val showConvertingIntoImagesDialogBox = remember {
+            mutableStateOf(
+                false
+            )
+        }
         Spacer(modifier = Modifier.height(50.dp))
         Text(
             text = stringResource(id = R.string.success),
@@ -105,8 +119,36 @@ fun FinalScreenOfPdfOperations(navHostController: NavHostController, path: Strin
             )
         }
         Spacer(modifier = Modifier.height(10.dp))
+        if (showConvertingIntoImagesDialogBox.value) {
+            ProgressDialogBox(message = mutableStateOf(stringResource(id = R.string.convertingIntoImages)))
+        }
         OutlinedButton(
-            onClick = { /*TODO*/ },
+            onClick = {
+                showConvertingIntoImagesDialogBox.value = true
+                var listOfUris = ArrayList<Uri>()
+                scope.launch(Dispatchers.IO) {
+
+                    var listOfBitmaps = savePdfAsImageInTempFolder(path)
+                    for (i in listOfBitmaps.indices) {
+                        listOfUris.add(
+                            FileProvider.getUriForFile(
+                                context,
+                                context.applicationContext.packageName + ".provider",
+                                File(listOfBitmaps[i])
+                            )
+                        )
+                    }
+                    withContext(Dispatchers.Main) {
+                        showConvertingIntoImagesDialogBox.value = false
+                        Intent(Intent.ACTION_SEND_MULTIPLE).apply {
+                            flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+                            type = "image/*"
+                            putParcelableArrayListExtra(Intent.EXTRA_STREAM, listOfUris)
+                            context.startActivity(this)
+                        }
+                    }
+                }
+            },
             modifier = Modifier
                 .width(250.dp)
                 .height(60.dp),
