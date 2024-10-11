@@ -16,8 +16,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -46,6 +48,7 @@ import com.pzbdownloaders.redpdfpro.documentfeature.util.ShareAsPdfOrImage
 import com.pzbdownloaders.redpdfpro.scannerfeature.components.BottomSheet.BottomSheet
 import com.pzbdownloaders.redpdfpro.scannerfeature.components.SavePdfAsDocxFile
 import com.pzbdownloaders.redpdfpro.scannerfeature.components.SavePdfAsImage
+import com.pzbdownloaders.redpdfpro.splitpdffeature.screens.getPdfs
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.text.DateFormat
@@ -62,16 +65,16 @@ fun DocumentFeature(
 ) {
     var listOfPdfs = ArrayList<Uri>()
     var scope = rememberCoroutineScope()
-    val showProgressBarOfPdfSavedAsImage = mutableStateOf(false)
-    val nameOfTheWordFile = mutableStateOf("")
-    val saveWordFIleDialogBox = mutableStateOf(false)
-    val pathOfThePdfFile = mutableStateOf("")
-    val showBottomSheet = mutableStateOf(false)
-    val showDeleteDialogBox = mutableStateOf(false)
-    val showPasswordDialogBox = mutableStateOf(false)
-    val showSaveDialogBox = mutableStateOf(false)
-    val nameOfThePdfFile = mutableStateOf<String?>("")
-    val uriOfFile = mutableStateOf<Uri>(Uri.EMPTY)
+    val showProgressBarOfPdfSavedAsImage = remember { mutableStateOf(false) }
+    val nameOfTheWordFile = remember { mutableStateOf("") }
+    val saveWordFIleDialogBox = remember { mutableStateOf(false) }
+    val pathOfThePdfFile = remember { mutableStateOf("") }
+    val showBottomSheet = remember { mutableStateOf(false) }
+    val showDeleteDialogBox = remember { mutableStateOf(false) }
+    val showPasswordDialogBox = remember { mutableStateOf(false) }
+    val showSaveDialogBox = remember { mutableStateOf(false) }
+    val nameOfThePdfFile = remember { mutableStateOf<String?>("") }
+    val uriOfFile = remember { mutableStateOf<Uri>(Uri.EMPTY) }
     val showShareDialogBox = remember { mutableStateOf(false) }
     val shareFIleAsPdf = remember { mutableStateOf(false) }
     val shareFileAsImages = remember { mutableStateOf(false) }
@@ -92,6 +95,16 @@ fun DocumentFeature(
         }
     }
 
+    val filteredPdfs = remember(queryForSearch.value, viewModel.mutableStateListOfPdfs) {
+        if (queryForSearch.value.isBlank()) {
+            viewModel.mutableStateListOfPdfs // Show all files if the query is empty
+        } else {
+            viewModel.mutableStateListOfPdfs.filterIndexed { index, _ ->
+                viewModel.listOfPdfNames[index].contains(queryForSearch.value, ignoreCase = true)
+            }
+        }
+    }
+
 
     //  println(viewModel.mutableStateListOfPdfs.size)
 //    println(viewModel.listOfPdfNames.size)
@@ -100,7 +113,7 @@ fun DocumentFeature(
 
     SavePdfAsImage(
         showProgressDialogBox = showProgressBarOfPdfSavedAsImage,
-        message = mutableStateOf("Save pdf as image")
+        message = remember { mutableStateOf("Save pdf as image") }
     )
     SavePdfAsDocxFile(
         showWordFIleSaveDialogBox = saveWordFIleDialogBox,
@@ -108,7 +121,7 @@ fun DocumentFeature(
         viewModel = viewModel,
         activity = activity,
         pathOfPdfFile = pathOfThePdfFile,
-        messageSavingWordFIle = mutableStateOf("Saving pdf as .docx"),
+        messageSavingWordFIle = remember { mutableStateOf("Saving pdf as .docx") },
     )
 
     BottomSheet(
@@ -129,16 +142,25 @@ fun DocumentFeature(
     Column(modifier = Modifier.fillMaxSize()) {
 
 
-        SearchBar(
-            query = queryForSearch.value,
-            onQueryChange = { queryForSearch.value = it },
-            onSearch = {},
-            active = false,
-            onActiveChange = { searchActiveBoolean.value = !searchActiveBoolean.value },
-            modifier = Modifier.padding(10.dp),
-            placeholder = { Text(text = stringResource(id = R.string.searchPdf)) }
-        ) {
-        }
+        androidx.compose.material.OutlinedTextField(
+            value = queryForSearch.value,
+            onValueChange = { queryForSearch.value = it },
+            label = { Text("Search PDFs") },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(10.dp),
+            colors = androidx.compose.material.TextFieldDefaults.outlinedTextFieldColors(
+                focusedBorderColor = MaterialTheme.colorScheme.onSecondary,
+                unfocusedBorderColor = MaterialTheme.colorScheme.onSecondary,
+                cursorColor = MaterialTheme.colorScheme.onSecondary
+            ),
+            shape = MaterialTheme.shapes.medium.copy(
+                topStart = CornerSize(10.dp),
+                topEnd = CornerSize(10.dp),
+                bottomEnd = CornerSize(10.dp),
+                bottomStart = CornerSize(10.dp),
+            )
+        )
 
 
         if (showShareDialogBox.value) {
@@ -152,105 +174,108 @@ fun DocumentFeature(
             ProgressDialogBox(message = mutableStateOf(stringResource(id = R.string.convertingIntoImages)))
         }
         LazyColumn(state = lazyListState) {
-            itemsIndexed(items = viewModel.mutableStateListOfPdfs) { index, item ->
-                SingleRowDocumentFeature(
-                    uri = item,
-                    nameOfPdfFile = viewModel.listOfPdfNames[index],
-                    activity = activity,
-                    showCircularProgress = showProgressBarOfPdfSavedAsImage,
-                    viewModel = viewModel,
-                    pathOfThePdfFile = pathOfThePdfFile,
-                    saveWordFIleDialogBox = saveWordFIleDialogBox,
-                    showBottomSheet = showBottomSheet,
-                    nameOfPdfFileOutsideScope = nameOfThePdfFile,
-                    uriOfFile = uriOfFile,
-                    size = viewModel.listOfSize[index],
-                    navHostController = navHostController,
-                    showShareDialogBox = showShareDialogBox,
-                    shareFIleAsPdf = shareFIleAsPdf,
-                    shareFileAsImage = shareFileAsImages,
-                    currentUri = currentUri,
-                    showConvertingIntoImagesProgressDialogBox = showConvertingIntoImagesProgressDialogBox
-                )
+            itemsIndexed(items = filteredPdfs) { index, item ->
+                val originalIndex = viewModel.mutableStateListOfPdfs.indexOf(item)
+                if (originalIndex != -1) {
+                    SingleRowDocumentFeature(
+                        uri = item,
+                        nameOfPdfFile = viewModel.listOfPdfNames[originalIndex],
+                        activity = activity,
+                        showCircularProgress = showProgressBarOfPdfSavedAsImage,
+                        viewModel = viewModel,
+                        pathOfThePdfFile = pathOfThePdfFile,
+                        saveWordFIleDialogBox = saveWordFIleDialogBox,
+                        showBottomSheet = showBottomSheet,
+                        nameOfPdfFileOutsideScope = nameOfThePdfFile,
+                        uriOfFile = uriOfFile,
+                        size = viewModel.listOfSize[index],
+                        navHostController = navHostController,
+                        showShareDialogBox = showShareDialogBox,
+                        shareFIleAsPdf = shareFIleAsPdf,
+                        shareFileAsImage = shareFileAsImages,
+                        currentUri = currentUri,
+                        showConvertingIntoImagesProgressDialogBox = showConvertingIntoImagesProgressDialogBox
+                    )
+                }
             }
         }
     }
-}
 
-fun getPdfs(
-    list: ArrayList<Uri>,
-    activity: MainActivity,
-    listOfPdfNames: ArrayList<String>,
-    listOfDateAdded: ArrayList<String>
-): Boolean {
-    val projection = arrayOf(
-        MediaStore.Files.FileColumns._ID,
-        MediaStore.Files.FileColumns.MIME_TYPE,
-        MediaStore.Files.FileColumns.DATE_ADDED,
-        MediaStore.Files.FileColumns.DATE_MODIFIED,
-        MediaStore.Files.FileColumns.DISPLAY_NAME,
-        MediaStore.Files.FileColumns.TITLE,
-        MediaStore.Files.FileColumns.SIZE
-    )
+    fun getPdfs(
+        list: ArrayList<Uri>,
+        activity: MainActivity,
+        listOfPdfNames: ArrayList<String>,
+        listOfDateAdded: ArrayList<String>
+    ): Boolean {
+        val projection = arrayOf(
+            MediaStore.Files.FileColumns._ID,
+            MediaStore.Files.FileColumns.MIME_TYPE,
+            MediaStore.Files.FileColumns.DATE_ADDED,
+            MediaStore.Files.FileColumns.DATE_MODIFIED,
+            MediaStore.Files.FileColumns.DISPLAY_NAME,
+            MediaStore.Files.FileColumns.TITLE,
+            MediaStore.Files.FileColumns.SIZE
+        )
 
-    val mimeType = "application/pdf"
+        val mimeType = "application/pdf"
 
-    val whereClause = MediaStore.Files.FileColumns.MIME_TYPE + " IN ('" + mimeType + "')"
-    val orderBy = MediaStore.Files.FileColumns.DATE_MODIFIED + " DESC"
+        val whereClause = MediaStore.Files.FileColumns.MIME_TYPE + " IN ('" + mimeType + "')"
+        val orderBy = MediaStore.Files.FileColumns.DATE_MODIFIED + " DESC"
 
-    val cursor: Cursor? = activity.contentResolver.query(
-        MediaStore.Files.getContentUri("external"),
-        projection,
-        whereClause,
-        null,
-        orderBy
-    )
+        val cursor: Cursor? = activity.contentResolver.query(
+            MediaStore.Files.getContentUri("external"),
+            projection,
+            whereClause,
+            null,
+            orderBy
+        )
 
-    val idCol = cursor!!.getColumnIndexOrThrow(MediaStore.Files.FileColumns._ID)
-    val mimeCol = cursor!!.getColumnIndexOrThrow(MediaStore.Files.FileColumns.MIME_TYPE)
-    val addedCol = cursor!!.getColumnIndexOrThrow(MediaStore.Files.FileColumns.DATE_ADDED)
-    val modifiedCol =
-        cursor!!.getColumnIndexOrThrow(MediaStore.Files.FileColumns.DATE_MODIFIED)
-    val nameCol = cursor!!.getColumnIndexOrThrow(MediaStore.Files.FileColumns.DISPLAY_NAME)
-    val titleCol = cursor!!.getColumnIndexOrThrow(MediaStore.Files.FileColumns.TITLE)
-    val sizeCol = cursor!!.getColumnIndexOrThrow(MediaStore.Files.FileColumns.SIZE)
+        val idCol = cursor!!.getColumnIndexOrThrow(MediaStore.Files.FileColumns._ID)
+        val mimeCol = cursor!!.getColumnIndexOrThrow(MediaStore.Files.FileColumns.MIME_TYPE)
+        val addedCol = cursor!!.getColumnIndexOrThrow(MediaStore.Files.FileColumns.DATE_ADDED)
+        val modifiedCol =
+            cursor!!.getColumnIndexOrThrow(MediaStore.Files.FileColumns.DATE_MODIFIED)
+        val nameCol = cursor!!.getColumnIndexOrThrow(MediaStore.Files.FileColumns.DISPLAY_NAME)
+        val titleCol = cursor!!.getColumnIndexOrThrow(MediaStore.Files.FileColumns.TITLE)
+        val sizeCol = cursor!!.getColumnIndexOrThrow(MediaStore.Files.FileColumns.SIZE)
 
-    if (cursor!!.moveToFirst()) {
-        do {
-            val fileUri = Uri.withAppendedPath(
-                MediaStore.Files.getContentUri("external"),
-                cursor!!.getString(idCol)
-            )
-            val name = cursor.getString(titleCol)
-            list.add(fileUri)
-            listOfPdfNames.add(name)
-            val size = cursor.getString(sizeCol)
-            if (size.toDouble() / 1000000 <= 1) {
-                val floatValue = size.toDouble() / 1000
-                val sizeInKBs: Double = String.format("%.2f", floatValue).toDouble()
-                listOfDateAdded.add("$sizeInKBs KB")
-            } else if (size.toDouble() / 1000000 > 1) {
-                val floatValue = size.toDouble() / 1000000
-                val sizeInMbs: Double = String.format("%.2f", floatValue).toDouble()
-                listOfDateAdded.add("$sizeInMbs MB")
-            }
+        if (cursor!!.moveToFirst()) {
+            do {
+                val fileUri = Uri.withAppendedPath(
+                    MediaStore.Files.getContentUri("external"),
+                    cursor!!.getString(idCol)
+                )
+                val name = cursor.getString(titleCol)
+                list.add(fileUri)
+                listOfPdfNames.add(name)
+                val size = cursor.getString(sizeCol)
+                if (size.toDouble() / 1000000 <= 1) {
+                    val floatValue = size.toDouble() / 1000
+                    val sizeInKBs: Double = String.format("%.2f", floatValue).toDouble()
+                    listOfDateAdded.add("$sizeInKBs KB")
+                } else if (size.toDouble() / 1000000 > 1) {
+                    val floatValue = size.toDouble() / 1000000
+                    val sizeInMbs: Double = String.format("%.2f", floatValue).toDouble()
+                    listOfDateAdded.add("$sizeInMbs MB")
+                }
 
-            // println(fileUri)
-            val mimeType = cursor!!.getString(mimeCol)
-            val dateAdded = cursor!!.getLong(addedCol)
-            val dateModified = cursor!!.getLong(modifiedCol)
-            // ...
-        } while (cursor!!.moveToNext())
+                // println(fileUri)
+                val mimeType = cursor!!.getString(mimeCol)
+                val dateAdded = cursor!!.getLong(addedCol)
+                val dateModified = cursor!!.getLong(modifiedCol)
+                // ...
+            } while (cursor!!.moveToNext())
+        }
+        return true
+
     }
-    return true
 
-}
-
-fun getFileDetail(uri: Uri, activity: MainActivity) {
-    var cursor = activity.contentResolver.query(uri, null, null, null, null)
-    cursor?.use {
-        while (it.moveToFirst()) {
-            var data = it.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+    fun getFileDetail(uri: Uri, activity: MainActivity) {
+        var cursor = activity.contentResolver.query(uri, null, null, null, null)
+        cursor?.use {
+            while (it.moveToFirst()) {
+                var data = it.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+            }
         }
     }
 }
