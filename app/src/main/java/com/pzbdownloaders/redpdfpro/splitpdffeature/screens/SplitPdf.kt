@@ -28,6 +28,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material3.Button
@@ -36,12 +37,16 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -53,6 +58,7 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -103,6 +109,8 @@ fun SplitPdf(
     val queryForSearch = remember { mutableStateOf("") }
     val searchActiveBoolean = remember { mutableStateOf(false) }
 
+    var searchResultList = remember { mutableStateListOf<Uri>() }
+
 
     val stroke = Stroke(
         width = 2f,
@@ -118,6 +126,17 @@ fun SplitPdf(
         )
         withContext(Dispatchers.Main) {
             viewModel.mutableStateListOfPdfs = listOfPdfs.toMutableStateList()
+            println("QUERY:${viewModel.mutableStateListOfPdfs[0].host}")
+        }
+    }
+
+    val filteredPdfs = remember(queryForSearch.value, viewModel.mutableStateListOfPdfs) {
+        if (queryForSearch.value.isBlank()) {
+            viewModel.mutableStateListOfPdfs // Show all files if the query is empty
+        } else {
+            viewModel.mutableStateListOfPdfs.filterIndexed { index, _ ->
+                viewModel.listOfPdfNames[index].contains(queryForSearch.value, ignoreCase = true)
+            }
         }
     }
 
@@ -128,7 +147,12 @@ fun SplitPdf(
             if (it != null) {
                 path = getFilePathFromContentUri(it, activity)!!
                 viewModel.modelList.clear()
-                navHostController.navigate(Screens.ViewSplitPdfScreen.viewSplitPdfScreen(path, it.toString()))
+                navHostController.navigate(
+                    Screens.ViewSplitPdfScreen.viewSplitPdfScreen(
+                        path,
+                        it.toString()
+                    )
+                )
                 /*      val python = Python.getInstance()
                       val module = python.getModule("splitPDF")
                       var response = module.callAttr("is_encrypted", path)
@@ -164,18 +188,26 @@ fun SplitPdf(
                 .align(Alignment.TopCenter),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            SearchBar(
-                query = queryForSearch.value,
-                onQueryChange = { queryForSearch.value = it },
-                onSearch = {},
-                active = false,
-                onActiveChange = {
-                    searchActiveBoolean.value = !searchActiveBoolean.value
-                },
-                modifier = Modifier.padding(10.dp),
-                placeholder = { Text(text = stringResource(id = R.string.searchPdf)) }
-            ) {
-            }
+
+            androidx.compose.material.OutlinedTextField(
+                value = queryForSearch.value,
+                onValueChange = { queryForSearch.value = it },
+                label = { Text("Search PDFs") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp),
+                colors = androidx.compose.material.TextFieldDefaults.outlinedTextFieldColors(
+                    focusedBorderColor = MaterialTheme.colorScheme.onSecondary,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.onSecondary,
+                    cursorColor = MaterialTheme.colorScheme.onSecondary
+                ),
+                shape = MaterialTheme.shapes.medium.copy(
+                    topStart = CornerSize(10.dp),
+                    topEnd = CornerSize(10.dp),
+                    bottomEnd = CornerSize(10.dp),
+                    bottomStart = CornerSize(10.dp),
+                )
+            )
 
 
             LazyColumn() {
@@ -221,16 +253,31 @@ fun SplitPdf(
                         }
                     }
                 }
-                itemsIndexed(items = viewModel.mutableStateListOfPdfs) { index, item ->
 
-                    SingleRowSplitFeature(
-                        uri = item,
-                        nameOfPdfFile = viewModel.listOfPdfNames[index],
-                        activity = activity,
-                        navHostController = navHostController,
-                        viewModel = viewModel
-                    )
+                itemsIndexed(items = filteredPdfs) { index, item ->
+                    val originalIndex = viewModel.mutableStateListOfPdfs.indexOf(item)
+                    if (originalIndex != -1) {
+                        SingleRowSplitFeature(
+                            uri = item,
+                            nameOfPdfFile = viewModel.listOfPdfNames[originalIndex],
+                            activity = activity,
+                            navHostController = navHostController,
+                            viewModel = viewModel
+                        )
+                    } else {
+
+                    }
                 }
+//                itemsIndexed(items = viewModel.mutableStateListOfPdfs) { index, item ->
+//
+//                    SingleRowSplitFeature(
+//                        uri = item,
+//                        nameOfPdfFile = viewModel.listOfPdfNames[index],
+//                        activity = activity,
+//                        navHostController = navHostController,
+//                        viewModel = viewModel
+//                    )
+//                }
             }
         }
     }
@@ -241,7 +288,7 @@ fun getPdfs(
     list: ArrayList<Uri>,
     activity: MainActivity,
     listOfPdfNames: ArrayList<String>,
-    listOfDateAdded: ArrayList<String>
+    listOfSizeOfFiles: ArrayList<String>
 ): Boolean {
     val projection = arrayOf(
         MediaStore.Files.FileColumns._ID,
@@ -288,11 +335,11 @@ fun getPdfs(
             if (size.toDouble() / 1000000 <= 1) {
                 val floatValue = size.toDouble() / 1000
                 val sizeInKBs: Double = String.format("%.2f", floatValue).toDouble()
-                listOfDateAdded.add("$sizeInKBs KB")
+                listOfSizeOfFiles.add("$sizeInKBs KB")
             } else if (size.toDouble() / 1000000 > 1) {
                 val floatValue = size.toDouble() / 1000000
                 val sizeInMbs: Double = String.format("%.2f", floatValue).toDouble()
-                listOfDateAdded.add("$sizeInMbs MB")
+                listOfSizeOfFiles.add("$sizeInMbs MB")
             }
 
             // println(fileUri)

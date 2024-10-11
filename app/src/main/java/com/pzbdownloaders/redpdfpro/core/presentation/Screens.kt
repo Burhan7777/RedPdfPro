@@ -1,6 +1,7 @@
 package com.pzbdownloaders.redpdfpro.core.presentation
 
 import android.net.Uri
+import java.io.File
 
 const val TOOLS_GRAPH = "tools_graph_route"
 const val SCANNER_GRAPH = "scanner_graph_route"
@@ -32,7 +33,7 @@ sealed class Screens(var route: String) {
     object ScanToTxt : Screens("scan_to_txt_screen")
     object Documents : Screens("document_screen")
     object PdfReader : Screens("pdf_reader_screen/?uri={uri}/?file={file}") {
-        fun pdfReaderWithUri(uri: String,file:String): String {
+        fun pdfReaderWithUri(uri: String, file: String): String {
             return "pdf_reader_screen/?uri=$uri/?file=$file"
         }
     }
@@ -47,6 +48,12 @@ sealed class Screens(var route: String) {
         Screens("final_screen_of_pdf_operations/?path={path}/?uri={uri}") {
         fun finalScreen(path: String, uri: String): String {
             return "final_screen_of_pdf_operations/?path=$path/?uri=$uri"
+        }
+    }
+
+    object PdfViewer : Screens("pdf_viewer_screen/?uri={uri}/?file={file}") {
+        fun pdfViewerWIthUri(uri: String,file:String): String {
+            return "pdf_viewer_screen/?uri=$uri/?file=$file"
         }
     }
 

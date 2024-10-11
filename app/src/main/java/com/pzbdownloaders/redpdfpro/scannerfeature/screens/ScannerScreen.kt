@@ -149,7 +149,7 @@ fun ScannerScreen(
     }
     var externalDir =
         Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-    val file = File("$externalDir/Pro Scanner/Pdfs")
+    val file = File("$externalDir/Pro Scanner/Scanned Pdfs")
     if (!file.exists()) {
         file.mkdirs()
     }
@@ -286,7 +286,8 @@ fun ScannerScreen(
                         shareFileAsPdf,
                         shareFileAsImage,
                         rememberFilePathSoThatItCanBeShared,
-                        showConvertingIntoImagesProgressDialogBox
+                        showConvertingIntoImagesProgressDialogBox,
+                        navHostController
                     )
                 }
             }

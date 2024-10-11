@@ -27,12 +27,12 @@ fun SaveFIleAsPdf(
             resultFromActivity.value?.pdf?.let { pdf ->
                 var externalDIr =
                     Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-                var file = File("$externalDIr/Pro Scanner/Pdfs")
+                var file = File("$externalDIr/Pro Scanner/Scanned Pdfs")
                 if (!file.exists()) {
                     file.mkdirs()
                 }
                 var path =
-                    File("$externalDIr/Pro Scanner/Pdfs/${name.value}.pdf")
+                    File("$externalDIr/Pro Scanner/Scanned Pdfs/${name.value}.pdf")
                 if (!path.exists()) {
                     path.createNewFile()
                 }

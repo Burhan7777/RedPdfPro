@@ -120,11 +120,11 @@ class MainActivity : ComponentActivity() {
     private fun loadPdfs() {
         var externalDir =
             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-        val file = File("$externalDir/Pro Scanner/Pdfs")
+        val file = File("$externalDir/Pro Scanner/Scanned Pdfs")
         if (!file.exists()) {
             file.mkdirs()
         }
-        Toast.makeText(this, "App", Toast.LENGTH_SHORT).show()
+        //oast.makeText(this, "App", Toast.LENGTH_SHORT).show()
         if (viewModel.listOfFiles.size < (file.listFiles()?.size ?: 0)) {
             viewModel.listOfFiles =
                 file.listFiles()?.toCollection(ArrayList()) ?: ArrayList<File>()

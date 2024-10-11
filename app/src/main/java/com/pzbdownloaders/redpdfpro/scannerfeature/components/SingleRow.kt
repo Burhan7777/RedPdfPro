@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,10 +39,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.pzbdownloaders.redpdfpro.core.presentation.MainActivity
 import com.pzbdownloaders.redpdfpro.R
+import com.pzbdownloaders.redpdfpro.core.presentation.Screens
 import com.pzbdownloaders.redpdfpro.documentfeature.util.savePdfAsImageInTempFolder
 import com.pzbdownloaders.redpdfpro.scannerfeature.util.ScannerModel
 import com.pzbdownloaders.redpdfpro.scannerfeature.util.downloadPdfAsJpeg
@@ -68,14 +71,23 @@ fun SingleRowScannerMainScreen(
     shareFileAsPdf: MutableState<Boolean>,
     shareFileAsImage: MutableState<Boolean>,
     rememberFilePath: MutableState<String>,
-    showConvertingIntoImagesProgressDialogBox: MutableState<Boolean>
+    showConvertingIntoImagesProgressDialogBox: MutableState<Boolean>,
+    navController: NavController
 ) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(10.dp),
+            .padding(10.dp)
+            .clickable {
+                var uri = FileProvider.getUriForFile(
+                    context,
+                    context.applicationContext.packageName + ".provider",
+                    File(modelScanner.path!!)
+                )
+                navController.navigate(Screens.PdfViewer.pdfViewerWIthUri(uri.toString(), modelScanner.path))
+            },
         shape = RoundedCornerShape(10.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.onSecondary
