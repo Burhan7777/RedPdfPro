@@ -161,7 +161,8 @@ fun SingleRowDocumentFeature(
                         }) {
                             Icon(
                                 imageVector = Icons.Default.Share,
-                                contentDescription = "Share file"
+                                contentDescription = "Share file",
+                                tint = MaterialTheme.colorScheme.onPrimary
                             )
                         }
 
@@ -230,7 +231,7 @@ fun SingleRowDocumentFeature(
                             Icon(
                                 imageVector = Icons.Default.Image,
                                 contentDescription = "Download as Image",
-                                tint = Color.Unspecified
+                                tint = MaterialTheme.colorScheme.onPrimary
                             )
                         }
                         IconButton(onClick = {
@@ -243,7 +244,7 @@ fun SingleRowDocumentFeature(
                             Icon(
                                 painter = painterResource(id = R.drawable.word),
                                 contentDescription = "Save to word file",
-                                tint = Color.Unspecified
+                                tint = MaterialTheme.colorScheme.onPrimary
                             )
                         }
                         IconButton(onClick = {
@@ -267,7 +268,8 @@ fun SingleRowDocumentFeature(
                         }) {
                             Icon(
                                 imageVector = Icons.Default.MoreVert,
-                                contentDescription = "More options"
+                                contentDescription = "More options",
+                                tint = MaterialTheme.colorScheme.onPrimary
                             )
                         }
                     }

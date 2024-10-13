@@ -86,7 +86,12 @@ fun SingleRowScannerMainScreen(
                     context.applicationContext.packageName + ".provider",
                     File(modelScanner.path!!)
                 )
-                navController.navigate(Screens.PdfViewer.pdfViewerWIthUri(uri.toString(), modelScanner.path))
+                navController.navigate(
+                    Screens.PdfViewer.pdfViewerWIthUri(
+                        uri.toString(),
+                        modelScanner.path
+                    )
+                )
             },
         shape = RoundedCornerShape(10.dp),
         colors = CardDefaults.cardColors(
@@ -203,7 +208,7 @@ fun SingleRowScannerMainScreen(
                             Icon(
                                 imageVector = Icons.Default.Image,
                                 contentDescription = "Download as Image",
-                                tint = Color.Unspecified
+                                tint = MaterialTheme.colorScheme.onPrimary
                             )
                         }
                         IconButton(onClick = {
@@ -215,7 +220,7 @@ fun SingleRowScannerMainScreen(
                             Icon(
                                 painter = painterResource(id = R.drawable.word),
                                 contentDescription = "Save to word file",
-                                tint = Color.Unspecified
+                                tint = MaterialTheme.colorScheme.onPrimary
                             )
                         }
                         IconButton(onClick = {
@@ -224,7 +229,8 @@ fun SingleRowScannerMainScreen(
                         }) {
                             Icon(
                                 painterResource(id = R.drawable.text_scanner),
-                                contentDescription = "Save as text file"
+                                contentDescription = "Save as text file",
+                                tint = MaterialTheme.colorScheme.onPrimary
                             )
                         }
                         IconButton(onClick = {
@@ -235,7 +241,8 @@ fun SingleRowScannerMainScreen(
                         }) {
                             Icon(
                                 imageVector = Icons.Default.MoreVert,
-                                contentDescription = "More options"
+                                contentDescription = "More options",
+                                tint = MaterialTheme.colorScheme.onPrimary
                             )
                         }
                     }
