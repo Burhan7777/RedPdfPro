@@ -42,6 +42,7 @@ import com.chaquo.python.PyObject
 import com.chaquo.python.Python
 import com.pzbdownloaders.redpdfpro.R
 import com.pzbdownloaders.redpdfpro.core.presentation.Component.AlertDialogBox
+import com.pzbdownloaders.redpdfpro.core.presentation.Component.scanFile
 import com.pzbdownloaders.redpdfpro.core.presentation.MainActivity
 import com.pzbdownloaders.redpdfpro.core.presentation.MyViewModel
 import com.pzbdownloaders.redpdfpro.core.presentation.Screens
@@ -69,12 +70,12 @@ fun ViewSplitPdfScreen(
 
     val scope = CoroutineScope(Dispatchers.Default)
 
-    val name = mutableStateOf("")
+    val name = remember{mutableStateOf("")}
 
 
     val showProgress = remember { mutableStateOf(false) }
 
-    var pdfRenderer1: MutableState<PdfRenderer?> = mutableStateOf(null)
+    var pdfRenderer1: MutableState<PdfRenderer?> = remember{mutableStateOf(null)}
 
     var showLazyColumn by remember { mutableStateOf(false) }
     if (path != "") {
@@ -241,13 +242,3 @@ fun LazyColumnVer(
     }
 }
 
-fun scanFile(filePath: String, context: Context) {
-    MediaScannerConnection.scanFile(
-        context,
-        arrayOf(filePath),
-        null
-    ) { path, uri ->
-        // Callback invoked after scanning is complete
-        // You can perform any additional actions here if needed
-    }
-}

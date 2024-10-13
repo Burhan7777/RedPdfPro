@@ -60,7 +60,9 @@ import com.chaquo.python.Python
 import com.pzbdownloaders.redpdfpro.core.presentation.MainActivity
 import com.pzbdownloaders.redpdfpro.R
 import com.pzbdownloaders.redpdfpro.core.presentation.Component.AlertDialogBox
+import com.pzbdownloaders.redpdfpro.core.presentation.Component.LoadingDialogBox
 import com.pzbdownloaders.redpdfpro.core.presentation.MyViewModel
+import com.pzbdownloaders.redpdfpro.core.presentation.Screens
 import com.pzbdownloaders.redpdfpro.mergepdffeature.components.SingleRowMergePdf
 import com.pzbdownloaders.redpdfpro.mergepdffeature.components.SingleRowSelectedPdfs
 import com.pzbdownloaders.redpdfpro.mergepdffeature.util.getFileName
@@ -273,14 +275,7 @@ fun MergePdf(
         }
 
         if (showProgress) {
-            CircularProgressIndicator(
-                modifier = Modifier
-                    .height(40.dp)
-                    .width(40.dp)
-                    .zIndex(10f)
-                    .align(Alignment.Center),
-                color = Color.Red
-            )
+            LoadingDialogBox("Files are being merged")
         }
         if (viewModel.listOfPdfToMerge.size > 1) {
             Button(
@@ -319,6 +314,13 @@ fun MergePdf(
                                 Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
                             val path = "${externalDIr}/Pro Scanner/Pdfs/${name.value}.pdf"
                             scanFile(path, activity)
+                            navHostController.navigate(
+                                Screens.FinalScreenOfPdfOperations.finalScreen(
+                                    "$externalDIr/Pro Scanner/Pdfs/${name.value}.pdf",
+                                    "$externalDIr/Pro Scanner/Pdfs/${name.value}.pdf",
+
+                                    )
+                            )
                         } else if (result.toString() == "Failure") {
                             showProgress = false
                             Toast.makeText(context, "Operation Failed", Toast.LENGTH_SHORT).show()
