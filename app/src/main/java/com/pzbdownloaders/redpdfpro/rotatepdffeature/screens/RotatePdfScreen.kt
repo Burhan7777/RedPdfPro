@@ -3,6 +3,7 @@ package com.pzbdownloaders.redpdfpro.rotatepdffeature.screens
 import android.content.Context
 import android.graphics.pdf.PdfRenderer
 import android.media.MediaScannerConnection
+import android.net.Uri
 import android.os.Environment
 import android.os.ParcelFileDescriptor
 import android.widget.Toast
@@ -14,14 +15,17 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -30,12 +34,14 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -54,10 +60,14 @@ import com.chaquo.python.Python
 import com.pzbdownloaders.redpdfpro.core.presentation.MainActivity
 import com.pzbdownloaders.redpdfpro.R
 import com.pzbdownloaders.redpdfpro.core.presentation.Component.AlertDialogBox
+import com.pzbdownloaders.redpdfpro.core.presentation.Component.scanFile
 import com.pzbdownloaders.redpdfpro.core.presentation.MyViewModel
 import com.pzbdownloaders.redpdfpro.rotatepdffeature.components.RotateDialogBox
+import com.pzbdownloaders.redpdfpro.rotatepdffeature.components.SingleRowRotatePdf
 import com.pzbdownloaders.redpdfpro.splitpdffeature.components.SingleRow
+import com.pzbdownloaders.redpdfpro.splitpdffeature.components.SingleRowSplitFeature
 import com.pzbdownloaders.redpdfpro.splitpdffeature.components.modelBitmap
+import com.pzbdownloaders.redpdfpro.splitpdffeature.screens.getPdfs
 import com.pzbdownloaders.redpdfpro.splitpdffeature.utils.getFilePathFromContentUri
 import com.pzbdownloaders.redpdfpro.splitpdffeature.utils.loadPage
 import kotlinx.coroutines.Dispatchers
@@ -76,6 +86,10 @@ fun RotatePDf(
     var path by remember {
         mutableStateOf(" ")
     }
+
+    var queryForSearch = remember { mutableStateOf("") }
+
+    var listOfPdfs = ArrayList<Uri>()
 
     var name = remember {
         mutableStateOf("")
@@ -120,207 +134,118 @@ fun RotatePDf(
             }
         })
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    LaunchedEffect(key1 = true) {
+        getPdfs(
+            listOfPdfs,
+            activity,
+            viewModel.listOfPdfNames,
+            viewModel.listOfSize
+        )
+        withContext(Dispatchers.Main) {
+            viewModel.mutableStateListOfPdfs = listOfPdfs.toMutableStateList()
+        }
+    }
 
+    val filteredPdfs = remember(queryForSearch.value, viewModel.mutableStateListOfPdfs) {
+        if (queryForSearch.value.isBlank()) {
+            viewModel.mutableStateListOfPdfs // Show all files if the query is empty
+        } else {
+            viewModel.mutableStateListOfPdfs.filterIndexed { index, _ ->
+                viewModel.listOfPdfNames[index].contains(queryForSearch.value, ignoreCase = true)
+            }
+        }
+    }
+    Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .align(Alignment.TopCenter),
-            verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            if (totalPages == 0) {
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(150.dp)
-                        .padding(start = 20.dp, end = 20.dp)
-                        .clickable {
-                            result.launch("application/pdf")
-                        }
-                        .drawBehind {
-                            drawRoundRect(
-                                color = Color.Red,
-                                style = stroke,
-                                cornerRadius = CornerRadius(10.dp.toPx())
-                            )
-                        },
-                    colors = CardDefaults.cardColors(
-                        containerColor = Color.Transparent
-                    ),
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.upload),
-                        contentDescription = stringResource(
-                            id = R.string.upload
-                        ),
-                        modifier = Modifier
-                            .align(Alignment.CenterHorizontally)
-                            .padding(top = 20.dp)
-                    )
-                    Text(
-                        text = stringResource(id = R.string.addPDF),
-                        fontSize = 20.sp,
-                        modifier = Modifier
-                            .align(Alignment.CenterHorizontally)
-                            .padding(top = 10.dp)
-                    )
-                }
-            }
-            Box(contentAlignment = Alignment.Center) {
-                if (showProgress) {
-                    CircularProgressIndicator(
-                        modifier = Modifier
-                            .height(40.dp)
-                            .width(40.dp)
-                            .zIndex(10f),
-                        color = Color.Red
-                    )
-                }
 
-
-                if (totalPages > 0 && file != null) {
-                    parcelFileDescriptor =
-                        ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY)
-                    pdfRenderer = PdfRenderer(parcelFileDescriptor)
-                    com.pzbdownloaders.redpdfpro.splitpdffeature.screens.LazyColumnVer(
-                        totalPages = totalPages.toString().toInt(),
-                        context = context,
-                        file = file!!,
-                        pdfRenderer,
-                        pageNumbersSelected.value,
-                        viewModel
-                    )
-                }
-            }
-        }
-        if (file != null) {
-            Button(
-                onClick = {
-                    if (pageNumbersSelected.value.isEmpty()) {
-                        Toast.makeText(
-                            context,
-                            "Please select pages to be rotated",
-                            Toast.LENGTH_SHORT
-                        )
-                            .show()
-                    } else {
-                        showRadioDialogBox.value = !showRadioDialogBox.value
-                    }
-                }, modifier = Modifier
+            androidx.compose.material.OutlinedTextField(
+                value = queryForSearch.value,
+                onValueChange = { queryForSearch.value = it },
+                label = { Text("Search PDFs") },
+                modifier = Modifier
                     .fillMaxWidth()
-                    .height(60.dp)
-                    .align(Alignment.BottomCenter),
+                    .padding(10.dp),
+                colors = androidx.compose.material.TextFieldDefaults.outlinedTextFieldColors(
+                    focusedBorderColor = MaterialTheme.colorScheme.onSecondary,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.onSecondary,
+                    cursorColor = MaterialTheme.colorScheme.onSecondary
+                ),
                 shape = MaterialTheme.shapes.medium.copy(
-                    all = CornerSize(10.dp)
+                    topStart = CornerSize(10.dp),
+                    topEnd = CornerSize(10.dp),
+                    bottomEnd = CornerSize(10.dp),
+                    bottomStart = CornerSize(10.dp),
                 )
-            ) {
-                Text(text = stringResource(id = R.string.rotatePDF))
-            }
-        }
-    }
-    if (showAlertBox.value)
-        AlertDialogBox(
-            name = name,
-            showRotateDialogBox = showRadioDialogBox,
-            featureExecution = {
-                scope.launch(Dispatchers.IO) {
-                    showProgress = true
-                    val python = Python.getInstance()
-                    val module = python.getModule("rotatePDF")
-                    var result = module.callAttr(
-                        "rotate_pdf",
-                        path,
-                        selectedRotateAngle.value,
-                        pageNumbersSelected.value.toArray(),
-                        name.value
-                    )
-                    withContext(Dispatchers.Main) {
-                        println(selectedRotateAngle.value)
-                        if (result.toString() == "Success") {
-                            withContext(Dispatchers.Main) {
-                                showProgress = false
+            )
+
+            LazyColumn() {
+                item {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(100.dp)
+                            .padding(start = 20.dp, end = 20.dp, top = 10.dp)
+                            .clickable {
+                                result.launch("application/pdf")
                             }
-                            Toast.makeText(
-                                context,
-                                "Filed saved",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            val externalDIr =
-                                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-                            val path = "${externalDIr}/Pro Scanner/Pdfs/${name.value}.pdf"
-                            scanFile(path, activity)
-                        } else if (result.toString() == "Failure") {
-                            showProgress = false
-                            Toast.makeText(context, "Operation Failed", Toast.LENGTH_SHORT).show()
+                            .drawBehind {
+                                drawRoundRect(
+                                    color = Color.Red,
+                                    style = stroke,
+                                    cornerRadius = CornerRadius(10.dp.toPx())
+                                )
+                            },
+                        colors = CardDefaults.cardColors(
+                            containerColor = Color.Transparent
+                        ),
+                    ) {
+                        Row(
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Image(
+                                painter = painterResource(id = R.drawable.upload),
+                                contentDescription = stringResource(
+                                    id = R.string.upload
+                                ),
+                                modifier = Modifier
+                                    .padding(top = 20.dp)
+                            )
+                            Text(
+                                text = stringResource(id = R.string.addPDF),
+                                fontSize = 20.sp,
+                                modifier = Modifier
+                                    .padding(top = 10.dp)
+                            )
                         }
                     }
                 }
-            },
-            onDismiss = { showAlertBox.value = false })
 
-    if (showRadioDialogBox.value) {
-        RotateDialogBox(
-            showAlertDialog = showAlertBox,
-            selectedRotateAngle = selectedRotateAngle,
-            options = options,
-            onDismiss = { showRadioDialogBox.value = false }) {
+                itemsIndexed(items = filteredPdfs) { index, item ->
+                    val originalIndex = viewModel.mutableStateListOfPdfs.indexOf(item)
+                    if (originalIndex != -1) {
+                        SingleRowRotatePdf(
+                            uri = item,
+                            nameOfPdfFile = viewModel.listOfPdfNames[originalIndex],
+                            activity = activity,
+                            navHostController = navHostController,
+                            viewModel = viewModel
+                        )
+                    } else {
 
-        }
-    }
-
-
-}
-
-@Composable
-fun LazyColumnVer(
-    totalPages: Int,
-    context: Context,
-    file: File,
-    pdfRenderer: PdfRenderer,
-    pageNoSelected: ArrayList<Int>,
-    darkTheme: Boolean,
-    viewModel: MyViewModel
-) {
-
-
-    var scope = rememberCoroutineScope()
-    scope.launch(Dispatchers.IO) {
-        for (i in 0 until totalPages) {
-            var bitmap = loadPage(
-                i,
-                pdfRenderer,
-            )
-            withContext(Dispatchers.Main) {
-                if (viewModel.modelList.size < totalPages)
-                    viewModel.modelList.add(modelBitmap(bitmap, isSelected = mutableStateOf(false)))
+                    }
+                }
             }
         }
-    }
 
-
-
-    LazyVerticalGrid(
-        columns = GridCells.Adaptive(100.dp),
-        modifier = Modifier.padding(10.dp),
-        verticalArrangement = Arrangement.spacedBy(10.dp),
-        horizontalArrangement = Arrangement.spacedBy(10.dp)
-    ) {
-        itemsIndexed(items = viewModel.modelList) { index, item ->
-            SingleRow(model = item, pageNo = index, pageNoSelected)
-        }
 
     }
 }
 
-fun scanFile(filePath: String, context: Context) {
-    MediaScannerConnection.scanFile(
-        context,
-        arrayOf(filePath),
-        null
-    ) { path, uri ->
-        // Callback invoked after scanning is complete
-        // You can perform any additional actions here if needed
-    }
-}
 

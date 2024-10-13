@@ -51,9 +51,16 @@ sealed class Screens(var route: String) {
         }
     }
 
+
     object PdfViewer : Screens("pdf_viewer_screen/?uri={uri}/?file={file}") {
-        fun pdfViewerWIthUri(uri: String,file:String): String {
+        fun pdfViewerWIthUri(uri: String, file: String): String {
             return "pdf_viewer_screen/?uri=$uri/?file=$file"
+        }
+    }
+
+    object ViewPdfRotateScreen : Screens("view_rotate_pdf_screen/?path={path}/?uri={uri}") {
+        fun viewPdfRotateScreen(path: String, uri: String): String {
+            return "view_rotate_pdf_screen/?path=$path/?uri=$uri"
         }
     }
 

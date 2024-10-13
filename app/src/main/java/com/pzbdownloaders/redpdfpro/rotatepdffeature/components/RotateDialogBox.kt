@@ -97,7 +97,6 @@ fun RotateDialogBox(
                 onClick = {
                     selectedRotateAngle.value = radioSelected.toInt()
                     showAlertDialog.value = !showAlertDialog.value
-
                 },
                 colors = ButtonDefaults.outlinedButtonColors(
                     containerColor = MaterialTheme.colorScheme.onPrimary,

@@ -238,7 +238,6 @@ fun LazyColumnVer(
         itemsIndexed(items = viewModel.modelList) { index, item ->
             SingleRow(model = item, pageNo = index, pageNoSelected)
         }
-
     }
 }
 
