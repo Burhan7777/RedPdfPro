@@ -58,9 +58,9 @@ sealed class Screens(var route: String) {
         }
     }
 
-    object ViewPdfRotateScreen : Screens("view_rotate_pdf_screen/?path={path}/?uri={uri}") {
-        fun viewPdfRotateScreen(path: String, uri: String): String {
-            return "view_rotate_pdf_screen/?path=$path/?uri=$uri"
+    object ViewPdfRotateScreen : Screens("view_rotate_pdf_screen/?path={path}") {
+        fun viewPdfRotateScreen(path: String): String {
+            return "view_rotate_pdf_screen/?path=$path"
         }
     }
 

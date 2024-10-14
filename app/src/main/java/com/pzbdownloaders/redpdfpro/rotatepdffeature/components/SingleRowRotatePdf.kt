@@ -62,7 +62,6 @@ fun SingleRowRotatePdf(
                 navHostController.navigate(
                     Screens.ViewPdfRotateScreen.viewPdfRotateScreen(
                         path ?: "",
-                        uri.toString()
                     )
                 )
             },

@@ -25,6 +25,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -70,12 +71,12 @@ fun ViewSplitPdfScreen(
 
     val scope = CoroutineScope(Dispatchers.Default)
 
-    val name = remember{mutableStateOf("")}
+    val name = remember { mutableStateOf("") }
 
 
     val showProgress = remember { mutableStateOf(false) }
 
-    var pdfRenderer1: MutableState<PdfRenderer?> = remember{mutableStateOf(null)}
+    var pdfRenderer1: MutableState<PdfRenderer?> = remember { mutableStateOf(null) }
 
     var showLazyColumn by remember { mutableStateOf(false) }
     if (path != "") {
@@ -205,22 +206,20 @@ fun LazyColumnVer(
 ) {
 
 
-    var scope = rememberCoroutineScope()
-    var bitmap: Bitmap? = null
-    scope.launch(Dispatchers.Default) {
+    LaunchedEffect(true) {
         for (i in 0 until totalPages) {
-            try {
-                bitmap = loadPage(
-                    i,
-                    pdfRenderer
-                )
-            } catch (exception: IllegalStateException) {
-
-            }
-
+            var bitmap = loadPage(
+                i,
+                pdfRenderer
+            )
             withContext(Dispatchers.Main) {
                 if (viewModel.modelList.size < totalPages)
-                    viewModel.modelList.add(modelBitmap(bitmap, isSelected = mutableStateOf(false)))
+                    viewModel.modelList.add(
+                        modelBitmap(
+                            bitmap,
+                            isSelected = mutableStateOf(false)
+                        )
+                    )
             }
         }
     }
@@ -238,6 +237,7 @@ fun LazyColumnVer(
         itemsIndexed(items = viewModel.modelList) { index, item ->
             SingleRow(model = item, pageNo = index, pageNoSelected)
         }
+
     }
 }
 

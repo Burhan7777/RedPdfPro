@@ -62,6 +62,7 @@ import com.pzbdownloaders.redpdfpro.R
 import com.pzbdownloaders.redpdfpro.core.presentation.Component.AlertDialogBox
 import com.pzbdownloaders.redpdfpro.core.presentation.Component.scanFile
 import com.pzbdownloaders.redpdfpro.core.presentation.MyViewModel
+import com.pzbdownloaders.redpdfpro.core.presentation.Screens
 import com.pzbdownloaders.redpdfpro.rotatepdffeature.components.RotateDialogBox
 import com.pzbdownloaders.redpdfpro.rotatepdffeature.components.SingleRowRotatePdf
 import com.pzbdownloaders.redpdfpro.splitpdffeature.components.SingleRow
@@ -128,9 +129,10 @@ fun RotatePDf(
             if (it != null) {
                 path = getFilePathFromContentUri(it!!, activity)!!
                 file = File(path)
-                val python = Python.getInstance()
-                val module = python.getModule("splitPDF")
-                totalPages = module.callAttr("total_pages", path).toString().toInt()
+                navHostController.navigate(Screens.ViewPdfRotateScreen.viewPdfRotateScreen(path))
+//                val python = Python.getInstance()
+//                val module = python.getModule("splitPDF")
+//                totalPages = module.callAttr("total_pages", path).toString().toInt()
             }
         })
 

@@ -53,7 +53,8 @@ fun SingleRow(model: modelBitmap, pageNo: Int, pageNoSelected: ArrayList<Int>) {
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(end = 10.dp),
-            fontSize = 8.sp
+            fontSize = 8.sp,
+            color = MaterialTheme.colorScheme.onSecondary
         )
     }
 }

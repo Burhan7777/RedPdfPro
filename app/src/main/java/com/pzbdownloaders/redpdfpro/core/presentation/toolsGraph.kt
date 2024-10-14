@@ -122,16 +122,12 @@ fun NavGraphBuilder.toolsGraph(
         composable(Screens.ViewPdfRotateScreen.route, arguments = listOf(navArgument("path") {
             type = NavType.StringType
             defaultValue = ""
-        }, navArgument("uri") {
-            type = NavType.StringType
-            defaultValue = ""
         })) {
             ViewPdfRotateScreen(
                 activity,
                 viewModel,
                 navHostController,
                 it.arguments?.getString("path") ?: "",
-                it.arguments?.getString("uri") ?: ""
             )
         }
     }

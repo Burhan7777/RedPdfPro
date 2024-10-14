@@ -21,4 +21,22 @@ fun loadPage(
     page.render(bitmap, clipRect,null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
     page.close()
     return bitmap
+//    val page = renderer.openPage(pageIndex)
+//
+//    // Scale down the image if necessary (adjust scale factor as needed)
+//    val scaleFactor = 2 // or 3, depending on how much you want to reduce resolution
+//    val width = page.width / scaleFactor
+//    val height = page.height / scaleFactor
+//
+//    val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+//    val canvas = Canvas(bitmap)
+//
+//    val clipRect = Rect(0, 0, width, height)
+//    canvas.drawColor(Color.WHITE)
+//    canvas.clipRect(clipRect)
+//
+//    page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
+//    page.close()
+//
+//    return bitmap
 }

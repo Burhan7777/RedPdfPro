@@ -5,6 +5,7 @@ import android.graphics.pdf.PdfRenderer
 import android.os.Environment
 import android.os.ParcelFileDescriptor
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,6 +23,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -61,8 +63,7 @@ fun ViewPdfRotateScreen(
     activity: MainActivity,
     viewModel: MyViewModel,
     navHostController: NavHostController,
-    path: String,
-    uri: String
+    path: String
 ) {
     var pageNumbersSelected = remember { mutableStateOf(ArrayList<Int>()) }
 
@@ -87,9 +88,11 @@ fun ViewPdfRotateScreen(
     var showAlertBox = remember { mutableStateOf(false) }
 
 
-    var pdfRenderer1: MutableState<PdfRenderer?> = remember { mutableStateOf(null) }
+    // var pdfRenderer1: MutableState<PdfRenderer?> = remember { mutableStateOf(null) }
 
     lateinit var parcelFileDescriptor: ParcelFileDescriptor
+    lateinit var pdfRenderer1: PdfRenderer
+
 
     var showLazyColumn by remember { mutableStateOf(false) }
     Box(modifier = Modifier.fillMaxSize()) {
@@ -107,14 +110,14 @@ fun ViewPdfRotateScreen(
                 var file = File(path)
                 parcelFileDescriptor =
                     ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY)
-                pdfRenderer1.value = PdfRenderer(parcelFileDescriptor)
-                var totalPagesPathFile = pdfRenderer1.value!!.pageCount
+                pdfRenderer1 = PdfRenderer(parcelFileDescriptor)
+                var totalPagesPathFile = pdfRenderer1.pageCount
                 println("PAGE COUNT:$totalPagesPathFile")
                 LazyColumnVer1(
                     totalPages = totalPagesPathFile.toString().toInt(),
                     context = context,
                     file = file!!,
-                    pdfRenderer1.value!!,
+                    pdfRenderer1,
                     pageNumbersSelected.value,
                     false,
                     viewModel
@@ -214,8 +217,7 @@ fun LazyColumnVer1(
 ) {
 
 
-    var scope = rememberCoroutineScope()
-    scope.launch(Dispatchers.IO) {
+    LaunchedEffect(true) {
         for (i in 0 until totalPages) {
             var bitmap = loadPage(
                 i,
