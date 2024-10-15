@@ -71,7 +71,7 @@ fun NavGraphBuilder.toolsGraph(
             LockPdf(activity, viewModel, navHostController)
         }
         composable(Screens.UnlockPdf.route) {
-            UnlockPdf(activity)
+            UnlockPdf(activity, viewModel, navHostController)
         }
         composable(Screens.ExtractImageFromPdf.route) {
             ExtractImage(activity = activity)

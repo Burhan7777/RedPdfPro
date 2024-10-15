@@ -14,7 +14,7 @@ def unlock_pdf(file, password, name):
 
     # Save the new PDF to a file
     try:
-        writer.write(f"/storage/emulated/0/Download/{name}.pdf")
+        writer.write(f"/storage/emulated/0/Download/Pro Scanner/Pdfs/{name}.pdf")
         return "Success"
     except Exception:
         return "Failure"
