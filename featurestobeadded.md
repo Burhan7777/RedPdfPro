@@ -30,3 +30,4 @@ FEATURES TO BE ADDED (5/29)
 27) Apply pdf reader of pdf screen to main screen:
 28) Search bar to the scanned documents:
 29) Way to delete the temp images folder when existing the app:
+30) Check if the pdf is password protected and give an option to unlock:

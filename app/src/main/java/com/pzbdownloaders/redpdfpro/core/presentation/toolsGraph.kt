@@ -68,7 +68,7 @@ fun NavGraphBuilder.toolsGraph(
             RotatePDf(navHostController, viewModel, activity)
         }
         composable(Screens.LockPdf.route) {
-            LockPdf(activity)
+            LockPdf(activity, viewModel, navHostController)
         }
         composable(Screens.UnlockPdf.route) {
             UnlockPdf(activity)

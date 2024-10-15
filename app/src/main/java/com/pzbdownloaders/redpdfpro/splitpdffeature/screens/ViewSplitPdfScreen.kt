@@ -225,9 +225,6 @@ fun LazyColumnVer(
         }
     }
 
-
-
-
     LazyVerticalGrid(
         columns = GridCells.Adaptive(100.dp),
         modifier = Modifier
@@ -241,7 +238,6 @@ fun LazyColumnVer(
         item{
             Spacer(modifier = Modifier.height(250.dp))
         }
-
     }
 }
 

@@ -129,6 +129,7 @@ fun RotatePDf(
             if (it != null) {
                 path = getFilePathFromContentUri(it!!, activity)!!
                 file = File(path)
+                viewModel.modelList.clear()
                 navHostController.navigate(Screens.ViewPdfRotateScreen.viewPdfRotateScreen(path))
 //                val python = Python.getInstance()
 //                val module = python.getModule("splitPDF")
