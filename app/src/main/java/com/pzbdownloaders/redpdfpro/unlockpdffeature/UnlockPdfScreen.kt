@@ -50,6 +50,7 @@ import com.chaquo.python.Python
 import com.pzbdownloaders.redpdfpro.core.presentation.MainActivity
 import com.pzbdownloaders.redpdfpro.R
 import com.pzbdownloaders.redpdfpro.core.presentation.Component.AlertDialogBox
+import com.pzbdownloaders.redpdfpro.core.presentation.Component.DisplayMessageDialogBox
 import com.pzbdownloaders.redpdfpro.core.presentation.Component.LoadingDialogBox
 import com.pzbdownloaders.redpdfpro.core.presentation.Component.scanFile
 import com.pzbdownloaders.redpdfpro.core.presentation.MyViewModel
@@ -224,16 +225,33 @@ fun UnlockPdf(
             LoadingDialogBox("PDF is being unlocked")
         }
     }
-    if (showPasswordDialogBox.value)
-        AlertDialogBox(
-            name = password,
-            id = R.string.existingPassword,
-            featureExecution = {
-                scope.launch(Dispatchers.IO) {
-                    showAlertBox.value = !showAlertBox.value
-                }
-            },
-            onDismiss = { showPasswordDialogBox.value = false })
+    if (showPasswordDialogBox.value) {
+        val python = Python.getInstance()
+        val module = python.getModule("checkLockStatus")
+        var result = module.callAttr(
+            "check_lock_status_pdf",
+            path.value
+        )
+        if (result.toString() == "Unlocked") {
+            DisplayMessageDialogBox(
+                message = "This file is already unlocked",
+                confirmTextButtonText = "OK",
+                cancelTextButtonText = "Cancel"
+            ) {
+                showPasswordDialogBox.value = false
+            }
+        } else {
+            AlertDialogBox(
+                name = password,
+                id = R.string.existingPassword,
+                featureExecution = {
+                    scope.launch(Dispatchers.IO) {
+                        showAlertBox.value = !showAlertBox.value
+                    }
+                },
+                onDismiss = { showPasswordDialogBox.value = false })
+        }
+    }
 
     if (showAlertBox.value) {
         AlertDialogBox(

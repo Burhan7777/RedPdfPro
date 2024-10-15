@@ -18,9 +18,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -48,6 +50,7 @@ import com.chaquo.python.Python
 import com.pzbdownloaders.redpdfpro.core.presentation.MainActivity
 import com.pzbdownloaders.redpdfpro.R
 import com.pzbdownloaders.redpdfpro.core.presentation.Component.AlertDialogBox
+import com.pzbdownloaders.redpdfpro.core.presentation.Component.DisplayMessageDialogBox
 import com.pzbdownloaders.redpdfpro.core.presentation.Component.LoadingDialogBox
 import com.pzbdownloaders.redpdfpro.core.presentation.Component.scanFile
 import com.pzbdownloaders.redpdfpro.core.presentation.MyViewModel
@@ -122,64 +125,94 @@ fun LockPdf(activity: MainActivity, viewModel: MyViewModel, navHostController: N
             }
         })
 
-    LazyColumn() {
-        item {
-            Card(
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .align(Alignment.TopCenter),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+
+            androidx.compose.material.OutlinedTextField(
+                value = queryForSearch.value,
+                onValueChange = { queryForSearch.value = it },
+                label = { Text("Search PDFs") },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(100.dp)
-                    .padding(start = 20.dp, end = 20.dp, top = 10.dp)
-                    .clickable {
-                        result.launch("application/pdf")
-                    }
-                    .drawBehind {
-                        drawRoundRect(
-                            color = Color.Red,
-                            style = stroke,
-                            cornerRadius = CornerRadius(10.dp.toPx())
-                        )
-                    },
-                colors = CardDefaults.cardColors(
-                    containerColor = Color.Transparent
+                    .padding(10.dp),
+                colors = androidx.compose.material.TextFieldDefaults.outlinedTextFieldColors(
+                    focusedBorderColor = MaterialTheme.colorScheme.onSecondary,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.onSecondary,
+                    cursorColor = MaterialTheme.colorScheme.onSecondary
                 ),
-            ) {
-                Row(
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.upload),
-                        contentDescription = stringResource(
-                            id = R.string.upload
-                        ),
-                        modifier = Modifier
-                            .padding(top = 20.dp)
-                    )
-                    Text(
-                        text = stringResource(id = R.string.addPDF),
-                        fontSize = 20.sp,
-                        modifier = Modifier
-                            .padding(top = 10.dp)
-                    )
-                }
-            }
-        }
-
-        itemsIndexed(items = filteredPdfs) { index, item ->
-            val originalIndex = viewModel.mutableStateListOfPdfs.indexOf(item)
-            if (originalIndex != -1) {
-                SingleRowLockedPdf(
-                    uri = item,
-                    nameOfPdfFile = viewModel.listOfPdfNames[originalIndex],
-                    activity = activity,
-                    navHostController = navHostController,
-                    viewModel = viewModel,
-                    showDialogBox = showPasswordDialogBox,
-                    path
+                shape = MaterialTheme.shapes.medium.copy(
+                    topStart = CornerSize(10.dp),
+                    topEnd = CornerSize(10.dp),
+                    bottomEnd = CornerSize(10.dp),
+                    bottomStart = CornerSize(10.dp),
                 )
-            } else {
+            )
 
+            LazyColumn() {
+                item {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(100.dp)
+                            .padding(start = 20.dp, end = 20.dp, top = 10.dp)
+                            .clickable {
+                                result.launch("application/pdf")
+                            }
+                            .drawBehind {
+                                drawRoundRect(
+                                    color = Color.Red,
+                                    style = stroke,
+                                    cornerRadius = CornerRadius(10.dp.toPx())
+                                )
+                            },
+                        colors = CardDefaults.cardColors(
+                            containerColor = Color.Transparent
+                        ),
+                    ) {
+                        Row(
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Image(
+                                painter = painterResource(id = R.drawable.upload),
+                                contentDescription = stringResource(
+                                    id = R.string.upload
+                                ),
+                                modifier = Modifier
+                                    .padding(top = 20.dp)
+                            )
+                            Text(
+                                text = stringResource(id = R.string.addPDF),
+                                fontSize = 20.sp,
+                                modifier = Modifier
+                                    .padding(top = 10.dp)
+                            )
+                        }
+                    }
+                }
+
+                itemsIndexed(items = filteredPdfs) { index, item ->
+                    val originalIndex = viewModel.mutableStateListOfPdfs.indexOf(item)
+                    if (originalIndex != -1) {
+                        SingleRowLockedPdf(
+                            uri = item,
+                            nameOfPdfFile = viewModel.listOfPdfNames[originalIndex],
+                            activity = activity,
+                            navHostController = navHostController,
+                            viewModel = viewModel,
+                            showDialogBox = showPasswordDialogBox,
+                            path
+                        )
+                    } else {
+
+                    }
+                }
             }
         }
     }
@@ -188,16 +221,33 @@ fun LockPdf(activity: MainActivity, viewModel: MyViewModel, navHostController: N
             LoadingDialogBox("Pdf is being locked")
         }
     }
-    if (showPasswordDialogBox.value)
-        AlertDialogBox(
-            name = password,
-            id = R.string.createNewPassword,
-            featureExecution = {
-                scope.launch(Dispatchers.IO) {
-                    showAlertBox.value = !showAlertBox.value
-                }
-            },
-            onDismiss = { showPasswordDialogBox.value = false })
+    if (showPasswordDialogBox.value) {
+        val python = Python.getInstance()
+        val module = python.getModule("checkLockStatus")
+        var result1 = module.callAttr(
+            "check_lock_status_pdf",
+            path.value
+        )
+        if (result1.toString() == "Locked") {
+            DisplayMessageDialogBox(
+                message = "This file is already locked",
+                confirmTextButtonText = "OK",
+                cancelTextButtonText = "Cancel"
+            ) {
+                showPasswordDialogBox.value = false
+            }
+        } else {
+            AlertDialogBox(
+                name = password,
+                id = R.string.createNewPassword,
+                featureExecution = {
+                    scope.launch(Dispatchers.IO) {
+                        showAlertBox.value = !showAlertBox.value
+                    }
+                },
+                onDismiss = { showPasswordDialogBox.value = false })
+        }
+    }
 
     if (showAlertBox.value) {
         AlertDialogBox(
@@ -236,7 +286,8 @@ fun LockPdf(activity: MainActivity, viewModel: MyViewModel, navHostController: N
                             )
                         } else if (result.toString() == "Failure") {
                             showProgress = false
-                            Toast.makeText(context, "Operation Failed", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, "Operation Failed", Toast.LENGTH_SHORT)
+                                .show()
                         }
                     }
                 }
