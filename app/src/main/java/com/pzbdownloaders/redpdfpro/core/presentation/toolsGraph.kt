@@ -111,12 +111,17 @@ fun NavGraphBuilder.toolsGraph(
             }, navArgument("uri") {
                 type = NavType.StringType
                 defaultValue = ""
+            }, navArgument("pathOfUnlockedFile") {
+                type = NavType.StringType
+                defaultValue = " "
             })
         ) {
             FinalScreenOfPdfOperations(
+                activity,
                 navHostController,
                 path = it.arguments?.getString("path") ?: "",
-                uri = it.arguments?.getString("uri") ?: ""
+                uri = it.arguments?.getString("uri") ?: "",
+                pathOfUnlockedFIle = it.arguments?.getString("pathOfUnlockedFile") ?: ""
             )
         }
         composable(Screens.ViewPdfRotateScreen.route, arguments = listOf(navArgument("path") {

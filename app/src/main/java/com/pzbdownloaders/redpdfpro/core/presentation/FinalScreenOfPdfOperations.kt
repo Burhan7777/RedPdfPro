@@ -2,6 +2,7 @@ package com.pzbdownloaders.redpdfpro.core.presentation
 
 import android.content.Intent
 import android.net.Uri
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -43,8 +44,24 @@ import java.io.File
 
 
 @Composable
-fun FinalScreenOfPdfOperations(navHostController: NavHostController, path: String, uri: String) {
+fun FinalScreenOfPdfOperations(
+    activity: MainActivity,
+    navHostController: NavHostController,
+    path: String,
+    uri: String,
+    pathOfUnlockedFIle: String
+) {
     var scope = rememberCoroutineScope()
+    BackHandler {
+        var uri = FileProvider.getUriForFile(
+            activity,
+            activity.applicationContext.packageName + ".provider",
+            File(pathOfUnlockedFIle)
+        )
+        activity.contentResolver.delete(uri, null, null)
+        navHostController.navigateUp()
+        navHostController.navigateUp()
+    }
     Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
         val context = LocalContext.current
         val showConvertingIntoImagesDialogBox = remember {
@@ -164,8 +181,14 @@ fun FinalScreenOfPdfOperations(navHostController: NavHostController, path: Strin
         Spacer(modifier = Modifier.height(100.dp))
         Button(
             onClick = {
-                navHostController.popBackStack()
-                navHostController.popBackStack()
+                var uri = FileProvider.getUriForFile(
+                    activity,
+                    activity.applicationContext.packageName + ".provider",
+                    File(pathOfUnlockedFIle)
+                )
+                activity.contentResolver.delete(uri, null, null)
+                navHostController.navigateUp()
+                navHostController.navigateUp()
             },
             modifier = Modifier
                 .height(60.dp),

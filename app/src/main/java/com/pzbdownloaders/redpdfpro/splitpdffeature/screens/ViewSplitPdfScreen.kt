@@ -5,6 +5,7 @@ import android.graphics.pdf.PdfRenderer
 import android.os.Environment
 import android.os.ParcelFileDescriptor
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,6 +39,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.FileProvider
 import androidx.navigation.NavHostController
 import com.chaquo.python.PyException
 import com.chaquo.python.PyObject
@@ -214,8 +216,9 @@ fun ViewSplitPdfScreen(
                                         Screens.FinalScreenOfPdfOperations.finalScreen(
                                             "$externalDir/${name.value}.pdf",
                                             "$externalDir/${name.value}.pdf",
+                                            pathOfUnlockedFile.value
 
-                                            )
+                                        )
                                     )
                                 } else if (result.toString() == "Failure") {
                                     showProgress.value = false
@@ -278,7 +281,8 @@ fun ViewSplitPdfScreen(
                                             Environment.DIRECTORY_DOWNLOADS
                                         )
                                     }/Pro Scanner/temp"
-                                pathOfUnlockedFile.value = "$externalDir/${nameOfUnlockedPdf.value}.pdf"
+                                pathOfUnlockedFile.value =
+                                    "$externalDir/${nameOfUnlockedPdf.value}.pdf"
                                 var file = File(pathOfUnlockedFile.value)
                                 pdfRenderer(totalPagesPathFile, pdfRenderer1, file)
                             } else if (result.toString() == "Failure") {
@@ -291,7 +295,11 @@ fun ViewSplitPdfScreen(
                             }
                         }
                     } catch (exception: PyException) {
-                        Toast.makeText(activity, "Password is incorrect", Toast.LENGTH_SHORT).show()
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(activity, "Password is incorrect", Toast.LENGTH_SHORT)
+                                .show()
+                            showProgressOfUnlockingPdf.value = false
+                        }
                     }
                 }
             },
@@ -302,6 +310,7 @@ fun ViewSplitPdfScreen(
     if (showProgressOfUnlockingPdf.value) {
         LoadingDialogBox("Unlocking PDF")
     }
+
 }
 
 @Composable
