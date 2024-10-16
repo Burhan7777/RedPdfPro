@@ -52,6 +52,7 @@ import com.pzbdownloaders.redpdfpro.core.presentation.MainActivity
 import com.pzbdownloaders.redpdfpro.core.presentation.MyViewModel
 import com.pzbdownloaders.redpdfpro.core.presentation.Screens
 import com.pzbdownloaders.redpdfpro.splitpdffeature.components.SingleRow
+import com.pzbdownloaders.redpdfpro.splitpdffeature.components.componentsViewSplitPdfScreen.UnlockPdf
 import com.pzbdownloaders.redpdfpro.splitpdffeature.components.modelBitmap
 import com.pzbdownloaders.redpdfpro.splitpdffeature.utils.loadPage
 import kotlinx.coroutines.CoroutineScope
@@ -97,7 +98,6 @@ fun ViewSplitPdfScreen(
 
     var pathOfUnlockedFile = remember { mutableStateOf("") }
 
-    var scopeUnlockPdf = rememberCoroutineScope()
     if (path != "") {
         val file = File(path)
         pdfRenderer(totalPagesPathFile, pdfRenderer1, file)
@@ -240,73 +240,20 @@ fun ViewSplitPdfScreen(
             Toast.LENGTH_SHORT
         ).show()
     }
-    if (showUnlockDialogBox.value) {
-        AlertDialogBox(
-            name = password,
-            confirmButtonText = stringResource(R.string.unlockPDF),
-            id = R.string.existingPassword,
-            featureExecution = {
-                scope.launch(Dispatchers.IO) {
-                    showUnlockPdfDialogBox.value = true
-                }
-            },
-            onDismiss = { showUnlockDialogBox.value = false })
-    }
 
-    if (showUnlockPdfDialogBox.value) {
-        AlertDialogBox(
-            name = nameOfUnlockedPdf,
-            id = R.string.saveTemporarilyAs,
-            confirmButtonText = stringResource(R.string.save),
-            dismissButtonText = stringResource(R.string.cancel),
-            featureExecution = {
-                showProgressOfUnlockingPdf.value = true
-                scopeUnlockPdf.launch(Dispatchers.IO) {
-                    val python = Python.getInstance()
-                    val module = python.getModule("unlockPDFWithTempFile")
-                    try {
-                        var result = module.callAttr(
-                            "unlock_pdf_temp_file",
-                            path,
-                            password.value,
-                            nameOfUnlockedPdf.value
-                        )
+    UnlockPdf(
+        showUnlockDialogBox = showUnlockDialogBox,
+        password = password,
+        showUnlockPdfDialogBox = showUnlockPdfDialogBox,
+        nameOfUnlockedPdf = nameOfUnlockedPdf,
+        path = path,
+        activity = activity,
+        showProgress = showProgressOfUnlockingPdf,
+        pathOfUnlockedFile = pathOfUnlockedFile,
+        totalPagesPathFile = totalPagesPathFile,
+        pdfRenderer1 = pdfRenderer1
+    )
 
-                        withContext(Dispatchers.Main) {
-                            showProgressOfUnlockingPdf.value = false
-                            if (result.toString() == "Success") {
-                                val externalDir =
-                                    "${
-                                        Environment.getExternalStoragePublicDirectory(
-                                            Environment.DIRECTORY_DOWNLOADS
-                                        )
-                                    }/Pro Scanner/temp"
-                                pathOfUnlockedFile.value =
-                                    "$externalDir/${nameOfUnlockedPdf.value}.pdf"
-                                var file = File(pathOfUnlockedFile.value)
-                                pdfRenderer(totalPagesPathFile, pdfRenderer1, file)
-                            } else if (result.toString() == "Failure") {
-                                showProgressOfUnlockingPdf.value = false
-                                Toast.makeText(
-                                    activity,
-                                    "Operation failed. Please try again",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
-                        }
-                    } catch (exception: PyException) {
-                        withContext(Dispatchers.Main) {
-                            Toast.makeText(activity, "Password is incorrect", Toast.LENGTH_SHORT)
-                                .show()
-                            showProgressOfUnlockingPdf.value = false
-                        }
-                    }
-                }
-            },
-            onDismiss = {
-                showUnlockPdfDialogBox.value = false
-            })
-    }
     if (showProgressOfUnlockingPdf.value) {
         LoadingDialogBox("Unlocking PDF")
     }
