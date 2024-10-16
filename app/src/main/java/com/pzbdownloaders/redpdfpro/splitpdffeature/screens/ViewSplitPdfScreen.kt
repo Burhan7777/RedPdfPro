@@ -1,13 +1,10 @@
 package com.pzbdownloaders.redpdfpro.splitpdffeature.screens
 
 import android.content.Context
-import android.graphics.Bitmap
 import android.graphics.pdf.PdfRenderer
-import android.media.MediaScannerConnection
 import android.os.Environment
 import android.os.ParcelFileDescriptor
 import android.widget.Toast
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,30 +21,30 @@ import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
 import androidx.navigation.NavHostController
+import com.chaquo.python.PyException
 import com.chaquo.python.PyObject
 import com.chaquo.python.Python
 import com.pzbdownloaders.redpdfpro.R
 import com.pzbdownloaders.redpdfpro.core.presentation.Component.AlertDialogBox
+import com.pzbdownloaders.redpdfpro.core.presentation.Component.LoadingDialogBox
 import com.pzbdownloaders.redpdfpro.core.presentation.Component.scanFile
 import com.pzbdownloaders.redpdfpro.core.presentation.MainActivity
 import com.pzbdownloaders.redpdfpro.core.presentation.MyViewModel
@@ -78,7 +75,9 @@ fun ViewSplitPdfScreen(
 
     val name = remember { mutableStateOf("") }
 
-    var totalPagesPathFile = 0
+    val nameOfUnlockedPdf = remember { mutableStateOf("") }
+
+    var totalPagesPathFile = remember { mutableIntStateOf(0) }
 
     var showUnlockDialogBox = remember { mutableStateOf(false) }
 
@@ -86,30 +85,28 @@ fun ViewSplitPdfScreen(
 
     val showProgress = remember { mutableStateOf(false) }
 
+    val showProgressOfUnlockingPdf = remember { mutableStateOf(false) }
+
     var pdfRenderer1: MutableState<PdfRenderer?> = remember { mutableStateOf(null) }
 
+    var showUnlockPdfDialogBox = remember { mutableStateOf(false) }
+
     var showLazyColumn by remember { mutableStateOf(false) }
+
+    var pathOfUnlockedFile = remember { mutableStateOf("") }
+
+    var scopeUnlockPdf = rememberCoroutineScope()
     if (path != "") {
         val file = File(path)
-        var parcelFileDescriptor =
-            ParcelFileDescriptor.open(
-                file,
-                ParcelFileDescriptor.MODE_READ_ONLY
-            )
-        try {
-            pdfRenderer1.value = PdfRenderer(parcelFileDescriptor)
-            totalPagesPathFile = pdfRenderer1.value!!.pageCount
-        } catch (exception: SecurityException) {
-        }
+        pdfRenderer(totalPagesPathFile, pdfRenderer1, file)
 
-
-        if (totalPagesPathFile > 0) {
+        if (totalPagesPathFile.value > 0) {
             showLazyColumn = true
         }
         Box(modifier = Modifier.fillMaxSize()) {
             if (pdfRenderer1.value != null) {
                 LazyColumnVer(
-                    totalPages = totalPagesPathFile,
+                    totalPages = totalPagesPathFile.intValue,
                     context = activity,
                     file = file,
                     pdfRenderer = pdfRenderer1.value!!,
@@ -146,14 +143,7 @@ fun ViewSplitPdfScreen(
                 }
             }
             if (showProgress.value) {
-                CircularProgressIndicator(
-                    modifier = Modifier
-                        .height(40.dp)
-                        .width(40.dp)
-                        .zIndex(10f)
-                        .align(Alignment.Center),
-                    color = Color.Red
-                )
+                LoadingDialogBox("PDF is being split")
             }
             Button(
                 onClick = {
@@ -185,12 +175,21 @@ fun ViewSplitPdfScreen(
                             showProgress.value = true
                             val python = Python.getInstance()
                             val module = python.getModule("splitPDF")
-                            result = module.callAttr(
-                                "split",
-                                path,
-                                pageNumbersSelected.value.toArray(),
-                                name.value
-                            )
+                            if (pathOfUnlockedFile.value.isEmpty()) {
+                                result = module.callAttr(
+                                    "split",
+                                    path,
+                                    pageNumbersSelected.value.toArray(),
+                                    name.value
+                                )
+                            } else {
+                                result = module.callAttr(
+                                    "split",
+                                    pathOfUnlockedFile.value,
+                                    pageNumbersSelected.value.toArray(),
+                                    name.value
+                                )
+                            }
                             withContext(Dispatchers.Main) {
                                 if (result.toString() == "Success") {
                                     withContext(Dispatchers.Main) {
@@ -239,13 +238,69 @@ fun ViewSplitPdfScreen(
         ).show()
     }
     if (showUnlockDialogBox.value) {
-        AlertDialogBox(name = password, id = R.string.enterPassword,
+        AlertDialogBox(
+            name = password,
+            confirmButtonText = stringResource(R.string.unlockPDF),
+            id = R.string.existingPassword,
             featureExecution = {
+                scope.launch(Dispatchers.IO) {
+                    showUnlockPdfDialogBox.value = true
+                }
+            },
+            onDismiss = { showUnlockDialogBox.value = false })
+    }
 
+    if (showUnlockPdfDialogBox.value) {
+        AlertDialogBox(
+            name = nameOfUnlockedPdf,
+            id = R.string.saveTemporarilyAs,
+            confirmButtonText = stringResource(R.string.save),
+            dismissButtonText = stringResource(R.string.cancel),
+            featureExecution = {
+                showProgressOfUnlockingPdf.value = true
+                scopeUnlockPdf.launch(Dispatchers.IO) {
+                    val python = Python.getInstance()
+                    val module = python.getModule("unlockPDFWithTempFile")
+                    try {
+                        var result = module.callAttr(
+                            "unlock_pdf_temp_file",
+                            path,
+                            password.value,
+                            nameOfUnlockedPdf.value
+                        )
+
+                        withContext(Dispatchers.Main) {
+                            showProgressOfUnlockingPdf.value = false
+                            if (result.toString() == "Success") {
+                                val externalDir =
+                                    "${
+                                        Environment.getExternalStoragePublicDirectory(
+                                            Environment.DIRECTORY_DOWNLOADS
+                                        )
+                                    }/Pro Scanner/temp"
+                                pathOfUnlockedFile.value = "$externalDir/${nameOfUnlockedPdf.value}.pdf"
+                                var file = File(pathOfUnlockedFile.value)
+                                pdfRenderer(totalPagesPathFile, pdfRenderer1, file)
+                            } else if (result.toString() == "Failure") {
+                                showProgressOfUnlockingPdf.value = false
+                                Toast.makeText(
+                                    activity,
+                                    "Operation failed. Please try again",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        }
+                    } catch (exception: PyException) {
+                        Toast.makeText(activity, "Password is incorrect", Toast.LENGTH_SHORT).show()
+                    }
+                }
             },
             onDismiss = {
-                showUnlockDialogBox.value = false
+                showUnlockPdfDialogBox.value = false
             })
+    }
+    if (showProgressOfUnlockingPdf.value) {
+        LoadingDialogBox("Unlocking PDF")
     }
 }
 
@@ -291,6 +346,24 @@ fun LazyColumnVer(
         item {
             Spacer(modifier = Modifier.height(250.dp))
         }
+    }
+}
+
+fun pdfRenderer(
+    totalPages: MutableState<Int>,
+    pdfRenderer1: MutableState<PdfRenderer?>,
+    file: File
+) {
+    var parcelFileDescriptor =
+        ParcelFileDescriptor.open(
+            file,
+            ParcelFileDescriptor.MODE_READ_ONLY
+        )
+    try {
+        pdfRenderer1.value = PdfRenderer(parcelFileDescriptor)
+        totalPages.value = pdfRenderer1.value!!.pageCount
+    } catch (exception: SecurityException) {
+
     }
 }
 

@@ -52,4 +52,5 @@
     <string name="success">Success</string>
     <string name="closeScreen">Close Screen</string>
     <string name="enterFileName">Save as...</string>
+    <string name="saveTemporarilyAs">Save temporarily as</string>
 </resources>

@@ -31,6 +31,8 @@ fun AlertDialogBox(
     name: MutableState<String> = mutableStateOf(""),
     showRotateDialogBox: MutableState<Boolean> = mutableStateOf(false),
     id: Int = R.string.saveAs,
+    confirmButtonText: String = "Save",
+    dismissButtonText: String = "Cancel",
     onDismiss: () -> Unit,
     featureExecution: () -> Unit
 
@@ -109,7 +111,7 @@ fun AlertDialogBox(
                 )
             ) {
                 Text(
-                    text = stringResource(id = R.string.save),
+                    text = confirmButtonText,
                     color = MaterialTheme.colorScheme.onSecondary
                 )
             }
@@ -130,7 +132,7 @@ fun AlertDialogBox(
                 )
             ) {
                 Text(
-                    text = stringResource(id = R.string.cancel),
+                    text = dismissButtonText,
                     color = MaterialTheme.colorScheme.onPrimary
                 )
             }

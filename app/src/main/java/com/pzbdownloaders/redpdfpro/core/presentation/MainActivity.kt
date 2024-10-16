@@ -128,6 +128,10 @@ class MainActivity : ComponentActivity() {
         if (!filePdf.exists()) {
             filePdf.mkdirs()
         }
+        val filePdfTemp = File("$externalDir/Pro Scanner/temp")
+        if (!filePdfTemp.exists()) {
+            filePdfTemp.mkdirs()
+        }
         //oast.makeText(this, "App", Toast.LENGTH_SHORT).show()
         if (viewModel.listOfFiles.size < (file.listFiles()?.size ?: 0)) {
             viewModel.listOfFiles =
