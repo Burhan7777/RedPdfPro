@@ -46,6 +46,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavHostController
+import com.chaquo.python.PyException
 import com.chaquo.python.Python
 import com.pzbdownloaders.redpdfpro.core.presentation.MainActivity
 import com.pzbdownloaders.redpdfpro.R
@@ -262,35 +263,44 @@ fun UnlockPdf(
                     showProgress = true
                     val python = Python.getInstance()
                     val module = python.getModule("unlockPDF")
-                    var result = module.callAttr(
-                        "unlock_pdf",
-                        path.value,
-                        password.value,
-                        name.value
-                    )
-                    withContext(Dispatchers.Main) {
-                        if (result.toString() == "Success") {
-                            withContext(Dispatchers.Main) {
-                                showProgress = false
-                            }
-                            val externalDir =
-                                "${
-                                    Environment.getExternalStoragePublicDirectory(
-                                        Environment.DIRECTORY_DOWNLOADS
-                                    )
-                                }/Pro Scanner/Pdfs"
-                            viewModel.listOfFiles.add(File("$externalDir/${name.value}.pdf"))
-                            scanFile("$externalDir/${name.value}.pdf", activity)
-                            navHostController.navigate(
-                                Screens.FinalScreenOfPdfOperations.finalScreen(
-                                    "$externalDir/${name.value}.pdf",
-                                    "$externalDir/${name.value}.pdf",
+                    try {
+                        var result = module.callAttr(
+                            "unlock_pdf",
+                            path.value,
+                            password.value,
+                            name.value
+                        )
+                        withContext(Dispatchers.Main) {
+                            if (result.toString() == "Success") {
+                                withContext(Dispatchers.Main) {
+                                    showProgress = false
+                                }
+                                val externalDir =
+                                    "${
+                                        Environment.getExternalStoragePublicDirectory(
+                                            Environment.DIRECTORY_DOWNLOADS
+                                        )
+                                    }/Pro Scanner/Pdfs"
+                                viewModel.listOfFiles.add(File("$externalDir/${name.value}.pdf"))
+                                scanFile("$externalDir/${name.value}.pdf", activity)
+                                navHostController.navigate(
+                                    Screens.FinalScreenOfPdfOperations.finalScreen(
+                                        "$externalDir/${name.value}.pdf",
+                                        "$externalDir/${name.value}.pdf",
 
-                                    )
-                            )
-                        } else if (result.toString() == "Failure") {
+                                        )
+                                )
+                            } else if (result.toString() == "Failure") {
+                                showProgress = false
+                                Toast.makeText(context, "Operation Failed", Toast.LENGTH_SHORT)
+                                    .show()
+                            }
+                        }
+                    } catch (exception: PyException) {
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(context, "Password entered is wrong", Toast.LENGTH_SHORT)
+                                .show()
                             showProgress = false
-                            Toast.makeText(context, "Operation Failed", Toast.LENGTH_SHORT).show()
                         }
                     }
                 }

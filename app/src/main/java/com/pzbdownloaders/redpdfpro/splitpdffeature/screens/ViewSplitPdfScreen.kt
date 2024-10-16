@@ -21,7 +21,9 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.shape.CornerSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -37,7 +39,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavHostController
 import com.chaquo.python.PyObject
@@ -74,6 +78,11 @@ fun ViewSplitPdfScreen(
 
     val name = remember { mutableStateOf("") }
 
+    var totalPagesPathFile = 0
+
+    var showUnlockDialogBox = remember { mutableStateOf(false) }
+
+    var password = remember { mutableStateOf("") }
 
     val showProgress = remember { mutableStateOf(false) }
 
@@ -87,20 +96,55 @@ fun ViewSplitPdfScreen(
                 file,
                 ParcelFileDescriptor.MODE_READ_ONLY
             )
-        pdfRenderer1.value = PdfRenderer(parcelFileDescriptor)
-        var totalPagesPathFile = pdfRenderer1.value!!.pageCount
+        try {
+            pdfRenderer1.value = PdfRenderer(parcelFileDescriptor)
+            totalPagesPathFile = pdfRenderer1.value!!.pageCount
+        } catch (exception: SecurityException) {
+        }
+
+
         if (totalPagesPathFile > 0) {
             showLazyColumn = true
         }
         Box(modifier = Modifier.fillMaxSize()) {
-            LazyColumnVer(
-                totalPages = totalPagesPathFile,
-                context = activity,
-                file = file,
-                pdfRenderer = pdfRenderer1.value!!,
-                pageNoSelected = pageNumbersSelected.value,
-                viewModel = viewModel,
-            )
+            if (pdfRenderer1.value != null) {
+                LazyColumnVer(
+                    totalPages = totalPagesPathFile,
+                    context = activity,
+                    file = file,
+                    pdfRenderer = pdfRenderer1.value!!,
+                    pageNoSelected = pageNumbersSelected.value,
+                    viewModel = viewModel,
+                )
+            } else {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        "This file is locked",
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Button(
+                        onClick = {
+                            showUnlockDialogBox.value = true
+                        },
+                        shape = RoundedCornerShape(40.dp),
+                        modifier = Modifier
+                            .height(50.dp)
+                            .width(200.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.tertiary
+                        )
+                    ) {
+                        Text("Unlock", color = MaterialTheme.colorScheme.onPrimary)
+                    }
+                }
+            }
             if (showProgress.value) {
                 CircularProgressIndicator(
                     modifier = Modifier
@@ -194,6 +238,15 @@ fun ViewSplitPdfScreen(
             Toast.LENGTH_SHORT
         ).show()
     }
+    if (showUnlockDialogBox.value) {
+        AlertDialogBox(name = password, id = R.string.enterPassword,
+            featureExecution = {
+
+            },
+            onDismiss = {
+                showUnlockDialogBox.value = false
+            })
+    }
 }
 
 @Composable
@@ -235,7 +288,7 @@ fun LazyColumnVer(
         itemsIndexed(items = viewModel.modelList) { index, item ->
             SingleRow(model = item, pageNo = index, pageNoSelected)
         }
-        item{
+        item {
             Spacer(modifier = Modifier.height(250.dp))
         }
     }
