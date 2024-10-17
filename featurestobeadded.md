@@ -31,3 +31,5 @@ FEATURES TO BE ADDED (5/29)
 28) Search bar to the scanned documents:
 29) Way to delete the temp images folder when existing the app:
 30) Check if the pdf is password protected and give an option to unlock:
+31) Check for locked pdf in pdf document screens and scanner screen:
+32) Close the screen automatically when permission to access all files is given:

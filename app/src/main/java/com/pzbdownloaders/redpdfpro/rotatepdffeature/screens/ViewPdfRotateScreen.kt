@@ -19,7 +19,9 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.shape.CornerSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -37,9 +39,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavHostController
+import com.chaquo.python.PyObject
 import com.chaquo.python.Python
 import com.pzbdownloaders.redpdfpro.R
 import com.pzbdownloaders.redpdfpro.core.presentation.Component.AlertDialogBox
@@ -50,8 +55,10 @@ import com.pzbdownloaders.redpdfpro.core.presentation.MyViewModel
 import com.pzbdownloaders.redpdfpro.core.presentation.Screens
 import com.pzbdownloaders.redpdfpro.rotatepdffeature.components.RotateDialogBox
 import com.pzbdownloaders.redpdfpro.splitpdffeature.components.SingleRow
+import com.pzbdownloaders.redpdfpro.splitpdffeature.components.componentsViewSplitPdfScreen.UnlockPdf
 import com.pzbdownloaders.redpdfpro.splitpdffeature.components.modelBitmap
 import com.pzbdownloaders.redpdfpro.splitpdffeature.screens.LazyColumnVer
+import com.pzbdownloaders.redpdfpro.splitpdffeature.screens.pdfRenderer
 import com.pzbdownloaders.redpdfpro.splitpdffeature.utils.loadPage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -88,14 +95,22 @@ fun ViewPdfRotateScreen(
 
     var showAlertBox = remember { mutableStateOf(false) }
 
+    var pdfRenderer1: MutableState<PdfRenderer?> = remember { mutableStateOf(null) }
 
     // var pdfRenderer1: MutableState<PdfRenderer?> = remember { mutableStateOf(null) }
 
     lateinit var parcelFileDescriptor: ParcelFileDescriptor
-    lateinit var pdfRenderer1: PdfRenderer
+
+    var showUnlockDialogBox = remember { mutableStateOf(false) }
+
+    var password = remember { mutableStateOf("") }
+    var showUnlockPdfDialogBox = remember { mutableStateOf(false) }
+    var nameOfUnlockedPdf = remember { mutableStateOf("") }
+    var pathOfUnlockedFile = remember { mutableStateOf("") }
+    var totalPagesPathFile = remember { mutableIntStateOf(0) }
+    var showProgressOfUnlockingPdf = remember { mutableStateOf(false) }
 
 
-    var showLazyColumn by remember { mutableStateOf(false) }
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
@@ -109,20 +124,47 @@ fun ViewPdfRotateScreen(
             }
             if (path != "") {
                 var file = File(path)
-                parcelFileDescriptor =
-                    ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY)
-                pdfRenderer1 = PdfRenderer(parcelFileDescriptor)
-                var totalPagesPathFile = pdfRenderer1.pageCount
+                pdfRenderer(totalPagesPathFile, pdfRenderer1, file)
                 println("PAGE COUNT:$totalPagesPathFile")
-                LazyColumnVer1(
-                    totalPages = totalPagesPathFile.toString().toInt(),
-                    context = context,
-                    file = file!!,
-                    pdfRenderer1,
-                    pageNumbersSelected.value,
-                    false,
-                    viewModel
-                )
+                if (pdfRenderer1.value != null) {
+                    LazyColumnVer1(
+                        totalPages = totalPagesPathFile.intValue,
+                        context = context,
+                        file = file!!,
+                        pdfRenderer1.value!!,
+                        pageNumbersSelected.value,
+                        false,
+                        viewModel
+                    )
+                } else {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            "This file is locked",
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Button(
+                            onClick = {
+                                showUnlockDialogBox.value = true
+                            },
+                            shape = RoundedCornerShape(40.dp),
+                            modifier = Modifier
+                                .height(50.dp)
+                                .width(200.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.tertiary
+                            )
+                        ) {
+                            Text("Unlock", color = MaterialTheme.colorScheme.onPrimary)
+                        }
+                    }
+                }
             }
         }
         Button(
@@ -153,16 +195,27 @@ fun ViewPdfRotateScreen(
                 showRotateDialogBox = showRadioDialogBox,
                 featureExecution = {
                     showProgress.value = true
+                    lateinit var result: PyObject
                     scope.launch(Dispatchers.IO) {
                         val python = Python.getInstance()
                         val module = python.getModule("rotatePDF")
-                        var result = module.callAttr(
-                            "rotate_pdf",
-                            path,
-                            selectedRotateAngle.value,
-                            pageNumbersSelected.value.toArray(),
-                            name.value
-                        )
+                        if (pathOfUnlockedFile.value.isEmpty()) {
+                            result = module.callAttr(
+                                "rotate_pdf",
+                                path,
+                                selectedRotateAngle.value,
+                                pageNumbersSelected.value.toArray(),
+                                name.value
+                            )
+                        } else {
+                            result = module.callAttr(
+                                "rotate_pdf",
+                                pathOfUnlockedFile.value,
+                                selectedRotateAngle.value,
+                                pageNumbersSelected.value.toArray(),
+                                name.value
+                            )
+                        }
                         withContext(Dispatchers.Main) {
                             if (result.toString() == "Success") {
                                 withContext(Dispatchers.Main) {
@@ -181,8 +234,8 @@ fun ViewPdfRotateScreen(
                                     Screens.FinalScreenOfPdfOperations.finalScreen(
                                         "$externalDIr/Pro Scanner/Pdfs/${name.value}.pdf",
                                         "$externalDIr/Pro Scanner/Pdfs/${name.value}.pdf",
-
-                                        )
+                                        pathOfUnlockedFile.value
+                                    )
                                 )
                             } else if (result.toString() == "Failure") {
                                 showProgress.value = false
@@ -204,7 +257,26 @@ fun ViewPdfRotateScreen(
             }
         }
     }
+
+
+    UnlockPdf(
+        showUnlockDialogBox = showUnlockDialogBox,
+        password = password,
+        showUnlockPdfDialogBox = showUnlockPdfDialogBox,
+        nameOfUnlockedPdf = nameOfUnlockedPdf,
+        path = path,
+        activity = activity,
+        showProgress = showProgressOfUnlockingPdf,
+        pathOfUnlockedFile = pathOfUnlockedFile,
+        totalPagesPathFile = totalPagesPathFile,
+        pdfRenderer1 = pdfRenderer1
+    )
+
+    if (showProgressOfUnlockingPdf.value) {
+        LoadingDialogBox("Unlocking PDF")
+    }
 }
+
 
 @Composable
 fun LazyColumnVer1(
@@ -244,8 +316,8 @@ fun LazyColumnVer1(
         itemsIndexed(items = viewModel.modelList) { index, item ->
             SingleRow(model = item, pageNo = index, pageNoSelected)
         }
-        item{
-          Spacer(modifier = Modifier.height(250.dp))
+        item {
+            Spacer(modifier = Modifier.height(250.dp))
         }
 
     }
