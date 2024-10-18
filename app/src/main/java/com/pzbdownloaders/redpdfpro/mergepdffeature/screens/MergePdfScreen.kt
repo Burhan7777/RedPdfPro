@@ -56,22 +56,28 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavHostController
+import com.chaquo.python.PyException
+import com.chaquo.python.PyObject
 import com.chaquo.python.Python
 import com.pzbdownloaders.redpdfpro.core.presentation.MainActivity
 import com.pzbdownloaders.redpdfpro.R
 import com.pzbdownloaders.redpdfpro.core.presentation.Component.AlertDialogBox
+import com.pzbdownloaders.redpdfpro.core.presentation.Component.DisplayMessageDialogBox
 import com.pzbdownloaders.redpdfpro.core.presentation.Component.LoadingDialogBox
 import com.pzbdownloaders.redpdfpro.core.presentation.MyViewModel
 import com.pzbdownloaders.redpdfpro.core.presentation.Screens
 import com.pzbdownloaders.redpdfpro.mergepdffeature.components.SingleRowMergePdf
 import com.pzbdownloaders.redpdfpro.mergepdffeature.components.SingleRowSelectedPdfs
 import com.pzbdownloaders.redpdfpro.mergepdffeature.util.getFileName
+import com.pzbdownloaders.redpdfpro.scannerfeature.util.scanFile
 import com.pzbdownloaders.redpdfpro.splitpdffeature.components.SingleRowSplitFeature
 import com.pzbdownloaders.redpdfpro.splitpdffeature.screens.getPdfs
+import com.pzbdownloaders.redpdfpro.splitpdffeature.screens.pdfRenderer
 import com.pzbdownloaders.redpdfpro.splitpdffeature.utils.getFilePathFromContentUri
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.File
 
 @Composable
 fun MergePdf(
@@ -88,6 +94,23 @@ fun MergePdf(
     var listOfPdfs = ArrayList<Uri>()
 
     val queryForSearch = remember { mutableStateOf("") }
+
+    var showFileIsLockedDialogBox = remember { mutableStateOf(false) }
+
+    var showEnterPasswordDialogBox = remember { mutableStateOf(false) }
+
+    var showSaveAsTemp = remember { mutableStateOf(false) }
+
+    var showProgressOfUnlocking = remember { mutableStateOf(false) }
+
+    var password = remember { mutableStateOf("") }
+
+    var tempNameOfFile = remember { mutableStateOf("") }
+
+    var pathOfLockedFile = remember { mutableStateOf("") }
+
+    var pathOfTempFIle = remember { mutableStateOf("") }
+
 
     var result = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
@@ -266,7 +289,9 @@ fun MergePdf(
                             navHostController = navHostController,
                             viewModel = viewModel,
                             index = index,
-                            viewModel.listOfPdfToMerge
+                            viewModel.listOfPdfToMerge,
+                            showFileIsLockedDialogBox,
+                            pathOfLockedFile,
                         )
                     } else {
 
@@ -294,11 +319,12 @@ fun MergePdf(
             AlertDialogBox(
                 name = name,
                 onDismiss = { showAlertBox.value = !showAlertBox.value }) {
+                lateinit var result: PyObject
                 scope.launch(Dispatchers.IO) {
                     showProgress = true
                     val python = Python.getInstance()
                     val module = python.getModule("mergePDF")
-                    val result = module.callAttr(
+                    result = module.callAttr(
                         "merge_pdf",
                         viewModel.listOfPdfToMerge.toTypedArray(),
                         name.value
@@ -319,8 +345,8 @@ fun MergePdf(
                                 Screens.FinalScreenOfPdfOperations.finalScreen(
                                     "$externalDIr/Pro Scanner/Pdfs/${name.value}.pdf",
                                     "$externalDIr/Pro Scanner/Pdfs/${name.value}.pdf",
-
-                                    )
+                                    pathOfUnlockedFile = pathOfTempFIle.value
+                                )
                             )
                         } else if (result.toString() == "Failure") {
                             showProgress = false
@@ -330,8 +356,94 @@ fun MergePdf(
                 }
             }
         }
-    }
+        if (showFileIsLockedDialogBox.value) {
+            DisplayMessageDialogBox(
+                "This file is locked. You can unlock it and then add it.",
+                confirmTextButtonText = "Unlock",
+                cancelTextButtonText = "Cancel",
+                featureExecution = {
+                    showEnterPasswordDialogBox.value = true
+                }
+            ) {
+                showFileIsLockedDialogBox.value = false
+            }
+        }
+        if (showEnterPasswordDialogBox.value) {
+            AlertDialogBox(
+                name = password,
+                confirmButtonText = stringResource(R.string.unlockPDF),
+                id = R.string.existingPassword,
+                featureExecution = {
+                    scope.launch(Dispatchers.IO) {
+                        showSaveAsTemp.value = true
+                    }
+                },
+                onDismiss = { showEnterPasswordDialogBox.value = false })
+        }
+        if (showSaveAsTemp.value) {
+            AlertDialogBox(
+                name = tempNameOfFile,
+                id = R.string.saveTemporarilyAs,
+                confirmButtonText = stringResource(R.string.save),
+                dismissButtonText = stringResource(R.string.cancel),
+                featureExecution = {
+                    showProgressOfUnlocking.value = true
+                    scope.launch(Dispatchers.IO) {
+                        val python = Python.getInstance()
+                        val module = python.getModule("unlockPDFWithTempFile")
+                        try {
+                            var result = module.callAttr(
+                                "unlock_pdf_temp_file",
+                                pathOfLockedFile.value,
+                                password.value,
+                                tempNameOfFile.value
+                            )
 
+                            withContext(Dispatchers.Main) {
+                                showProgressOfUnlocking.value = false
+                                if (result.toString() == "Success") {
+                                    val externalDir =
+                                        "${
+                                            Environment.getExternalStoragePublicDirectory(
+                                                Environment.DIRECTORY_DOWNLOADS
+                                            )
+                                        }/Pro Scanner/temp"
+                                    pathOfTempFIle.value =
+                                        "$externalDir/${tempNameOfFile.value}.pdf"
+                                    viewModel.listOfPdfToMerge.add(pathOfTempFIle.value)
+                                    viewModel.pdfNames.add(tempNameOfFile.value)
+                                } else if (result.toString() == "Failure") {
+                                    showProgressOfUnlocking.value = false
+                                    Toast.makeText(
+                                        activity,
+                                        "Operation failed. Please try again",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                } else {
+
+                                }
+                            }
+                        } catch (exception: PyException) {
+                            withContext(Dispatchers.Main) {
+                                Toast.makeText(
+                                    activity,
+                                    "Password is incorrect",
+                                    Toast.LENGTH_SHORT
+                                )
+                                    .show()
+                                showProgressOfUnlocking.value = false
+                            }
+                        }
+                    }
+                },
+                onDismiss = {
+                    showSaveAsTemp.value = false
+                })
+        }
+        if (showProgressOfUnlocking.value) {
+            LoadingDialogBox("PDF is being unlocked")
+        }
+    }
 }
 
 fun scanFile(filePath: String, context: Context) {

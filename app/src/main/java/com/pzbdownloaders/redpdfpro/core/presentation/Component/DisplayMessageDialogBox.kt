@@ -36,6 +36,7 @@ fun DisplayMessageDialogBox(
     message: String,
     confirmTextButtonText: String,
     cancelTextButtonText: String,
+    featureExecution: () -> Unit = {},
     onDismiss: () -> Unit
 ) {
     val context = LocalContext.current
@@ -52,7 +53,7 @@ fun DisplayMessageDialogBox(
         title = {
             Text(
                 text = message,
-                fontSize = 15.sp,
+                fontSize = 18.sp,
                 color = androidx.compose.material3.MaterialTheme.colorScheme.onPrimary
             )
         }, confirmButton = {
@@ -60,13 +61,14 @@ fun DisplayMessageDialogBox(
                 onClick = {
 
                     //showEmailWillBeSendAlertBox.value = false
+                    featureExecution()
                     onDismiss()
 
 
                 },
                 colors = ButtonDefaults.buttonColors(
-                    backgroundColor = androidx.compose.material3.MaterialTheme.colorScheme.onPrimary,
-                    contentColor = androidx.compose.material3.MaterialTheme.colorScheme.primary
+                    backgroundColor = androidx.compose.material3.MaterialTheme.colorScheme.tertiary,
+                    contentColor = androidx.compose.material3.MaterialTheme.colorScheme.onPrimary
                 ),
                 shape = androidx.compose.material.MaterialTheme.shapes.medium.copy(
                     topStart = CornerSize(15.dp),

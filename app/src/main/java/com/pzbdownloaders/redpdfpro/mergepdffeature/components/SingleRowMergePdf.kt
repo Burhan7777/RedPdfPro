@@ -12,8 +12,10 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,9 +23,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.chaquo.python.Python
 import com.pzbdownloaders.redpdfpro.core.presentation.MainActivity
 import com.pzbdownloaders.redpdfpro.core.presentation.MyViewModel
+import com.pzbdownloaders.redpdfpro.mergepdffeature.util.getFileName
 import com.pzbdownloaders.redpdfpro.splitpdffeature.utils.getFilePathFromContentUri
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Composable
 fun SingleRowMergePdf(
@@ -34,14 +41,36 @@ fun SingleRowMergePdf(
     viewModel: MyViewModel,
     index: Int,
     listOfMergedPdfs: SnapshotStateList<String>,
+    showLockedDialogBox: MutableState<Boolean>,
+    path: MutableState<String>
 ) {
+    val scope = rememberCoroutineScope()
     Card(
         modifier = Modifier
             .fillMaxSize()
             .padding(10.dp)
             .clickable {
-                listOfMergedPdfs.add(getFilePathFromContentUri(uri, activity = activity)!!)
-                viewModel.pdfNames.add(nameOfPdfFile)
+                path.value = getFilePathFromContentUri(uri, activity)!!
+                scope.launch(Dispatchers.Default) {
+                    val python = Python.getInstance()
+                    val module = python.getModule("checkLockStatus")
+                    var result = module.callAttr("check_lock_status_pdf", path.value)
+                    withContext(Dispatchers.Main) {
+                        if (result.toString() == "Locked") {
+                            showLockedDialogBox.value = true
+                        } else if (result.toString() == "Unlocked") {
+                            listOfMergedPdfs.add(
+                                getFilePathFromContentUri(
+                                    uri,
+                                    activity = activity
+                                )!!
+                            )
+                            viewModel.pdfNames.add(nameOfPdfFile)
+                        }
+                    }
+                }
+
+
             },
         shape = RoundedCornerShape(10.dp),
         colors = CardDefaults.cardColors(
