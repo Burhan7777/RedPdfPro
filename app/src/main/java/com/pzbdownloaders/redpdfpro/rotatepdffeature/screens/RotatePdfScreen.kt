@@ -174,9 +174,10 @@ fun RotatePDf(
                     .fillMaxWidth()
                     .padding(10.dp),
                 colors = androidx.compose.material.TextFieldDefaults.outlinedTextFieldColors(
-                    focusedBorderColor = MaterialTheme.colorScheme.onSecondary,
-                    unfocusedBorderColor = MaterialTheme.colorScheme.onSecondary,
-                    cursorColor = MaterialTheme.colorScheme.onSecondary
+                    focusedBorderColor = MaterialTheme.colorScheme.onPrimary,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.onPrimary,
+                    cursorColor = MaterialTheme.colorScheme.onPrimary,
+                    textColor = MaterialTheme.colorScheme.onPrimary
                 ),
                 shape = MaterialTheme.shapes.medium.copy(
                     topStart = CornerSize(10.dp),

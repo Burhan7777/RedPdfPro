@@ -17,6 +17,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.pzbdownloaders.redpdfpro.core.presentation.MainActivity
@@ -51,7 +53,13 @@ fun SingleRowMergePdf(
         )
     ) {
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(10.dp)) {
-            Text(nameOfPdfFile)
+            Text(
+                text = nameOfPdfFile,
+                modifier = Modifier
+                    .padding(10.dp),
+                fontWeight = FontWeight.Bold,
+                overflow = TextOverflow.Ellipsis
+            )
         }
     }
 }
