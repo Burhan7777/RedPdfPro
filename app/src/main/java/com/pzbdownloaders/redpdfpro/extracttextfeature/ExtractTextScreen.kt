@@ -1,27 +1,36 @@
 package com.pzbdownloaders.redpdfpro.extracttextfeature
 
+import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -39,26 +48,35 @@ import com.chaquo.python.Python
 import com.pzbdownloaders.redpdfpro.core.presentation.MainActivity
 import com.pzbdownloaders.redpdfpro.R
 import com.pzbdownloaders.redpdfpro.core.presentation.Component.AlertDialogBox
+import com.pzbdownloaders.redpdfpro.core.presentation.Component.LoadingDialogBox
+import com.pzbdownloaders.redpdfpro.core.presentation.MyViewModel
 import com.pzbdownloaders.redpdfpro.mergepdffeature.util.getFileName
+import com.pzbdownloaders.redpdfpro.splitpdffeature.components.SingleRowSplitFeature
+import com.pzbdownloaders.redpdfpro.splitpdffeature.screens.getPdfs
 import com.pzbdownloaders.redpdfpro.splitpdffeature.utils.getFilePathFromContentUri
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 @Composable
-fun ExtractText(mainActivity: MainActivity) {
-    var path by remember { mutableStateOf("") }
-    var nameOfFile = mutableStateOf("")
+fun ExtractText(mainActivity: MainActivity, viewModel: MyViewModel) {
+    var path = remember { mutableStateOf("") }
+    var nameOfFile = remember { mutableStateOf("") }
     var name = remember {
         mutableStateOf("")
     }
-    var alertDialogBox by remember {
+
+    var listOfPdfs = ArrayList<Uri>()
+    var alertDialogBox = remember {
         mutableStateOf(false)
     }
 
     var showProgress by remember {
         mutableStateOf(false)
     }
+
+    var queryForSearch = remember { mutableStateOf("") }
+
 
     val stroke = Stroke(
         width = 2f,
@@ -75,87 +93,160 @@ fun ExtractText(mainActivity: MainActivity) {
         onResult = {
             if (it != null) {
                 nameOfFile.value = getFileName(it, mainActivity)
-                path = getFilePathFromContentUri(it, mainActivity)!!
-                alertDialogBox = !alertDialogBox
+                path.value = getFilePathFromContentUri(it, mainActivity)!!
+                alertDialogBox.value = !alertDialogBox.value
             }
 
         })
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        Column(
-            modifier = Modifier.align(
-                Alignment.Center
-            )
-        ) {
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(150.dp)
-                    .padding(start = 20.dp, end = 20.dp)
-                    .clickable {
-                        result.launch("application/pdf")
-                    }
-                    .drawBehind {
-                        drawRoundRect(
-                            color = Color.Red,
-                            style = stroke,
-                            cornerRadius = CornerRadius(10.dp.toPx())
-                        )
-                    },
-                colors = CardDefaults.cardColors(
-                    containerColor = Color.Transparent
-                ),
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.upload),
-                    contentDescription = stringResource(
-                        id = R.string.upload
-                    ),
-                    modifier = Modifier
-                        .align(Alignment.CenterHorizontally)
-                        .padding(top = 20.dp)
-                )
-                Text(
-                    text = stringResource(id = R.string.addPDF),
-                    fontSize = 20.sp,
-                    modifier = Modifier
-                        .align(Alignment.CenterHorizontally)
-                        .padding(top = 10.dp)
-                )
-            }
+    LaunchedEffect(key1 = true) {
+        getPdfs(
+            listOfPdfs,
+            mainActivity,
+            viewModel.listOfPdfNames,
+            viewModel.listOfSize
+        )
+        withContext(Dispatchers.Main) {
+            viewModel.mutableStateListOfPdfs = listOfPdfs.toMutableStateList()
+            println("QUERY:${viewModel.mutableStateListOfPdfs[0].host}")
         }
-        if (showProgress) {
-            CircularProgressIndicator(
-                modifier = Modifier
-                    .height(40.dp)
-                    .width(40.dp)
-                    .zIndex(10f)
-                    .align(Alignment.Center),
-                color = Color.Red
-            )
-        }
-        if (alertDialogBox) {
-            AlertDialogBox(name = name, onDismiss = { alertDialogBox = !alertDialogBox }) {
-                scope.launch(Dispatchers.IO) {
-                    showProgress = true
-                    val python = Python.getInstance()
-                    val module = python.getModule("extractTextPDF")
-                    var result = module.callAttr("extract_text_pypdf", path, name.value)
-                    withContext(Dispatchers.Main) {
-                        showProgress = false
-                        if (result.toString() == "Success") {
-                            Toast.makeText(context, "File successfully saved", Toast.LENGTH_SHORT)
-                                .show()
-                        } else if (result.toString() == "Failure") {
-                            showProgress = false
-                            Toast.makeText(context, "Operation failed", Toast.LENGTH_SHORT)
-                                .show()
-                        }
-                    }
-                }
+    }
 
+    val filteredPdfs = remember(queryForSearch.value, viewModel.mutableStateListOfPdfs) {
+        if (queryForSearch.value.isBlank()) {
+            viewModel.mutableStateListOfPdfs // Show all files if the query is empty
+        } else {
+            viewModel.mutableStateListOfPdfs.filterIndexed { index, _ ->
+                viewModel.listOfPdfNames[index].contains(queryForSearch.value, ignoreCase = true)
             }
         }
     }
 
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .align(Alignment.TopCenter),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+
+            androidx.compose.material.OutlinedTextField(
+                value = queryForSearch.value,
+                onValueChange = { queryForSearch.value = it },
+                label = { Text("Search PDFs") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp),
+                colors = androidx.compose.material.TextFieldDefaults.outlinedTextFieldColors(
+                    focusedBorderColor = MaterialTheme.colorScheme.onPrimary,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.onPrimary,
+                    cursorColor = MaterialTheme.colorScheme.onPrimary,
+                    textColor = MaterialTheme.colorScheme.onPrimary
+                ),
+                shape = MaterialTheme.shapes.medium.copy(
+                    topStart = CornerSize(10.dp),
+                    topEnd = CornerSize(10.dp),
+                    bottomEnd = CornerSize(10.dp),
+                    bottomStart = CornerSize(10.dp),
+                )
+            )
+
+
+            LazyColumn() {
+                item {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(100.dp)
+                            .padding(start = 20.dp, end = 20.dp, top = 10.dp)
+                            .clickable {
+                                result.launch("application/pdf")
+                            }
+                            .drawBehind {
+                                drawRoundRect(
+                                    color = Color.Red,
+                                    style = stroke,
+                                    cornerRadius = CornerRadius(10.dp.toPx())
+                                )
+                            },
+                        colors = CardDefaults.cardColors(
+                            containerColor = Color.Transparent
+                        ),
+                    ) {
+                        Row(
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Image(
+                                painter = painterResource(id = R.drawable.upload),
+                                contentDescription = stringResource(
+                                    id = R.string.upload
+                                ),
+                                modifier = Modifier
+                                    .padding(top = 20.dp)
+                            )
+                            Text(
+                                text = stringResource(id = R.string.addPDF),
+                                fontSize = 20.sp,
+                                modifier = Modifier
+                                    .padding(top = 10.dp)
+                            )
+                        }
+                    }
+                }
+
+                itemsIndexed(items = filteredPdfs) { index, item ->
+                    val originalIndex = viewModel.mutableStateListOfPdfs.indexOf(item)
+                    if (originalIndex != -1) {
+                        SingleRowExtractText(
+                            uri = item,
+                            nameOfPdfFile = viewModel.listOfPdfNames[originalIndex],
+                            activity = mainActivity,
+                            path = path,
+                            alertDialogBox = alertDialogBox
+                        )
+                    } else {
+
+                    }
+                }
+//                itemsIndexed(items = viewModel.mutableStateListOfPdfs) { index, item ->
+//
+//                    SingleRowSplitFeature(
+//                        uri = item,
+//                        nameOfPdfFile = viewModel.listOfPdfNames[index],
+//                        activity = activity,
+//                        navHostController = navHostController,
+//                        viewModel = viewModel
+//                    )
+//                }
+            }
+        }
+    }
+    if (showProgress) {
+        LoadingDialogBox("Text is being extracted")
+    }
+    if (alertDialogBox.value) {
+        AlertDialogBox(name = name, onDismiss = { alertDialogBox.value = !alertDialogBox.value }) {
+            scope.launch(Dispatchers.IO) {
+                showProgress = true
+                val python = Python.getInstance()
+                val module = python.getModule("extractTextPDF")
+                var result = module.callAttr("extract_text_pypdf", path.value, name.value)
+                withContext(Dispatchers.Main) {
+                    showProgress = false
+                    if (result.toString() == "Success") {
+                        Toast.makeText(context, "File successfully saved", Toast.LENGTH_SHORT)
+                            .show()
+                    } else if (result.toString() == "Failure") {
+                        showProgress = false
+                        Toast.makeText(context, "Operation failed", Toast.LENGTH_SHORT)
+                            .show()
+                    }
+                }
+            }
+
+        }
+    }
 }

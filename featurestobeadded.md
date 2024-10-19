@@ -1,4 +1,4 @@
-FEATURES TO BE ADDED (5/29)
+FEATURES TO BE ADDED (6/29)
 --------------------------------------------
 
 1) Share pdf as pdf and images: DONE
@@ -30,6 +30,7 @@ FEATURES TO BE ADDED (5/29)
 27) Apply pdf reader of pdf screen to main screen:
 28) Search bar to the scanned documents:
 29) Way to delete the temp images folder when existing the app:
-30) Check if the pdf is password protected and give an option to unlock:
+30) Check if the pdf is password protected and give an option to unlock: DONE
 31) Check for locked pdf in pdf document screens and scanner screen:
 32) Close the screen automatically when permission to access all files is given:
+33) Allow all document request as a menu:

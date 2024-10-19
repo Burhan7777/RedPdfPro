@@ -20,7 +20,7 @@ def extract_text_pypdf(file, name):
         actual_text += reader1.pages[i].extract_text()
 
     try:
-        with open(f"/storage/emulated/0/Download/{name}.txt", 'w') as file1:
+        with open(f"/storage/emulated/0/Download/Pro Scanner/text files/{name}.txt", 'w') as file1:
             file1.write(actual_text)
 
             return "Success"

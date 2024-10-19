@@ -62,7 +62,7 @@ fun NavGraphBuilder.toolsGraph(
             CompressPDF(mainActivity = activity)
         }
         composable(Screens.ExtractText.route) {
-            ExtractText(activity)
+            ExtractText(activity,viewModel)
         }
         composable(Screens.RotatePdf.route) {
             RotatePDf(navHostController, viewModel, activity)
