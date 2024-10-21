@@ -1,4 +1,4 @@
-package com.pzbdownloaders.redpdfpro.extracttextfeature
+package com.pzbdownloaders.redpdfpro.extracttextfeature.components
 
 import android.net.Uri
 import androidx.compose.foundation.border
@@ -24,10 +24,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
+import com.chaquo.python.Python
 import com.pzbdownloaders.redpdfpro.core.presentation.MainActivity
-import com.pzbdownloaders.redpdfpro.core.presentation.MyViewModel
-import com.pzbdownloaders.redpdfpro.core.presentation.Screens
 import com.pzbdownloaders.redpdfpro.splitpdffeature.utils.getFilePathFromContentUri
 
 @Composable
@@ -36,7 +34,8 @@ fun SingleRowExtractText(
     nameOfPdfFile: String,
     activity: MainActivity,
     path: MutableState<String>,
-    alertDialogBox: MutableState<Boolean>
+    alertDialogBox: MutableState<Boolean>,
+    showFileIsLockedDialogBox: MutableState<Boolean>
 ) {
     Card(
         modifier = Modifier
@@ -44,8 +43,14 @@ fun SingleRowExtractText(
             .padding(10.dp)
             .clickable {
                 path.value = getFilePathFromContentUri(uri, activity)!!
-                alertDialogBox.value = true
-
+                val pythonLockedStatus = Python.getInstance()
+                val moduleLockedStatus = pythonLockedStatus.getModule("checkLockStatus")
+                var lockedResult = moduleLockedStatus.callAttr("check_lock_status_pdf", path.value)
+                if (lockedResult.toString() == "Locked") {
+                    showFileIsLockedDialogBox.value = true
+                } else if (lockedResult.toString() == "Unlocked") {
+                    alertDialogBox.value = true
+                }
             },
         shape = RoundedCornerShape(10.dp),
         colors = CardDefaults.cardColors(

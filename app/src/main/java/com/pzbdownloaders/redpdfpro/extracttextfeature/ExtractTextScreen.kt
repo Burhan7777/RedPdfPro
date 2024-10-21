@@ -1,6 +1,7 @@
 package com.pzbdownloaders.redpdfpro.extracttextfeature
 
 import android.net.Uri
+import android.os.Environment
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -14,13 +15,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -43,15 +42,16 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
+import com.chaquo.python.PyException
 import com.chaquo.python.Python
 import com.pzbdownloaders.redpdfpro.core.presentation.MainActivity
 import com.pzbdownloaders.redpdfpro.R
 import com.pzbdownloaders.redpdfpro.core.presentation.Component.AlertDialogBox
+import com.pzbdownloaders.redpdfpro.core.presentation.Component.DisplayMessageDialogBox
 import com.pzbdownloaders.redpdfpro.core.presentation.Component.LoadingDialogBox
 import com.pzbdownloaders.redpdfpro.core.presentation.MyViewModel
+import com.pzbdownloaders.redpdfpro.extracttextfeature.components.SingleRowExtractText
 import com.pzbdownloaders.redpdfpro.mergepdffeature.util.getFileName
-import com.pzbdownloaders.redpdfpro.splitpdffeature.components.SingleRowSplitFeature
 import com.pzbdownloaders.redpdfpro.splitpdffeature.screens.getPdfs
 import com.pzbdownloaders.redpdfpro.splitpdffeature.utils.getFilePathFromContentUri
 import kotlinx.coroutines.Dispatchers
@@ -59,7 +59,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 @Composable
-fun ExtractText(mainActivity: MainActivity, viewModel: MyViewModel) {
+fun ExtractText(activity: MainActivity, viewModel: MyViewModel) {
     var path = remember { mutableStateOf("") }
     var nameOfFile = remember { mutableStateOf("") }
     var name = remember {
@@ -77,6 +77,19 @@ fun ExtractText(mainActivity: MainActivity, viewModel: MyViewModel) {
 
     var queryForSearch = remember { mutableStateOf("") }
 
+    var showFileIsLockedDialogBox = remember { mutableStateOf(false) }
+
+    var showEnterPasswordDialogBox = remember { mutableStateOf(false) }
+
+    var showSaveAsTemp = remember { mutableStateOf(false) }
+
+    var password = remember { mutableStateOf("") }
+
+    var tempNameOfFile = remember { mutableStateOf("") }
+
+    var showProgressOfUnlocking = remember { mutableStateOf(false) }
+
+    var pathOfLockedFile = remember { mutableStateOf("") }
 
     val stroke = Stroke(
         width = 2f,
@@ -92,8 +105,8 @@ fun ExtractText(mainActivity: MainActivity, viewModel: MyViewModel) {
         contract = ActivityResultContracts.GetContent(),
         onResult = {
             if (it != null) {
-                nameOfFile.value = getFileName(it, mainActivity)
-                path.value = getFilePathFromContentUri(it, mainActivity)!!
+                nameOfFile.value = getFileName(it, activity)
+                path.value = getFilePathFromContentUri(it, activity)!!
                 alertDialogBox.value = !alertDialogBox.value
             }
 
@@ -102,7 +115,7 @@ fun ExtractText(mainActivity: MainActivity, viewModel: MyViewModel) {
     LaunchedEffect(key1 = true) {
         getPdfs(
             listOfPdfs,
-            mainActivity,
+            activity,
             viewModel.listOfPdfNames,
             viewModel.listOfSize
         )
@@ -203,9 +216,10 @@ fun ExtractText(mainActivity: MainActivity, viewModel: MyViewModel) {
                         SingleRowExtractText(
                             uri = item,
                             nameOfPdfFile = viewModel.listOfPdfNames[originalIndex],
-                            activity = mainActivity,
+                            activity = activity,
                             path = path,
-                            alertDialogBox = alertDialogBox
+                            alertDialogBox = alertDialogBox,
+                            showFileIsLockedDialogBox = showFileIsLockedDialogBox
                         )
                     } else {
 
@@ -227,6 +241,117 @@ fun ExtractText(mainActivity: MainActivity, viewModel: MyViewModel) {
     if (showProgress) {
         LoadingDialogBox("Text is being extracted")
     }
+    if (showFileIsLockedDialogBox.value) {
+        DisplayMessageDialogBox(
+            "This file is locked. You can unlock it and then add it.",
+            confirmTextButtonText = "Unlock",
+            cancelTextButtonText = "Cancel",
+            featureExecution = {
+                showEnterPasswordDialogBox.value = true
+            }
+        ) {
+            showFileIsLockedDialogBox.value = false
+        }
+    }
+    if (showEnterPasswordDialogBox.value) {
+        AlertDialogBox(
+            name = password,
+            confirmButtonText = stringResource(R.string.unlockPDF),
+            id = R.string.existingPassword,
+            featureExecution = {
+                scope.launch(Dispatchers.IO) {
+                    showSaveAsTemp.value = true
+                }
+            },
+            onDismiss = { showEnterPasswordDialogBox.value = false })
+    }
+    if (showSaveAsTemp.value) {
+        AlertDialogBox(
+            name = tempNameOfFile,
+            id = R.string.saveAs,
+            confirmButtonText = stringResource(R.string.save),
+            dismissButtonText = stringResource(R.string.cancel),
+            featureExecution = {
+                showProgressOfUnlocking.value = true
+                scope.launch(Dispatchers.IO) {
+                    val python = Python.getInstance()
+                    val module = python.getModule("unlockPDFWithTempFile")
+                    try {
+                        var result = module.callAttr(
+                            "unlock_pdf_temp_file",
+                            path.value,
+                            password.value,
+                            tempNameOfFile.value
+                        )
+
+                        withContext(Dispatchers.Main) {
+                            showProgressOfUnlocking.value = false
+                            if (result.toString() == "Success") {
+                                val externalDir =
+                                    "${
+                                        Environment.getExternalStoragePublicDirectory(
+                                            Environment.DIRECTORY_DOWNLOADS
+                                        )
+                                    }/Pro Scanner/temp"
+                                path.value =
+                                    "$externalDir/${tempNameOfFile.value}.pdf"
+                                val python = Python.getInstance()
+                                val module = python.getModule("extractTextPDF")
+                                var result = module.callAttr(
+                                    "extract_text_pypdf",
+                                    path.value,
+                                    tempNameOfFile.value
+                                )
+                                withContext(Dispatchers.Main) {
+                                    showProgress = false
+                                    if (result.toString() == "Success") {
+                                        Toast.makeText(
+                                            context,
+                                            "File successfully saved",
+                                            Toast.LENGTH_SHORT
+                                        )
+                                            .show()
+                                    } else if (result.toString() == "Failure") {
+                                        showProgress = false
+                                        Toast.makeText(
+                                            context,
+                                            "Operation failed",
+                                            Toast.LENGTH_SHORT
+                                        )
+                                            .show()
+                                    }
+                                }
+                            } else if (result.toString() == "Failure") {
+                                showProgressOfUnlocking.value = false
+                                Toast.makeText(
+                                    activity,
+                                    "Operation failed. Please try again",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            } else {
+
+                            }
+                        }
+                    } catch (exception: PyException) {
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(
+                                activity,
+                                "Password is incorrect",
+                                Toast.LENGTH_SHORT
+                            )
+                                .show()
+                            showProgressOfUnlocking.value = false
+                        }
+                    }
+                }
+            },
+            onDismiss = {
+                showSaveAsTemp.value = false
+            })
+    }
+    if (showProgressOfUnlocking.value) {
+        LoadingDialogBox("Saving file")
+    }
     if (alertDialogBox.value) {
         AlertDialogBox(name = name, onDismiss = { alertDialogBox.value = !alertDialogBox.value }) {
             scope.launch(Dispatchers.IO) {
@@ -246,7 +371,6 @@ fun ExtractText(mainActivity: MainActivity, viewModel: MyViewModel) {
                     }
                 }
             }
-
         }
     }
 }
