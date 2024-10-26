@@ -137,5 +137,8 @@ dependencies {
     //PDFIUM
     implementation ("com.github.barteksc:pdfium-android:1.9.0")
 
+    //PDF BOX
+    implementation ("com.tom-roush:pdfbox-android:2.0.27.0")
+
 
 }

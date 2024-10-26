@@ -49,16 +49,18 @@ fun FinalScreenOfPdfOperations(
     navHostController: NavHostController,
     path: String,
     uri: String,
-    pathOfUnlockedFIle: String
+    pathOfUnlockedFIle: String?
 ) {
     var scope = rememberCoroutineScope()
     BackHandler {
-        var uri = FileProvider.getUriForFile(
-            activity,
-            activity.applicationContext.packageName + ".provider",
-            File(pathOfUnlockedFIle)
-        )
-        activity.contentResolver.delete(uri, null, null)
+        if (pathOfUnlockedFIle != "null") {
+            var uri = FileProvider.getUriForFile(
+                activity,
+                activity.applicationContext.packageName + ".provider",
+                File(pathOfUnlockedFIle!!)
+            )
+            activity.contentResolver.delete(uri, null, null)
+        }
         navHostController.navigateUp()
         navHostController.navigateUp()
     }
@@ -181,12 +183,14 @@ fun FinalScreenOfPdfOperations(
         Spacer(modifier = Modifier.height(100.dp))
         Button(
             onClick = {
-                var uri = FileProvider.getUriForFile(
-                    activity,
-                    activity.applicationContext.packageName + ".provider",
-                    File(pathOfUnlockedFIle)
-                )
-                activity.contentResolver.delete(uri, null, null)
+                if (pathOfUnlockedFIle != "null") {
+                    var uri = FileProvider.getUriForFile(
+                        activity,
+                        activity.applicationContext.packageName + ".provider",
+                        File(pathOfUnlockedFIle)
+                    )
+                    activity.contentResolver.delete(uri, null, null)
+                }
                 navHostController.navigateUp()
                 navHostController.navigateUp()
             },

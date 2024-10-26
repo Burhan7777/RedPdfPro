@@ -3,10 +3,16 @@ package com.pzbdownloaders.redpdfpro.extractimagefeature.util
 import android.content.Context
 import com.shockwave.pdfium.PdfiumCore
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Environment
 import android.os.ParcelFileDescriptor
 import android.widget.Toast
+import androidx.compose.runtime.MutableState
+import androidx.navigation.NavHostController
 import com.pzbdownloaders.redpdfpro.core.presentation.Component.scanFile
+import com.pzbdownloaders.redpdfpro.core.presentation.Screens
+import com.tom_roush.pdfbox.pdmodel.PDDocument
+import com.tom_roush.pdfbox.pdmodel.graphics.image.PDImageXObject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -15,7 +21,11 @@ import java.io.File
 import java.io.FileOutputStream
 import java.util.UUID
 
-fun extractImagesFromPDFWithPdfium(pdfFile: File, context: Context, scope: CoroutineScope) {
+fun extractImagesFromPDFWithPdfium(
+    pdfFile: File,
+    context: Context,
+    scope: CoroutineScope
+) {
     scope.launch(Dispatchers.Default) {
         val pdfiumCore = PdfiumCore(context)
         val pdfDocument = pdfiumCore.newDocument(
@@ -49,6 +59,66 @@ fun extractImagesFromPDFWithPdfium(pdfFile: File, context: Context, scope: Corou
         pdfiumCore.closeDocument(pdfDocument)
         withContext(Dispatchers.Main) {
             Toast.makeText(context, "Success", Toast.LENGTH_SHORT).show()
+        }
+    }
+}
+
+
+fun extractImagesFromPDFWithPDFBoxAndroid(
+    pdfFile: File,
+    context: Context,
+    scope: CoroutineScope,
+    showExtractingLoadingBox: MutableState<Boolean>,
+    navHostController: NavHostController,
+) {
+    var externalDir =
+        "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)}"
+    // Load the PDF document
+    scope.launch(Dispatchers.Default) {
+        showExtractingLoadingBox.value = true
+        PDDocument.load(pdfFile).use { document ->
+            var imageIndex = 0
+            // Iterate over each page in the document
+            for (page in document.pages) {
+                val resources = page.resources
+                for (xObjectName in resources.xObjectNames) {
+                    var randomUUID = UUID.randomUUID()
+                    val xObject = resources.getXObject(xObjectName)
+                    if (xObject is PDImageXObject) {
+                        // Extract image data as a Bitmap
+                        val imageStream = xObject.createInputStream()
+                        val bitmap = BitmapFactory.decodeStream(imageStream)
+                        imageStream.close()
+
+
+                        // Save the bitmap to the output directory
+                        if (bitmap != null) {
+                            val outputFile =
+                                File(
+                                    externalDir,
+                                    "Pro Scanner/images/image$imageIndex-${randomUUID}.png"
+                                )
+                            FileOutputStream(outputFile).use { out ->
+                                bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
+                            }
+                        } else {
+                            withContext(Dispatchers.Main) {
+                                Toast.makeText(
+                                    context,
+                                    "Failed to decode image at page : ${document.pages.indexOf(page)}, skipping that image",
+                                    Toast.LENGTH_LONG
+                                )
+                                    .show()
+                            }
+                        }
+                        imageIndex++
+                    }
+                }
+            }
+            withContext(Dispatchers.Main) {
+                showExtractingLoadingBox.value = false
+                Toast.makeText(context, "Success", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 }

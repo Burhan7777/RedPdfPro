@@ -44,7 +44,10 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.pzbdownloaders.redpdfpro.core.presentation.MainActivity
 import com.pzbdownloaders.redpdfpro.R
+import com.pzbdownloaders.redpdfpro.core.presentation.Component.LoadingDialogBox
 import com.pzbdownloaders.redpdfpro.core.presentation.MyViewModel
+import com.pzbdownloaders.redpdfpro.extractimagefeature.presentation.SingleRowExtractImage
+import com.pzbdownloaders.redpdfpro.extractimagefeature.util.extractImagesFromPDFWithPDFBoxAndroid
 import com.pzbdownloaders.redpdfpro.extractimagefeature.util.extractImagesFromPDFWithPdfium
 import com.pzbdownloaders.redpdfpro.splitpdffeature.components.SingleRowSplitFeature
 import com.pzbdownloaders.redpdfpro.splitpdffeature.screens.getPdfs
@@ -63,6 +66,8 @@ fun ExtractImage(
     var totalPages by remember { mutableStateOf(0) }
     val path = remember { mutableStateOf("") }
 
+    var showExtractingImagesLoadingBox = remember { mutableStateOf(false) }
+
 
     val scope = rememberCoroutineScope()
 
@@ -78,7 +83,14 @@ fun ExtractImage(
         onResult = {
             if (it != null) {
                 path.value = getFilePathFromContentUri(it, activity)!!
-                extractImagesFromPDFWithPdfium(File(path.value), context, scope)
+                // extractImagesFromPDFWithPdfium(File(path.value), context, scope)
+                extractImagesFromPDFWithPDFBoxAndroid(
+                    File(path.value),
+                    context,
+                    scope,
+                    showExtractingImagesLoadingBox,
+                    navHostController
+                )
 
 //
             }
@@ -114,6 +126,10 @@ fun ExtractImage(
                 .align(Alignment.TopCenter),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+
+            if (showExtractingImagesLoadingBox.value) {
+                LoadingDialogBox("Extracting images from PDF")
+            }
 
             androidx.compose.material.OutlinedTextField(
                 value = queryForSearch.value,
@@ -184,12 +200,12 @@ fun ExtractImage(
                 itemsIndexed(items = filteredPdfs) { index, item ->
                     val originalIndex = viewModel.mutableStateListOfPdfs.indexOf(item)
                     if (originalIndex != -1) {
-                        SingleRowSplitFeature(
+                        SingleRowExtractImage(
                             uri = item,
                             nameOfPdfFile = viewModel.listOfPdfNames[originalIndex],
                             activity = activity,
                             navHostController = navHostController,
-                            viewModel = viewModel
+                            showExtractingLoadingBox = showExtractingImagesLoadingBox
                         )
                     } else {
 
