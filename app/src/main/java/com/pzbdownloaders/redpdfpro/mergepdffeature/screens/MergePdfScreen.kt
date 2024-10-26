@@ -350,7 +350,7 @@ fun MergePdf(
                             )
                         } else if (result.toString() == "Failure") {
                             showProgress = false
-                            Toast.makeText(context, "Operation Failed", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, "Operation Failed. Please try again", Toast.LENGTH_SHORT).show()
                         }
                     }
                 }

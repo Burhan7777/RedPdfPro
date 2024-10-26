@@ -7,7 +7,7 @@ def extract_images(file):
         for pages in range(len(reader.pages)):
             selected_page = reader.pages[pages]
             for images in selected_page.images:
-                with open(f"/storage/emulated/0/Download/{images.name}", 'wb') as file:
+                with open(f"/storage/emulated/0/Download/Pro Scanner/images/{images.name}", 'wb') as file:
                     file.write(images.data)
 
         return "Success"

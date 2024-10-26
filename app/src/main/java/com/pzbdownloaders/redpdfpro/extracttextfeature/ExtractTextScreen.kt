@@ -285,7 +285,6 @@ fun ExtractText(activity: MainActivity, viewModel: MyViewModel) {
                         )
 
                         withContext(Dispatchers.Main) {
-                            showProgressOfUnlocking.value = false
                             if (result.toString() == "Success") {
                                 val externalDir =
                                     "${
@@ -295,13 +294,16 @@ fun ExtractText(activity: MainActivity, viewModel: MyViewModel) {
                                     }/Pro Scanner/temp"
                                 path.value =
                                     "$externalDir/${tempNameOfFile.value}.pdf"
-                                val python = Python.getInstance()
-                                val module = python.getModule("extractTextPDF")
-                                var result = module.callAttr(
-                                    "extract_text_pypdf",
-                                    path.value,
-                                    tempNameOfFile.value
-                                )
+                                withContext(Dispatchers.IO) {
+                                    val python = Python.getInstance()
+                                    val module = python.getModule("extractTextPDF")
+                                    var result = module.callAttr(
+                                        "extract_text_pypdf",
+                                        path.value,
+                                        tempNameOfFile.value
+                                    )
+                                }
+                                showProgressOfUnlocking.value = false
                                 withContext(Dispatchers.Main) {
                                     showProgress = false
                                     if (result.toString() == "Success") {

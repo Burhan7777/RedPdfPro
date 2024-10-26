@@ -134,5 +134,8 @@ dependencies {
 
     implementation ("io.github.afreakyelf:Pdf-Viewer:2.1.1")
 
+    //PDFIUM
+    implementation ("com.github.barteksc:pdfium-android:1.9.0")
+
 
 }

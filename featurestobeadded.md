@@ -34,3 +34,4 @@ FEATURES TO BE ADDED (6/29)
 31) Check for locked pdf in pdf document screens and scanner screen:
 32) Close the screen automatically when permission to access all files is given:
 33) Allow all document request as a menu:
+34) Consider pdfium to render the pdfs:
