@@ -64,4 +64,7 @@ sealed class Screens(var route: String) {
         }
     }
 
+    object FinalScreenOFImageExtraction :
+        Screens("final_screen_of_image_extraction")
+
 }

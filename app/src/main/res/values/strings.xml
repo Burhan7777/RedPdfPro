@@ -53,4 +53,6 @@
     <string name="closeScreen">Close Screen</string>
     <string name="enterFileName">Save as...</string>
     <string name="saveTemporarilyAs">Save temporarily as</string>
+    <string name="openGallery">Open Gallery</string>
+    <string name="shareImages">Share Images</string>
 </resources>

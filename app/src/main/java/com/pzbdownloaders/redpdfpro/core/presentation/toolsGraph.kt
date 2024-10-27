@@ -1,6 +1,5 @@
 package com.pzbdownloaders.redpdfpro.core.presentation
 
-import androidx.navigation.NavArgument
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -9,6 +8,8 @@ import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import com.pzbdownloaders.redpdfpro.docstopdffeature.DocsToPdf
 import com.pzbdownloaders.redpdfpro.compresspdffeature.screens.CompressPDF
+import com.pzbdownloaders.redpdfpro.core.presentation.finalscreens.FinalScreenForImageExtraction
+import com.pzbdownloaders.redpdfpro.core.presentation.finalscreens.FinalScreenOfPdfOperations
 import com.pzbdownloaders.redpdfpro.extractimagefeature.ExtractImage
 import com.pzbdownloaders.redpdfpro.extracttextfeature.ExtractText
 import com.pzbdownloaders.redpdfpro.imagetopdffeature.ImageToPdf
@@ -133,6 +134,15 @@ fun NavGraphBuilder.toolsGraph(
                 viewModel,
                 navHostController,
                 it.arguments?.getString("path") ?: "",
+            )
+        }
+        composable(
+            Screens.FinalScreenOFImageExtraction.route
+        ) {
+            FinalScreenForImageExtraction(
+                activity,
+                navHostController,
+                viewModel
             )
         }
     }

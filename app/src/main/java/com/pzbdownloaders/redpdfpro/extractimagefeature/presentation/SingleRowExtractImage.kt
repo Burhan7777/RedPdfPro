@@ -29,6 +29,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.pzbdownloaders.redpdfpro.core.presentation.MainActivity
+import com.pzbdownloaders.redpdfpro.core.presentation.MyViewModel
 import com.pzbdownloaders.redpdfpro.core.presentation.Screens
 import com.pzbdownloaders.redpdfpro.extractimagefeature.util.extractImagesFromPDFWithPDFBoxAndroid
 import com.pzbdownloaders.redpdfpro.splitpdffeature.utils.getFilePathFromContentUri
@@ -40,7 +41,8 @@ fun SingleRowExtractImage(
     activity: MainActivity,
     navHostController: NavHostController,
     nameOfPdfFile: String,
-    showExtractingLoadingBox: MutableState<Boolean>
+    showExtractingLoadingBox: MutableState<Boolean>,
+    viewModel: MyViewModel
 ) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
@@ -51,7 +53,14 @@ fun SingleRowExtractImage(
             .padding(10.dp)
             .clickable {
                 val path = getFilePathFromContentUri(uri, activity)!!
-                extractImagesFromPDFWithPDFBoxAndroid(File(path), activity, scope,showExtractingLoadingBox,navHostController)
+                extractImagesFromPDFWithPDFBoxAndroid(
+                    File(path),
+                    activity,
+                    scope,
+                    showExtractingLoadingBox,
+                    navHostController,
+                    viewModel
+                )
             },
         shape = RoundedCornerShape(10.dp),
         colors = CardDefaults.cardColors(

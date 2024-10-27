@@ -1,4 +1,4 @@
-package com.pzbdownloaders.redpdfpro.core.presentation
+package com.pzbdownloaders.redpdfpro.core.presentation.finalscreens
 
 import android.content.Intent
 import android.net.Uri
@@ -25,7 +25,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -35,8 +34,9 @@ import androidx.core.content.FileProvider
 import androidx.navigation.NavHostController
 import com.pzbdownloaders.redpdfpro.R
 import com.pzbdownloaders.redpdfpro.core.presentation.Component.ProgressDialogBox
+import com.pzbdownloaders.redpdfpro.core.presentation.MainActivity
+import com.pzbdownloaders.redpdfpro.core.presentation.Screens
 import com.pzbdownloaders.redpdfpro.documentfeature.util.savePdfAsImageInTempFolder
-import com.rajat.pdfviewer.compose.PdfRendererViewCompose
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext

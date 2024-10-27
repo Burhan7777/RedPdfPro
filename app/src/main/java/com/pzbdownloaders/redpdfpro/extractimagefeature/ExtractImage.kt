@@ -89,7 +89,8 @@ fun ExtractImage(
                     context,
                     scope,
                     showExtractingImagesLoadingBox,
-                    navHostController
+                    navHostController,
+                    viewModel
                 )
 
 //
@@ -205,7 +206,8 @@ fun ExtractImage(
                             nameOfPdfFile = viewModel.listOfPdfNames[originalIndex],
                             activity = activity,
                             navHostController = navHostController,
-                            showExtractingLoadingBox = showExtractingImagesLoadingBox
+                            showExtractingLoadingBox = showExtractingImagesLoadingBox,
+                            viewModel = viewModel
                         )
                     } else {
 

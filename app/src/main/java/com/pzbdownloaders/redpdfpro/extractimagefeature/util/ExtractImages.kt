@@ -8,8 +8,10 @@ import android.os.Environment
 import android.os.ParcelFileDescriptor
 import android.widget.Toast
 import androidx.compose.runtime.MutableState
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.pzbdownloaders.redpdfpro.core.presentation.Component.scanFile
+import com.pzbdownloaders.redpdfpro.core.presentation.MyViewModel
 import com.pzbdownloaders.redpdfpro.core.presentation.Screens
 import com.tom_roush.pdfbox.pdmodel.PDDocument
 import com.tom_roush.pdfbox.pdmodel.graphics.image.PDImageXObject
@@ -70,9 +72,11 @@ fun extractImagesFromPDFWithPDFBoxAndroid(
     scope: CoroutineScope,
     showExtractingLoadingBox: MutableState<Boolean>,
     navHostController: NavHostController,
+    viewModel: MyViewModel
 ) {
     var externalDir =
         "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)}"
+    var imageExtractedCount = 0
     // Load the PDF document
     scope.launch(Dispatchers.Default) {
         showExtractingLoadingBox.value = true
@@ -101,6 +105,9 @@ fun extractImagesFromPDFWithPDFBoxAndroid(
                             FileOutputStream(outputFile).use { out ->
                                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
                             }
+                            scanFile(outputFile.absolutePath, context)
+                            viewModel.listOfImagesFromExtractImages.add(outputFile.absolutePath)
+                            imageExtractedCount++
                         } else {
                             withContext(Dispatchers.Main) {
                                 Toast.makeText(
@@ -117,7 +124,14 @@ fun extractImagesFromPDFWithPDFBoxAndroid(
             }
             withContext(Dispatchers.Main) {
                 showExtractingLoadingBox.value = false
-                Toast.makeText(context, "Success", Toast.LENGTH_SHORT).show()
+                if (imageExtractedCount > 0) {
+                    navHostController.navigate(
+                        Screens.FinalScreenOFImageExtraction.route
+                    )
+                } else {
+                    Toast.makeText(context, "No image was extracted from pdf", Toast.LENGTH_LONG)
+                        .show()
+                }
             }
         }
     }
