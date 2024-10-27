@@ -28,6 +28,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.chaquo.python.Python
 import com.pzbdownloaders.redpdfpro.core.presentation.MainActivity
 import com.pzbdownloaders.redpdfpro.core.presentation.MyViewModel
 import com.pzbdownloaders.redpdfpro.core.presentation.Screens
@@ -42,7 +43,11 @@ fun SingleRowExtractImage(
     navHostController: NavHostController,
     nameOfPdfFile: String,
     showExtractingLoadingBox: MutableState<Boolean>,
-    viewModel: MyViewModel
+    viewModel: MyViewModel,
+    showFileIsLockedDialogBox: MutableState<Boolean>,
+    pathOfFIle: MutableState<String>,
+    showSaveAsTempAndExtractImages: MutableState<Boolean>
+
 ) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
@@ -52,15 +57,23 @@ fun SingleRowExtractImage(
             .fillMaxWidth()
             .padding(10.dp)
             .clickable {
-                val path = getFilePathFromContentUri(uri, activity)!!
-                extractImagesFromPDFWithPDFBoxAndroid(
-                    File(path),
-                    activity,
-                    scope,
-                    showExtractingLoadingBox,
-                    navHostController,
-                    viewModel
-                )
+                pathOfFIle.value = getFilePathFromContentUri(uri, activity)!!
+                val python = Python.getInstance()
+                val module = python.getModule("checkLockStatus")
+                val result = module.callAttr("check_lock_status_pdf", pathOfFIle.value)
+                if (result.toString() == "Unlocked") {
+                    extractImagesFromPDFWithPDFBoxAndroid(
+                        File(pathOfFIle.value),
+                        activity,
+                        scope,
+                        showExtractingLoadingBox,
+                        navHostController,
+                        viewModel,
+                        showSaveAsTempAndExtractImages
+                    )
+                } else {
+                    showFileIsLockedDialogBox.value = true
+                }
             },
         shape = RoundedCornerShape(10.dp),
         colors = CardDefaults.cardColors(

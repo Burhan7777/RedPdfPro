@@ -72,7 +72,8 @@ fun extractImagesFromPDFWithPDFBoxAndroid(
     scope: CoroutineScope,
     showExtractingLoadingBox: MutableState<Boolean>,
     navHostController: NavHostController,
-    viewModel: MyViewModel
+    viewModel: MyViewModel,
+    showSaveAsTempAndExtractImages: MutableState<Boolean>
 ) {
     var externalDir =
         "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)}"
@@ -124,6 +125,7 @@ fun extractImagesFromPDFWithPDFBoxAndroid(
             }
             withContext(Dispatchers.Main) {
                 showExtractingLoadingBox.value = false
+                showSaveAsTempAndExtractImages.value = false
                 if (imageExtractedCount > 0) {
                     navHostController.navigate(
                         Screens.FinalScreenOFImageExtraction.route

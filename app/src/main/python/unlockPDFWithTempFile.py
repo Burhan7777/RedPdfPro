@@ -16,5 +16,5 @@ def unlock_pdf_temp_file(file, password, name):
     try:
         writer.write(f"/storage/emulated/0/Download/Pro Scanner/temp/{name}.pdf")
         return "Success"
-    except Exception:
-        return "Failure"
+    except Exception as e:
+        return f"Failure: {str(e)}"
