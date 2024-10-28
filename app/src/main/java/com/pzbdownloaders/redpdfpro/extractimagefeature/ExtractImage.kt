@@ -53,6 +53,7 @@ import com.pzbdownloaders.redpdfpro.core.presentation.Component.DisplayMessageDi
 import com.pzbdownloaders.redpdfpro.core.presentation.Component.LoadingDialogBox
 import com.pzbdownloaders.redpdfpro.core.presentation.MyViewModel
 import com.pzbdownloaders.redpdfpro.extractimagefeature.presentation.SingleRowExtractImage
+import com.pzbdownloaders.redpdfpro.extractimagefeature.util.UnlockPdfAndExtractImages
 import com.pzbdownloaders.redpdfpro.extractimagefeature.util.extractImagesFromPDFWithPDFBoxAndroid
 import com.pzbdownloaders.redpdfpro.extractimagefeature.util.extractImagesFromPDFWithPdfium
 import com.pzbdownloaders.redpdfpro.splitpdffeature.components.SingleRowSplitFeature
@@ -82,6 +83,7 @@ fun ExtractImage(
     val showSaveAsTempAndExtractImages = remember { mutableStateOf(false) }
     val showProgressOfUnlocking = remember { mutableStateOf(false) }
     val pathOfFile = remember { mutableStateOf("") }
+    val pathOfTempFile = remember { mutableStateOf("") }
 
 
     val scope = rememberCoroutineScope()
@@ -97,17 +99,25 @@ fun ExtractImage(
         contract = ActivityResultContracts.GetContent(),
         onResult = {
             if (it != null) {
-                path.value = getFilePathFromContentUri(it, activity)!!
+                pathOfFile.value = getFilePathFromContentUri(it, activity)!!
                 // extractImagesFromPDFWithPdfium(File(path.value), context, scope)
-                extractImagesFromPDFWithPDFBoxAndroid(
-                    File(path.value),
-                    context,
-                    scope,
-                    showExtractingImagesLoadingBox,
-                    navHostController,
-                    viewModel,
-                    showSaveAsTempAndExtractImages
-                )
+                val python = Python.getInstance()
+                val module = python.getModule("checkLockStatus")
+                val result = module.callAttr("check_lock_status_pdf", pathOfFile.value)
+                if (result.toString() == "Unlocked") {
+                    extractImagesFromPDFWithPDFBoxAndroid(
+                        File(path.value),
+                        context,
+                        scope,
+                        showExtractingImagesLoadingBox,
+                        navHostController,
+                        viewModel,
+                        showSaveAsTempAndExtractImages,
+                        mutableStateOf("")
+                    )
+                } else {
+                    showFileIsLockedDialogBox.value = true
+                }
 
 //
             }
@@ -144,101 +154,19 @@ fun ExtractImage(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            if (showExtractingImagesLoadingBox.value) {
-                LoadingDialogBox("Extracting images from PDF")
-            }
-
-            if (showFileIsLockedDialogBox.value) {
-                DisplayMessageDialogBox(
-                    "This file is locked. You can unlock it and then add it.",
-                    confirmTextButtonText = "Unlock",
-                    cancelTextButtonText = "Cancel",
-                    featureExecution = {
-                        showUnlockDialogBox.value = true
-                    }
-                ) {
-                    showFileIsLockedDialogBox.value = false
-                }
-            }
-
-            if (showUnlockDialogBox.value) {
-                AlertDialogBox(
-                    name = password,
-                    confirmButtonText = stringResource(R.string.unlockPDF),
-                    id = R.string.existingPassword,
-                    featureExecution = {
-                        showSaveAsTempAndExtractImages.value = true
-                    },
-                    onDismiss = { showUnlockDialogBox.value = false })
-            }
-
-            if (showProgressOfUnlocking.value) {
-                LoadingDialogBox("Unlocking PDF")
-            }
-
-            if (showSaveAsTempAndExtractImages.value) {
-                LaunchedEffect(true) {
-                    val randomUUID = UUID.randomUUID()
-                    val tempNameOfFile = "$randomUUID"
-                    showProgressOfUnlocking.value = true
-                    scope.launch(Dispatchers.IO) {
-                        val python = Python.getInstance()
-                        val module = python.getModule("unlockPDFWithTempFile")
-                        try {
-                            var result = module.callAttr(
-                                "unlock_pdf_temp_file",
-                                pathOfFile.value,
-                                password.value,
-                                tempNameOfFile
-                            )
-
-                            withContext(Dispatchers.Main) {
-                                if (result.toString() == "Success") {
-                                    showProgressOfUnlocking.value = false
-                                    val externalDir =
-                                        "${
-                                            Environment.getExternalStoragePublicDirectory(
-                                                Environment.DIRECTORY_DOWNLOADS
-                                            )
-                                        }/Pro Scanner/temp"
-                                    var path =
-                                        "$externalDir/${tempNameOfFile}.pdf"
-                                    extractImagesFromPDFWithPDFBoxAndroid(
-                                        File(path),
-                                        activity,
-                                        scope,
-                                        showExtractingImagesLoadingBox,
-                                        navHostController,
-                                        viewModel,
-                                        showSaveAsTempAndExtractImages
-                                    )
-
-                                } else if (result.toString().contains("Failure")) {
-                                    Toast.makeText(
-                                        context,
-                                        "Operation failed",
-                                        Toast.LENGTH_SHORT
-                                    )
-                                        .show()
-                                    showProgressOfUnlocking.value = false
-                                } else {
-                                    showProgressOfUnlocking.value = false
-                                }
-                            }
-                        } catch (exception: PyException) {
-                            withContext(Dispatchers.Main) {
-                                Toast.makeText(
-                                    activity,
-                                    "Password is incorrect",
-                                    Toast.LENGTH_SHORT
-                                )
-                                    .show()
-                                showProgressOfUnlocking.value = false
-                            }
-                        }
-                    }
-                }
-            }
+            UnlockPdfAndExtractImages(
+                showExtractingImagesLoadingBox,
+                showFileIsLockedDialogBox,
+                showUnlockDialogBox,
+                password,
+                showSaveAsTempAndExtractImages,
+                showProgressOfUnlocking,
+                pathOfFile,
+                pathOfTempFile,
+                activity,
+                navHostController,
+                viewModel
+            )
 
             androidx.compose.material.OutlinedTextField(
                 value = queryForSearch.value,

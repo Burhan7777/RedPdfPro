@@ -137,12 +137,16 @@ fun NavGraphBuilder.toolsGraph(
             )
         }
         composable(
-            Screens.FinalScreenOFImageExtraction.route
+            Screens.FinalScreenOFImageExtraction.route, listOf(navArgument("pathOfTempFile") {
+                type = NavType.StringType
+                defaultValue = ""
+            })
         ) {
             FinalScreenForImageExtraction(
                 activity,
                 navHostController,
-                viewModel
+                viewModel,
+                it.arguments?.getString("pathOfTempFile") ?: ""
             )
         }
     }

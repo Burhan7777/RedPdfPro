@@ -53,7 +53,7 @@ fun FinalScreenOfPdfOperations(
 ) {
     var scope = rememberCoroutineScope()
     BackHandler {
-        if (pathOfUnlockedFIle != "null") {
+        if (pathOfUnlockedFIle != "") {
             var uri = FileProvider.getUriForFile(
                 activity,
                 activity.applicationContext.packageName + ".provider",
@@ -183,7 +183,7 @@ fun FinalScreenOfPdfOperations(
         Spacer(modifier = Modifier.height(100.dp))
         Button(
             onClick = {
-                if (pathOfUnlockedFIle != "null") {
+                if (pathOfUnlockedFIle != "") {
                     var uri = FileProvider.getUriForFile(
                         activity,
                         activity.applicationContext.packageName + ".provider",

@@ -45,13 +45,25 @@ import java.io.File
 fun FinalScreenForImageExtraction(
     activity: MainActivity,
     navHostController: NavHostController,
-    viewModel: MyViewModel
+    viewModel: MyViewModel,
+    pathOfTemFile: String
 ) {
 
+    println(pathOfTemFile)
     BackHandler {
         viewModel.listOfImagesFromExtractImages.clear()
+        if (pathOfTemFile != "") {
+            var uri = FileProvider.getUriForFile(
+                activity,
+                activity.applicationContext.packageName + ".provider",
+                File(pathOfTemFile)
+            )
+            activity.contentResolver.delete(uri, null, null)
+            println("executed")
+       }
         navHostController.navigateUp()
     }
+
     Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
         val context = LocalContext.current
         val showConvertingIntoImagesDialogBox = remember {
@@ -140,6 +152,14 @@ fun FinalScreenForImageExtraction(
         Button(
             onClick = {
                 viewModel.listOfImagesFromExtractImages.clear()
+                if (pathOfTemFile != "") {
+                    var uri = FileProvider.getUriForFile(
+                        activity,
+                        activity.applicationContext.packageName + ".provider",
+                        File(pathOfTemFile)
+                    )
+                    activity.contentResolver.delete(uri, null, null)
+                }
                 navHostController.navigateUp()
             },
             modifier = Modifier

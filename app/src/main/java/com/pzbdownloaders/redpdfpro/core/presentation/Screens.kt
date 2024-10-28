@@ -46,7 +46,7 @@ sealed class Screens(var route: String) {
 
     object FinalScreenOfPdfOperations :
         Screens("final_screen_of_pdf_operations/?path={path}/?uri={uri}?pathOfUnlockedFile={pathOfUnlockedFile}") {
-        fun finalScreen(path: String, uri: String, pathOfUnlockedFile: String? = null): String {
+        fun finalScreen(path: String, uri: String, pathOfUnlockedFile: String): String {
             return "final_screen_of_pdf_operations/?path=$path/?uri=$uri?pathOfUnlockedFile=$pathOfUnlockedFile"
         }
     }
@@ -65,6 +65,11 @@ sealed class Screens(var route: String) {
     }
 
     object FinalScreenOFImageExtraction :
-        Screens("final_screen_of_image_extraction")
+        Screens("final_screen_of_image_extraction?pathOfTempFIle={pathOfTempFile}"){
+            fun withParameters(pathOfTempFile:String):String{
+                return "final_screen_of_image_extraction?pathOfTempFIle=$pathOfTempFile"
+            }
+
+        }
 
 }

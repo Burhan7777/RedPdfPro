@@ -8,6 +8,7 @@ import android.os.Environment
 import android.os.ParcelFileDescriptor
 import android.widget.Toast
 import androidx.compose.runtime.MutableState
+import androidx.core.content.FileProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.pzbdownloaders.redpdfpro.core.presentation.Component.scanFile
@@ -73,7 +74,8 @@ fun extractImagesFromPDFWithPDFBoxAndroid(
     showExtractingLoadingBox: MutableState<Boolean>,
     navHostController: NavHostController,
     viewModel: MyViewModel,
-    showSaveAsTempAndExtractImages: MutableState<Boolean>
+    showSaveAsTempAndExtractImages: MutableState<Boolean>,
+    pathOfTempFile: MutableState<String>
 ) {
     var externalDir =
         "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)}"
@@ -123,17 +125,26 @@ fun extractImagesFromPDFWithPDFBoxAndroid(
                     }
                 }
             }
-            withContext(Dispatchers.Main) {
-                showExtractingLoadingBox.value = false
-                showSaveAsTempAndExtractImages.value = false
-                if (imageExtractedCount > 0) {
-                    navHostController.navigate(
-                        Screens.FinalScreenOFImageExtraction.route
+        }
+        withContext(Dispatchers.Main) {
+            showExtractingLoadingBox.value = false
+            showSaveAsTempAndExtractImages.value = false
+            if (imageExtractedCount > 0) {
+                navHostController.navigate(
+                    Screens.FinalScreenOFImageExtraction.withParameters(pathOfTempFile.value)
+                )
+            } else {
+                if (pathOfTempFile.value != "") {
+                    println(pathOfTempFile.value)
+                    var uri = FileProvider.getUriForFile(
+                        context,
+                        context.applicationContext.packageName + ".provider",
+                        File(pathOfTempFile.value)
                     )
-                } else {
-                    Toast.makeText(context, "No image was extracted from pdf", Toast.LENGTH_LONG)
-                        .show()
+                    context.contentResolver.delete(uri, null, null)
                 }
+                Toast.makeText(context, "No image was extracted from pdf", Toast.LENGTH_LONG)
+                    .show()
             }
         }
     }

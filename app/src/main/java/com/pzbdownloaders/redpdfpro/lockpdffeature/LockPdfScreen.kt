@@ -282,8 +282,8 @@ fun LockPdf(activity: MainActivity, viewModel: MyViewModel, navHostController: N
                                 Screens.FinalScreenOfPdfOperations.finalScreen(
                                     "$externalDir/${name.value}.pdf",
                                     "$externalDir/${name.value}.pdf",
-
-                                    )
+                                    pathOfUnlockedFile = ""
+                                )
                             )
                         } else if (result.toString() == "Failure") {
                             showProgress = false

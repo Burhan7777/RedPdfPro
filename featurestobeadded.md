@@ -35,3 +35,4 @@ FEATURES TO BE ADDED (6/29)
 32) Close the screen automatically when permission to access all files is given:
 33) Allow all document request as a menu:
 34) Consider pdfium to render the pdfs:
+35) Check ava.io.FileNotFoundException when opening any pdf as there may be pdfs which are deleted but still show in pdf list:
