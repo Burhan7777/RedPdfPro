@@ -57,4 +57,5 @@
     <string name="shareImages">Share Images</string>
     <string name="openTxtFiles">Open txt file</string>
     <string name="shareFile">Share file</string>
+    <string name="selectGallery">After opening the scanner there is button on the left to go to gallery. Select images from the gallery.</string>
 </resources>

@@ -8,7 +8,9 @@ import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -29,19 +31,24 @@ import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanning
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanningResult
 import com.pzbdownloaders.redpdfpro.R
 import com.pzbdownloaders.redpdfpro.core.presentation.Component.AlertDialogBox
 import com.pzbdownloaders.redpdfpro.core.presentation.MainActivity
+import com.pzbdownloaders.redpdfpro.core.presentation.Screens
 import java.io.File
 import java.io.FileOutputStream
 
 @Composable
-fun ImageToPdf(activity: MainActivity) {
+fun ImageToPdf(activity: MainActivity, navHostController: NavHostController) {
     val showSaveDialogBox = remember { mutableStateOf(false) }
     val name = remember { mutableStateOf("") }
     var resultFromActivity: MutableState<GmsDocumentScanningResult?> =
@@ -74,7 +81,11 @@ fun ImageToPdf(activity: MainActivity) {
         width = 2f,
         pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 10f), 0f)
     )
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         if (showSaveDialogBox.value) {
             AlertDialogBox(
                 name = name,
@@ -97,6 +108,11 @@ fun ImageToPdf(activity: MainActivity) {
                     activity.contentResolver.openInputStream(pdf.uri).use { inputStream ->
                         inputStream?.copyTo(fos)
                     }
+                    navHostController.navigate(
+                        Screens.FinalScreenOfPdfOperations.finalScreen(
+                            path.absolutePath, path.absolutePath, ""
+                        )
+                    )
                     Toast.makeText(activity, "File saved", Toast.LENGTH_SHORT).show()
                 }
             }
@@ -138,13 +154,22 @@ fun ImageToPdf(activity: MainActivity) {
                     .padding(top = 20.dp)
             )
             Text(
-                text = stringResource(id = R.string.addPDF),
+                text = stringResource(id = R.string.openGallery),
                 fontSize = 20.sp,
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
                     .padding(top = 10.dp)
             )
         }
+        Spacer(modifier = Modifier.height(10.dp))
+        Text(
+            stringResource(R.string.selectGallery),
+            fontSize = 15.sp,
+            fontStyle = FontStyle.Italic,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth()
+        )
     }
 
 }
