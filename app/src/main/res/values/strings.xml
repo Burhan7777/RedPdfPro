@@ -55,4 +55,6 @@
     <string name="saveTemporarilyAs">Save temporarily as</string>
     <string name="openGallery">Open Gallery</string>
     <string name="shareImages">Share Images</string>
+    <string name="openTxtFiles">Open txt file</string>
+    <string name="shareFile">Share file</string>
 </resources>

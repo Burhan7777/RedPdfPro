@@ -42,6 +42,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.chaquo.python.PyException
 import com.chaquo.python.Python
 import com.pzbdownloaders.redpdfpro.core.presentation.MainActivity
@@ -50,6 +51,7 @@ import com.pzbdownloaders.redpdfpro.core.presentation.Component.AlertDialogBox
 import com.pzbdownloaders.redpdfpro.core.presentation.Component.DisplayMessageDialogBox
 import com.pzbdownloaders.redpdfpro.core.presentation.Component.LoadingDialogBox
 import com.pzbdownloaders.redpdfpro.core.presentation.MyViewModel
+import com.pzbdownloaders.redpdfpro.core.presentation.Screens
 import com.pzbdownloaders.redpdfpro.extracttextfeature.components.SingleRowExtractText
 import com.pzbdownloaders.redpdfpro.mergepdffeature.util.getFileName
 import com.pzbdownloaders.redpdfpro.splitpdffeature.screens.getPdfs
@@ -59,7 +61,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 @Composable
-fun ExtractText(activity: MainActivity, viewModel: MyViewModel) {
+fun ExtractText(
+    activity: MainActivity,
+    viewModel: MyViewModel,
+    navHostController: NavHostController
+) {
     var path = remember { mutableStateOf("") }
     var nameOfFile = remember { mutableStateOf("") }
     var name = remember {
@@ -107,7 +113,14 @@ fun ExtractText(activity: MainActivity, viewModel: MyViewModel) {
             if (it != null) {
                 nameOfFile.value = getFileName(it, activity)
                 path.value = getFilePathFromContentUri(it, activity)!!
-                alertDialogBox.value = !alertDialogBox.value
+                val pythonLockedStatus = Python.getInstance()
+                val moduleLockedStatus = pythonLockedStatus.getModule("checkLockStatus")
+                var lockedResult = moduleLockedStatus.callAttr("check_lock_status_pdf", path.value)
+                if (lockedResult.toString() == "Locked") {
+                    showFileIsLockedDialogBox.value = true
+                } else {
+                    alertDialogBox.value = true
+                }
             }
 
         })
@@ -305,14 +318,16 @@ fun ExtractText(activity: MainActivity, viewModel: MyViewModel) {
                                 }
                                 showProgressOfUnlocking.value = false
                                 withContext(Dispatchers.Main) {
+                                    val externalDir1 =
+                                        "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)}"
                                     showProgress = false
                                     if (result.toString() == "Success") {
-                                        Toast.makeText(
-                                            context,
-                                            "File successfully saved",
-                                            Toast.LENGTH_SHORT
+                                        navHostController.navigate(
+                                            Screens.FinalScreenOfTextExtraction.withParameters(
+                                                "${externalDir1}/Pro Scanner/text files/${tempNameOfFile.value}.txt"
+                                            )
                                         )
-                                            .show()
+
                                     } else if (result.toString() == "Failure") {
                                         showProgress = false
                                         Toast.makeText(
@@ -355,6 +370,8 @@ fun ExtractText(activity: MainActivity, viewModel: MyViewModel) {
         LoadingDialogBox("Saving file")
     }
     if (alertDialogBox.value) {
+        val externalDir =
+            "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)}"
         AlertDialogBox(name = name, onDismiss = { alertDialogBox.value = !alertDialogBox.value }) {
             scope.launch(Dispatchers.IO) {
                 showProgress = true
@@ -364,8 +381,11 @@ fun ExtractText(activity: MainActivity, viewModel: MyViewModel) {
                 withContext(Dispatchers.Main) {
                     showProgress = false
                     if (result.toString() == "Success") {
-                        Toast.makeText(context, "File successfully saved", Toast.LENGTH_SHORT)
-                            .show()
+                        navHostController.navigate(
+                            Screens.FinalScreenOfTextExtraction.withParameters(
+                                "${externalDir}/Pro Scanner/text files/${name.value}.txt"
+                            )
+                        )
                     } else if (result.toString() == "Failure") {
                         showProgress = false
                         Toast.makeText(context, "Operation failed", Toast.LENGTH_SHORT)

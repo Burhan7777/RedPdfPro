@@ -10,6 +10,7 @@ import com.pzbdownloaders.redpdfpro.docstopdffeature.DocsToPdf
 import com.pzbdownloaders.redpdfpro.compresspdffeature.screens.CompressPDF
 import com.pzbdownloaders.redpdfpro.core.presentation.finalscreens.FinalScreenForImageExtraction
 import com.pzbdownloaders.redpdfpro.core.presentation.finalscreens.FinalScreenOfPdfOperations
+import com.pzbdownloaders.redpdfpro.core.presentation.finalscreens.FinalScreenOfTextExtraction
 import com.pzbdownloaders.redpdfpro.extractimagefeature.ExtractImage
 import com.pzbdownloaders.redpdfpro.extracttextfeature.ExtractText
 import com.pzbdownloaders.redpdfpro.imagetopdffeature.ImageToPdf
@@ -63,7 +64,7 @@ fun NavGraphBuilder.toolsGraph(
             CompressPDF(mainActivity = activity)
         }
         composable(Screens.ExtractText.route) {
-            ExtractText(activity, viewModel)
+            ExtractText(activity, viewModel, navHostController)
         }
         composable(Screens.RotatePdf.route) {
             RotatePDf(navHostController, viewModel, activity)
@@ -148,6 +149,12 @@ fun NavGraphBuilder.toolsGraph(
                 viewModel,
                 it.arguments?.getString("pathOfTempFile") ?: ""
             )
+        }
+        composable(Screens.FinalScreenOfTextExtraction.route, listOf(navArgument("pathOfFile") {
+            type = NavType.StringType
+            defaultValue = ""
+        })) {
+            FinalScreenOfTextExtraction(navHostController, it.arguments?.getString("pathOfFile")!!)
         }
     }
 }

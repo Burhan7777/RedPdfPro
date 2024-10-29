@@ -65,11 +65,17 @@ sealed class Screens(var route: String) {
     }
 
     object FinalScreenOFImageExtraction :
-        Screens("final_screen_of_image_extraction?pathOfTempFIle={pathOfTempFile}"){
-            fun withParameters(pathOfTempFile:String):String{
-                return "final_screen_of_image_extraction?pathOfTempFIle=$pathOfTempFile"
-            }
-
+        Screens("final_screen_of_image_extraction?pathOfTempFIle={pathOfTempFile}") {
+        fun withParameters(pathOfTempFile: String): String {
+            return "final_screen_of_image_extraction?pathOfTempFIle=$pathOfTempFile"
         }
+    }
+
+    object FinalScreenOfTextExtraction :
+        Screens("final_screen_of_text_extraction/?pathOfFile={pathOfFile}") {
+        fun withParameters(pathOfFile: String): String {
+            return "final_screen_of_text_extraction/?pathOfFile=$pathOfFile"
+        }
+    }
 
 }
