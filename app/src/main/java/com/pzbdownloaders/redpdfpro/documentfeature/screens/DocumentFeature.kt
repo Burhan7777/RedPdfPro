@@ -6,6 +6,8 @@ import android.provider.MediaStore
 import android.provider.OpenableColumns
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,11 +19,16 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CornerSize
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -30,6 +37,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.toMutableStateList
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -50,13 +58,14 @@ import com.pzbdownloaders.redpdfpro.scannerfeature.components.SavePdfAsDocxFile
 import com.pzbdownloaders.redpdfpro.scannerfeature.components.SavePdfAsImage
 import com.pzbdownloaders.redpdfpro.splitpdffeature.screens.getPdfs
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.Calendar
 
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun DocumentFeature(
     activity: MainActivity,
@@ -82,7 +91,26 @@ fun DocumentFeature(
     val showConvertingIntoImagesProgressDialogBox = remember { mutableStateOf(false) }
     val queryForSearch = remember { mutableStateOf("") }
     val searchActiveBoolean = remember { mutableStateOf(false) }
-
+    var isRefreshing = remember { mutableStateOf(false) }
+    val pullRefreshState = rememberPullRefreshState(
+        refreshing = isRefreshing.value,
+        onRefresh = {
+            isRefreshing.value = true
+            // Simulate loading or data fetching
+            scope.launch(Dispatchers.Default) {
+                // if (viewModel.mutableStateListOfPdfs.size == 0 && viewModel.listOfPdfNames.size == 0) {
+                viewModel.mutableStateListOfPdfs.clear()
+                viewModel.listOfPdfNames.clear()
+                getPdfs(listOfPdfs, activity, viewModel.listOfPdfNames, viewModel.listOfSize)
+                withContext(Dispatchers.Main) {
+                    viewModel.mutableStateListOfPdfs = listOfPdfs.toMutableStateList()
+                    isRefreshing.value = false
+                    //   }
+                }
+            }
+            // stop the refresh indicator
+        }
+    )
 
     val lazyListState = rememberLazyListState()
 
@@ -139,63 +167,75 @@ fun DocumentFeature(
     )
 
 
-    Column(modifier = Modifier.fillMaxSize()) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .pullRefresh(pullRefreshState)
+    ) {
 
-
-        androidx.compose.material.OutlinedTextField(
-            value = queryForSearch.value,
-            onValueChange = { queryForSearch.value = it },
-            label = { Text("Search PDFs") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(10.dp),
-            colors = androidx.compose.material.TextFieldDefaults.outlinedTextFieldColors(
-                focusedBorderColor = MaterialTheme.colorScheme.onSecondary,
-                unfocusedBorderColor = MaterialTheme.colorScheme.onSecondary,
-                cursorColor = MaterialTheme.colorScheme.onSecondary
-            ),
-            shape = MaterialTheme.shapes.medium.copy(
-                topStart = CornerSize(10.dp),
-                topEnd = CornerSize(10.dp),
-                bottomEnd = CornerSize(10.dp),
-                bottomStart = CornerSize(10.dp),
-            )
+        PullRefreshIndicator(
+            refreshing = isRefreshing.value,
+            state = pullRefreshState,
+            modifier = Modifier.align(Alignment.TopCenter)
         )
 
-
-        if (showShareDialogBox.value) {
-            ShareAsPdfOrImage(
-                shareFIleAsPdf = shareFIleAsPdf,
-                shareFileAsImages = shareFileAsImages,
-                showShareDialogBox = showShareDialogBox
+        Column(modifier = Modifier.fillMaxSize()) {
+            androidx.compose.material.OutlinedTextField(
+                value = queryForSearch.value,
+                onValueChange = { queryForSearch.value = it },
+                label = { Text("Search PDFs") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp),
+                colors = androidx.compose.material.TextFieldDefaults.outlinedTextFieldColors(
+                    focusedBorderColor = MaterialTheme.colorScheme.onPrimary,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.onPrimary,
+                    cursorColor = MaterialTheme.colorScheme.onPrimary,
+                    textColor = MaterialTheme.colorScheme.onPrimary
+                ),
+                shape = MaterialTheme.shapes.medium.copy(
+                    topStart = CornerSize(10.dp),
+                    topEnd = CornerSize(10.dp),
+                    bottomEnd = CornerSize(10.dp),
+                    bottomStart = CornerSize(10.dp),
+                )
             )
-        }
-        if (showConvertingIntoImagesProgressDialogBox.value) {
-            ProgressDialogBox(message = mutableStateOf(stringResource(id = R.string.convertingIntoImages)))
-        }
-        LazyColumn(state = lazyListState) {
-            itemsIndexed(items = filteredPdfs) { index, item ->
-                val originalIndex = viewModel.mutableStateListOfPdfs.indexOf(item)
-                if (originalIndex != -1) {
-                    SingleRowDocumentFeature(
-                        uri = item,
-                        nameOfPdfFile = viewModel.listOfPdfNames[originalIndex],
-                        activity = activity,
-                        showCircularProgress = showProgressBarOfPdfSavedAsImage,
-                        viewModel = viewModel,
-                        pathOfThePdfFile = pathOfThePdfFile,
-                        saveWordFIleDialogBox = saveWordFIleDialogBox,
-                        showBottomSheet = showBottomSheet,
-                        nameOfPdfFileOutsideScope = nameOfThePdfFile,
-                        uriOfFile = uriOfFile,
-                        size = viewModel.listOfSize[index],
-                        navHostController = navHostController,
-                        showShareDialogBox = showShareDialogBox,
-                        shareFIleAsPdf = shareFIleAsPdf,
-                        shareFileAsImage = shareFileAsImages,
-                        currentUri = currentUri,
-                        showConvertingIntoImagesProgressDialogBox = showConvertingIntoImagesProgressDialogBox
-                    )
+
+
+            if (showShareDialogBox.value) {
+                ShareAsPdfOrImage(
+                    shareFIleAsPdf = shareFIleAsPdf,
+                    shareFileAsImages = shareFileAsImages,
+                    showShareDialogBox = showShareDialogBox
+                )
+            }
+            if (showConvertingIntoImagesProgressDialogBox.value) {
+                ProgressDialogBox(message = mutableStateOf(stringResource(id = R.string.convertingIntoImages)))
+            }
+            LazyColumn(state = lazyListState) {
+                itemsIndexed(items = filteredPdfs) { index, item ->
+                    val originalIndex = viewModel.mutableStateListOfPdfs.indexOf(item)
+                    if (originalIndex != -1) {
+                        SingleRowDocumentFeature(
+                            uri = item,
+                            nameOfPdfFile = viewModel.listOfPdfNames[originalIndex],
+                            activity = activity,
+                            showCircularProgress = showProgressBarOfPdfSavedAsImage,
+                            viewModel = viewModel,
+                            pathOfThePdfFile = pathOfThePdfFile,
+                            saveWordFIleDialogBox = saveWordFIleDialogBox,
+                            showBottomSheet = showBottomSheet,
+                            nameOfPdfFileOutsideScope = nameOfThePdfFile,
+                            uriOfFile = uriOfFile,
+                            size = viewModel.listOfSize[index],
+                            navHostController = navHostController,
+                            showShareDialogBox = showShareDialogBox,
+                            shareFIleAsPdf = shareFIleAsPdf,
+                            shareFileAsImage = shareFileAsImages,
+                            currentUri = currentUri,
+                            showConvertingIntoImagesProgressDialogBox = showConvertingIntoImagesProgressDialogBox
+                        )
+                    }
                 }
             }
         }
@@ -278,4 +318,8 @@ fun DocumentFeature(
             }
         }
     }
+}
+
+fun pullToRefresh() {
+
 }

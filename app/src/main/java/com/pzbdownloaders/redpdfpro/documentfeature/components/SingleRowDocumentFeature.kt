@@ -98,6 +98,7 @@ fun SingleRowDocumentFeature(
             .fillMaxWidth()
             .padding(10.dp)
             .clickable {
+
                 navHostController.navigate(Screens.PdfReader.pdfReaderWithUri(uri.toString(), ""))
             },
         shape = RoundedCornerShape(10.dp),

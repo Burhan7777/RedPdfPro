@@ -42,6 +42,7 @@ import com.google.mlkit.vision.documentscanner.GmsDocumentScanning
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanningResult
 import com.pzbdownloaders.redpdfpro.R
 import com.pzbdownloaders.redpdfpro.core.presentation.Component.AlertDialogBox
+import com.pzbdownloaders.redpdfpro.core.presentation.Component.scanFile
 import com.pzbdownloaders.redpdfpro.core.presentation.MainActivity
 import com.pzbdownloaders.redpdfpro.core.presentation.Screens
 import java.io.File
@@ -113,6 +114,7 @@ fun ImageToPdf(activity: MainActivity, navHostController: NavHostController) {
                             path.absolutePath, path.absolutePath, ""
                         )
                     )
+                    scanFile(path.absolutePath, activity)
                     Toast.makeText(activity, "File saved", Toast.LENGTH_SHORT).show()
                 }
             }
