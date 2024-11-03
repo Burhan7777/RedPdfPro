@@ -1,4 +1,4 @@
-package com.pzbdownloaders.redpdfpro.core.presentation
+package com.pzbdownloaders.redpdfpro.core.presentation.graphs
 
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
@@ -8,6 +8,12 @@ import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import com.pzbdownloaders.redpdfpro.docstopdffeature.DocsToPdf
 import com.pzbdownloaders.redpdfpro.compresspdffeature.screens.CompressPDF
+import com.pzbdownloaders.redpdfpro.core.presentation.HomePage
+import com.pzbdownloaders.redpdfpro.core.presentation.MainActivity
+import com.pzbdownloaders.redpdfpro.core.presentation.MyViewModel
+import com.pzbdownloaders.redpdfpro.core.presentation.Screens
+import com.pzbdownloaders.redpdfpro.core.presentation.ScreensBottomNavigation
+import com.pzbdownloaders.redpdfpro.core.presentation.TOOLS_GRAPH
 import com.pzbdownloaders.redpdfpro.core.presentation.finalscreens.FinalScreenForImageExtraction
 import com.pzbdownloaders.redpdfpro.core.presentation.finalscreens.FinalScreenOfPdfOperations
 import com.pzbdownloaders.redpdfpro.core.presentation.finalscreens.FinalScreenOfTextExtraction
@@ -43,7 +49,8 @@ fun NavGraphBuilder.toolsGraph(
         })) {
             SplitPdf(navHostController, activity, viewModel, it.arguments?.getString("filePath"))
         }
-        composable(Screens.MergePdf.route, arguments = listOf(navArgument("fileName") {
+        composable(
+            Screens.MergePdf.route, arguments = listOf(navArgument("fileName") {
             type = NavType.StringType
             defaultValue = ""
         },

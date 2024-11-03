@@ -1,4 +1,4 @@
-package com.pzbdownloaders.redpdfpro.core.presentation
+package com.pzbdownloaders.redpdfpro.core.presentation.graphs
 
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
@@ -6,6 +6,10 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
+import com.pzbdownloaders.redpdfpro.core.presentation.DOCUMENTS_GRAPH
+import com.pzbdownloaders.redpdfpro.core.presentation.MainActivity
+import com.pzbdownloaders.redpdfpro.core.presentation.MyViewModel
+import com.pzbdownloaders.redpdfpro.core.presentation.Screens
 import com.pzbdownloaders.redpdfpro.documentfeature.screens.DocumentFeature
 import com.pzbdownloaders.redpdfpro.pdfreaderfeature.screens.PdfReader
 

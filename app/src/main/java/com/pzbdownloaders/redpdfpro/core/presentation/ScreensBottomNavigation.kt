@@ -27,4 +27,7 @@ sealed class ScreensBottomNavigation(
             painterId = R.drawable.pdf_bottom_navigation
         )
 
+    object AI :
+        ScreensBottomNavigation(Screens.AIScreen.route, "AI", painterId = R.drawable.brain)
+
 }

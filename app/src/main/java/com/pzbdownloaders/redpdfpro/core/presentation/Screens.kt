@@ -78,4 +78,6 @@ sealed class Screens(var route: String) {
         }
     }
 
+    object AIScreen:Screens("ai_screen")
+
 }

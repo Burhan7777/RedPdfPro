@@ -29,7 +29,7 @@ fun MainScreen(
     val currentDestination = navBackStackEntry?.destination
 
     Scaffold(bottomBar = {
-        if (currentDestination?.route == "scanner_tools_screen" || currentDestination?.route == "homepage_tools_screen" || currentDestination?.route == Screens.Documents.route)
+        if (currentDestination?.route == "scanner_tools_screen" || currentDestination?.route == "homepage_tools_screen" || currentDestination?.route == Screens.Documents.route || currentDestination?.route == Screens.AIScreen.route)
             BottomAppBar {
                 MyBottomBar(navHostController = navHostController)
             }
@@ -55,7 +55,8 @@ fun MyBottomBar(navHostController: NavHostController) {
     val screens = listOf(
         ScreensBottomNavigation.ScannerScreen,
         ScreensBottomNavigation.Documents,
-        ScreensBottomNavigation.HomePageTools
+        ScreensBottomNavigation.HomePageTools,
+        ScreensBottomNavigation.AI
     )
     val navBackStackEntry by navHostController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
@@ -71,7 +72,12 @@ fun MyBottomBar(navHostController: NavHostController) {
                         painter = painterResource(id = it.painterId),
                         contentDescription = "bottom_navigation_image"
                     )
-                } else {
+                } else if(it == ScreensBottomNavigation.AI){
+                    Icon(
+                        painter = painterResource(id = it.painterId),
+                        contentDescription = "ai_image"
+                    )
+                }else {
                     Icon(
                         imageVector = it.imageVector,
                         contentDescription = "bottom_navigation_image"

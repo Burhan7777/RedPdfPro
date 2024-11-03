@@ -19,10 +19,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -71,49 +73,49 @@ fun ScannerScreen(
 ) {
 
     var path: File? = null
-    var resultFromActivity: MutableState<GmsDocumentScanningResult?> = mutableStateOf(null)
+    var resultFromActivity: MutableState<GmsDocumentScanningResult?> = remember{mutableStateOf(null)}
     val showSaveDialogBox =
-        mutableStateOf(false) //  When we return from the scanner activity this dialog shows to save the pdf
+        remember{mutableStateOf(false)} //  When we return from the scanner activity this dialog shows to save the pdf
     val showProgressDialogBox =
-        mutableStateOf(false) // When we press the save as image button this dialog box appears
+        remember{mutableStateOf(false)} // When we press the save as image button this dialog box appears
     val showWordFIleSaveDialogBox =
-        mutableStateOf(false) // When we press the save as docx button this dialog box appears can asks for name of save file
+        remember{mutableStateOf(false)} // When we press the save as docx button this dialog box appears can asks for name of save file
     val showTextFileSaveDialogBox =
-        mutableStateOf(false) // // When we press the save as text button this dialog box appears can asks for name of save file
-    val showRenameSaveDialogBox = mutableStateOf(false)
-    val showDeleteDialogBox = mutableStateOf(false)
+        remember{mutableStateOf(false)} // // When we press the save as text button this dialog box appears can asks for name of save file
+    val showRenameSaveDialogBox = remember{mutableStateOf(false)}
+    val showDeleteDialogBox = remember{mutableStateOf(false)}
     val showPasswordDialogBox =
-        mutableStateOf(false)//  When we press "lock PDF" in bottom sheet this is first dialog box which appears asking for a password
+        remember{mutableStateOf(false)}//  When we press "lock PDF" in bottom sheet this is first dialog box which appears asking for a password
 
     val showSaveAsLockPdfBox =
-        mutableStateOf(false) // When we press "lock PDF" in bottom sheet this is the second dialog box which appears asking for name of the file
-    val rename = mutableStateOf("")
+        remember{mutableStateOf(false)} // When we press "lock PDF" in bottom sheet this is the second dialog box which appears asking for name of the file
+    val rename = remember{mutableStateOf("")}
     val name =
-        mutableStateOf("") // This is the name of the file which is to be saved as pdf when we return from scanner activity(Google's scanner activity)
+        remember{ mutableStateOf("")} // This is the name of the file which is to be saved as pdf when we return from scanner activity(Google's scanner activity)
     val nameOfWordFile =
-        mutableStateOf("") // This is the name of docx file when we save pdf as docx file
+        remember{mutableStateOf("")} // This is the name of docx file when we save pdf as docx file
     val nameOfTextFile =
-        mutableStateOf("")// This is the name of txt file when we save pdf as txt file
+        remember{mutableStateOf("")}// This is the name of txt file when we save pdf as txt file
     val pathOfPdfFile =
-        mutableStateOf("") // Path of the word file. This is passed to the singleRow and it becomes equal to the path of the selected pdf. It is important since we save docx file in viewmodel so we need this path here in this screen.
-    val bitmapOfPdfFile = mutableStateOf<Bitmap?>(null)
-    val nameOfPdfFIle = mutableStateOf<String?>("")
+        remember{mutableStateOf("")} // Path of the word file. This is passed to the singleRow and it becomes equal to the path of the selected pdf. It is important since we save docx file in viewmodel so we need this path here in this screen.
+    val bitmapOfPdfFile = remember{mutableStateOf<Bitmap?>(null)}
+    val nameOfPdfFIle =remember{ mutableStateOf<String?>("")}
     var message =
-        mutableStateOf("Saving pdf as jpeg") // This is the message of progress dialog box when we save the pdf as images
+        remember{mutableStateOf("Saving pdf as jpeg")} // This is the message of progress dialog box when we save the pdf as images
     val messageSavingWordFIle =
-        mutableStateOf("Saving pdf as docx") // This is the message of progress dialog box when we save the pdf as docx filer.
+        remember{mutableStateOf("Saving pdf as docx")} // This is the message of progress dialog box when we save the pdf as docx filer.
     val messageSavingTextFile =
-        mutableStateOf("Saving pdf as txt") // This is the message of progress dialog box when we save the pdf as txt filer.
-    val showBottomSheet = mutableStateOf(false)
+        remember{mutableStateOf("Saving pdf as txt")} // This is the message of progress dialog box when we save the pdf as txt filer.
+    val showBottomSheet = remember{mutableStateOf(false)}
     val showShareDialogBox =
-        mutableStateOf(false) // This shows the share as pdf or image dialog box
-    val shareFileAsPdf = mutableStateOf(false) // Shares the file as pdf
-    val shareFileAsImage = mutableStateOf(false) // Shares the file as images
+        remember{mutableStateOf(false)} // This shows the share as pdf or image dialog box
+    val shareFileAsPdf = remember{mutableStateOf(false)} // Shares the file as pdf
+    val shareFileAsImage = remember{mutableStateOf(false)} // Shares the file as images
     val rememberFilePathSoThatItCanBeShared =
         remember { mutableStateOf("") } // remembers the path of the file because due to recomposition scannermodel.path resets to top  pdf
-    val showConvertingIntoImagesProgressDialogBox = mutableStateOf(false)
-    val queryForSearch = mutableStateOf("")
-    val searchActiveBoolean = mutableStateOf(false)
+    val showConvertingIntoImagesProgressDialogBox = remember{mutableStateOf(false)}
+    val queryForSearch = remember{mutableStateOf("")}
+    val searchActiveBoolean = remember{mutableStateOf(false)}
     //  Why isn't there equivalent for "showSaveDialogBox" for files converted in docx. Well the equivalent is "showProgressDialogBoxOfWordFile" and it comes from viewmodel. This is because this needs to be passed on to "DownloadPdfAsWord" file and that methods of that file are called in viewmodel
     val options = GmsDocumentScannerOptions.Builder()
         .setScannerMode(SCANNER_MODE_FULL)
@@ -152,6 +154,16 @@ fun ScannerScreen(
     val file = File("$externalDir/Pro Scanner/Scanned Pdfs")
     if (!file.exists()) {
         file.mkdirs()
+    }
+
+    val filteredPdfs = remember(queryForSearch.value, viewModel.listOfFiles) {
+        if (queryForSearch.value.isBlank()) {
+            viewModel.listOfFiles // Show all files if the query is empty
+        } else {
+            viewModel.listOfFiles.filterIndexed { index, _ ->
+                viewModel.modelScanner[index].name?.contains(queryForSearch.value, ignoreCase = true)!!
+            }
+        }
     }
 
     // println(file.listFiles().size)
@@ -218,6 +230,27 @@ fun ScannerScreen(
                 .padding(it)
                 .background(MaterialTheme.colorScheme.secondary),
         ) {
+
+            androidx.compose.material.OutlinedTextField(
+                value = queryForSearch.value,
+                onValueChange = { queryForSearch.value = it },
+                label = { Text("Search PDFs") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp),
+                colors = androidx.compose.material.TextFieldDefaults.outlinedTextFieldColors(
+                    focusedBorderColor = MaterialTheme.colorScheme.onPrimary,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.onPrimary,
+                    cursorColor = MaterialTheme.colorScheme.onPrimary,
+                    textColor = MaterialTheme.colorScheme.onPrimary
+                ),
+                shape = MaterialTheme.shapes.medium.copy(
+                    topStart = CornerSize(10.dp),
+                    topEnd = CornerSize(10.dp),
+                    bottomEnd = CornerSize(10.dp),
+                    bottomStart = CornerSize(10.dp),
+                )
+            )
 
             SaveFIleAsPdf(showSaveDialogBox, name, resultFromActivity, activity, viewModel)
             SavePdfAsImage(showProgressDialogBox = showProgressDialogBox, message = message)
