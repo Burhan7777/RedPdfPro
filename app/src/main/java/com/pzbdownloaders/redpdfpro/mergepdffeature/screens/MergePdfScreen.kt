@@ -26,6 +26,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -79,6 +83,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun MergePdf(
     activity: MainActivity,
@@ -143,6 +148,28 @@ fun MergePdf(
         mutableStateOf(false)
     }
 
+    var scope1 = rememberCoroutineScope()
+    var isRefreshing = remember { mutableStateOf(false) }
+    val pullRefreshState = rememberPullRefreshState(
+        refreshing = isRefreshing.value,
+        onRefresh = {
+            isRefreshing.value = true
+            // Simulate loading or data fetching
+            scope1.launch(Dispatchers.Default) {
+                // if (viewModel.mutableStateListOfPdfs.size == 0 && viewModel.listOfPdfNames.size == 0) {
+                viewModel.mutableStateListOfPdfs.clear()
+                viewModel.listOfPdfNames.clear()
+                getPdfs(listOfPdfs, activity, viewModel.listOfPdfNames, viewModel.listOfSize)
+                withContext(Dispatchers.Main) {
+                    viewModel.mutableStateListOfPdfs = listOfPdfs.toMutableStateList()
+                    isRefreshing.value = false
+                    //   }
+                }
+            }
+            // stop the refresh indicator
+        }
+    )
+
     var context = LocalContext.current
     var scope = rememberCoroutineScope()
 
@@ -172,7 +199,14 @@ fun MergePdf(
         }
     }
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = Modifier.fillMaxSize().pullRefresh(pullRefreshState)) {
+
+        PullRefreshIndicator(
+            refreshing = isRefreshing.value,
+            state = pullRefreshState,
+            modifier = Modifier.align(Alignment.TopCenter)
+        )
+
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier

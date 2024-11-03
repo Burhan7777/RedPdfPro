@@ -27,6 +27,10 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CornerSize
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -76,6 +80,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun RotatePDf(
     navHostController: NavHostController,
@@ -123,6 +128,28 @@ fun RotatePDf(
         pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 10f), 0f)
     )
 
+    var scope1 = rememberCoroutineScope()
+    var isRefreshing = remember { mutableStateOf(false) }
+    val pullRefreshState = rememberPullRefreshState(
+        refreshing = isRefreshing.value,
+        onRefresh = {
+            isRefreshing.value = true
+            // Simulate loading or data fetching
+            scope1.launch(Dispatchers.Default) {
+                // if (viewModel.mutableStateListOfPdfs.size == 0 && viewModel.listOfPdfNames.size == 0) {
+                viewModel.mutableStateListOfPdfs.clear()
+                viewModel.listOfPdfNames.clear()
+                getPdfs(listOfPdfs, activity, viewModel.listOfPdfNames, viewModel.listOfSize)
+                withContext(Dispatchers.Main) {
+                    viewModel.mutableStateListOfPdfs = listOfPdfs.toMutableStateList()
+                    isRefreshing.value = false
+                    //   }
+                }
+            }
+            // stop the refresh indicator
+        }
+    )
+
     var result = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
         onResult = {
@@ -158,7 +185,13 @@ fun RotatePDf(
             }
         }
     }
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = Modifier.fillMaxSize().pullRefresh(pullRefreshState)) {
+
+        PullRefreshIndicator(
+            refreshing = isRefreshing.value,
+            state = pullRefreshState,
+            modifier = Modifier.align(Alignment.TopCenter)
+        )
         Column(
             modifier = Modifier
                 .fillMaxSize()
