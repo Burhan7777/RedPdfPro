@@ -1,7 +1,9 @@
 package com.pzbdownloaders.redpdfpro.aifeature.main.screens
 
 import android.app.Activity.RESULT_OK
+import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.ActivityResult
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -43,8 +45,10 @@ import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions.SCANNER
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanning
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanningResult
 import com.pzbdownloaders.redpdfpro.R
+import com.pzbdownloaders.redpdfpro.aifeature.textrecognitionfeature.presentation.SelectScriptDialogBox
 import com.pzbdownloaders.redpdfpro.aifeature.textrecognitionfeature.presentation.ShowRecognizedText
 import com.pzbdownloaders.redpdfpro.aifeature.textrecognitionfeature.presentation.TextRecognition
+import com.pzbdownloaders.redpdfpro.core.presentation.Component.LoadingDialogBox
 import com.pzbdownloaders.redpdfpro.core.presentation.MainActivity
 import com.pzbdownloaders.redpdfpro.core.presentation.MyViewModel
 
@@ -66,6 +70,13 @@ fun AIMainScreen(
 
     var recognizedText = remember { mutableStateOf(StringBuilder()) }
 
+    var showProgressBarOfExtractingText = remember { mutableStateOf(false) }
+
+    var showSelectScriptDialogBox = remember { mutableStateOf(false) }
+
+    var selectedScript = remember { mutableStateOf("") }
+
+
     val options = GmsDocumentScannerOptions.Builder()
         .setScannerMode(SCANNER_MODE_FULL)
         .setResultFormats(RESULT_FORMAT_JPEG, RESULT_FORMAT_PDF)
@@ -74,7 +85,7 @@ fun AIMainScreen(
     val scanner = GmsDocumentScanning.getClient(options)
 
     // println(viewModel.modelScanner.size)
-    val result = rememberLauncherForActivityResult(
+    var result = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult(),
         onResult = {
 
@@ -96,15 +107,7 @@ fun AIMainScreen(
                     .height(200.dp)
                     .padding(start = 20.dp, end = 20.dp, top = 10.dp)
                     .clickable {
-                        scanner
-                            .getStartScanIntent(activity)
-                            .addOnSuccessListener {
-                                result.launch(
-                                    IntentSenderRequest
-                                        .Builder(it)
-                                        .build()
-                                )
-                            }
+                        showSelectScriptDialogBox.value = true
                     }
                     .drawBehind {
                         drawRoundRect(
@@ -153,7 +156,13 @@ fun AIMainScreen(
                 }
             }
             if (recognizeText.value) {
-                TextRecognition(resultFromActivity, showTextRecognitionDialogBox, recognizedText)
+                TextRecognition(
+                    resultFromActivity,
+                    showTextRecognitionDialogBox,
+                    recognizedText,
+                    showProgressBarOfExtractingText,
+                    selectedScript
+                )
             }
             if (showTextRecognitionDialogBox.value) {
                 ShowRecognizedText(
@@ -161,6 +170,14 @@ fun AIMainScreen(
                     recognizedText
                 ) {
                     showTextRecognitionDialogBox.value = false
+                }
+            }
+            if (showProgressBarOfExtractingText.value) {
+                LoadingDialogBox("Extracting text")
+            }
+            if (showSelectScriptDialogBox.value) {
+                SelectScriptDialogBox(scanner, result, activity,selectedScript) {
+                    showSelectScriptDialogBox.value = false
                 }
             }
         }

@@ -15,6 +15,11 @@ import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanningResult
 import com.google.mlkit.vision.text.Text
 import com.google.mlkit.vision.text.TextRecognition
+import com.google.mlkit.vision.text.TextRecognizer
+import com.google.mlkit.vision.text.chinese.ChineseTextRecognizerOptions
+import com.google.mlkit.vision.text.devanagari.DevanagariTextRecognizerOptions
+import com.google.mlkit.vision.text.japanese.JapaneseTextRecognizerOptions
+import com.google.mlkit.vision.text.korean.KoreanTextRecognizerOptions
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -27,10 +32,13 @@ import kotlinx.coroutines.withContext
 fun TextRecognition(
     result: MutableState<GmsDocumentScanningResult?>,
     showTextRecognitionDialog: MutableState<Boolean>,
-    recognizedText: MutableState<StringBuilder>
+    recognizedText: MutableState<StringBuilder>,
+    showProgressBarOfExtractingText: MutableState<Boolean>,
+    selectedScript: MutableState<String>
 ) {
 
     val context = LocalContext.current
+    lateinit var recognizer: TextRecognizer
     LaunchedEffect(true) {
         recognizedText.value.clear()
     }
@@ -40,14 +48,25 @@ fun TextRecognition(
         result.value?.pages?.forEach { page ->
             listOfImageUris.add(page.imageUri)
         }
-        recognizedText.value.clear() // Clear previous text on each new scan
+    // Clear previous text on each new scan
     }
 
     println(listOfImageUris.size)
 
     LaunchedEffect(result.value) {
-        val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
-
+        showProgressBarOfExtractingText.value = true
+        if (selectedScript.value == "English") {
+            recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
+        } else if (selectedScript.value == "Hindi") {
+            recognizer =
+                TextRecognition.getClient(DevanagariTextRecognizerOptions.Builder().build())
+        } else if (selectedScript.value == "Japanese") {
+            recognizer = TextRecognition.getClient(JapaneseTextRecognizerOptions.Builder().build())
+        } else if (selectedScript.value == "Korean") {
+            recognizer = TextRecognition.getClient(KoreanTextRecognizerOptions.Builder().build())
+        } else if (selectedScript.value == "Chinese") {
+            recognizer = TextRecognition.getClient(ChineseTextRecognizerOptions.Builder().build())
+        }
         for (uri in listOfImageUris) {
             uri?.let {
                 val image = InputImage.fromFilePath(context, it)
@@ -60,12 +79,13 @@ fun TextRecognition(
 
                 // If text is retrieved, append to recognizedText
                 textResult?.textBlocks?.forEach { block ->
-                    recognizedText.value.append("${block.text}\n")
+                    recognizedText.value.append("${block.text}\n\n")
                 }
             }
         }
 
         // Show dialog only after all text blocks have been processed
+        showProgressBarOfExtractingText.value = false
         if (recognizedText.value.isNotEmpty()) {
             showTextRecognitionDialog.value = true
             println("VALUE: ${recognizedText.value}")
