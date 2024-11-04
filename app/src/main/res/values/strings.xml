@@ -58,4 +58,6 @@
     <string name="openTxtFiles">Open txt file</string>
     <string name="shareFile">Share file</string>
     <string name="selectGallery">After opening the scanner there is button on the left to go to gallery. Select images from the gallery.</string>
+    <string name ="text_recognition">Text Recognition</string>
+    <string name = "text_recognition_summary">It can recognize text in Latin , Chinese , Devanagari, Japanese and Korean scripts</string>
 </resources>
