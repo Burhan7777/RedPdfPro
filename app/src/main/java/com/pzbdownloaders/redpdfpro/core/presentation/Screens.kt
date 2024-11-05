@@ -78,6 +78,13 @@ sealed class Screens(var route: String) {
         }
     }
 
-    object AIScreen:Screens("ai_screen")
+    object AIScreen : Screens("ai_screen")
+
+    object FinalScreenDocx : Screens("final_screen_docx/?pathOfFile={pathOfFile}") {
+        fun withParameters(pathOfFile: String): String {
+            return "final_screen_docx/?pathOfFile=$pathOfFile"
+        }
+
+    }
 
 }

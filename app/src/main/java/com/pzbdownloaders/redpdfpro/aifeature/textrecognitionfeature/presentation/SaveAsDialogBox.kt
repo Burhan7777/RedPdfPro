@@ -24,7 +24,11 @@ import com.google.mlkit.vision.documentscanner.GmsDocumentScanner
 import com.pzbdownloaders.redpdfpro.core.presentation.MainActivity
 
 @Composable
-fun SaveAsDialogBox(saveAsDialogBox: MutableState<Boolean>, onDismiss: () -> Unit) {
+fun SaveAsDialogBox(
+    saveAsDialogBox: MutableState<Boolean>,
+    showSaveAsDocxDialogBox: MutableState<Boolean>,
+    onDismiss: () -> Unit
+) {
     val context = LocalContext.current
     androidx.compose.material3.AlertDialog(
         onDismissRequest = {
@@ -55,7 +59,7 @@ fun SaveAsDialogBox(saveAsDialogBox: MutableState<Boolean>, onDismiss: () -> Uni
                     "Save as .docx",
                     onDismiss
                 ) {
-
+                showSaveAsDocxDialogBox.value = true
                 }
             }
         },

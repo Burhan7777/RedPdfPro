@@ -2,6 +2,7 @@ package com.pzbdownloaders.redpdfpro.aifeature.main.screens
 
 import android.app.Activity.RESULT_OK
 import android.os.Environment
+import android.widget.Toast
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResult
@@ -27,6 +28,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -40,6 +42,7 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.chaquo.python.Python
 import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions
 import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions.RESULT_FORMAT_JPEG
 import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions.RESULT_FORMAT_PDF
@@ -57,6 +60,9 @@ import com.pzbdownloaders.redpdfpro.core.presentation.Component.LoadingDialogBox
 import com.pzbdownloaders.redpdfpro.core.presentation.MainActivity
 import com.pzbdownloaders.redpdfpro.core.presentation.MyViewModel
 import com.pzbdownloaders.redpdfpro.core.presentation.Screens
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Composable
 fun AIMainScreen(
@@ -86,7 +92,13 @@ fun AIMainScreen(
 
     val showSaveAsPdfDialogBox = remember { mutableStateOf(false) }
 
+    val showSaveAsDocxDialogBox = remember { mutableStateOf(false) }
+
     val nameOfPdfFIle = remember { mutableStateOf("") }
+
+    val nameOfDocxFile = remember { mutableStateOf("") }
+
+    val scope = rememberCoroutineScope()
 
 
     val options = GmsDocumentScannerOptions.Builder()
@@ -194,7 +206,7 @@ fun AIMainScreen(
                 }
             }
             if (showSaveAsDialogBox.value) {
-                SaveAsDialogBox(showSaveAsPdfDialogBox) {
+                SaveAsDialogBox(showSaveAsPdfDialogBox, showSaveAsDocxDialogBox) {
                     showSaveAsDialogBox.value = false
                 }
             }
@@ -216,6 +228,39 @@ fun AIMainScreen(
                     onDismiss = {
                         showSaveAsPdfDialogBox.value = false
                     }
+                )
+            }
+            if (showSaveAsDocxDialogBox.value) {
+                AlertDialogBox(
+                    name = nameOfDocxFile,
+                    featureExecution = {
+                        val pathOfFIle =
+                            "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)}/Pro Scanner/docx/${nameOfDocxFile.value}.docx"
+                        scope.launch(Dispatchers.Default) {
+                            val python = Python.getInstance()
+                            val module = python.getModule("saveExtractedTextAsDocx")
+                            var result = module.callAttr(
+                                "export_docx",
+                                recognizedText.value.toString(),
+                                nameOfDocxFile.value,
+                                pathOfFIle
+                            )
+                            withContext(Dispatchers.Main) {
+                                if (result.toString() == "Success") {
+                                    navHostController.navigate(
+                                        Screens.FinalScreenDocx.withParameters(pathOfFIle)
+                                    )
+                                } else if (result.toString() == "Failure") {
+                                    Toast.makeText(
+                                        activity,
+                                        "Failed to save the file. Please try again",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            }
+                        }
+                    },
+                    onDismiss = { showSaveAsDocxDialogBox.value = false }
                 )
             }
         }

@@ -1,5 +1,3 @@
-
-
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -132,31 +130,33 @@ dependencies {
     //PDF READER
     implementation("io.github.grizzi91:bouquet:1.1.2")
 
-    implementation ("io.github.afreakyelf:Pdf-Viewer:2.1.1")
+    implementation("io.github.afreakyelf:Pdf-Viewer:2.1.1")
 
     //PDFIUM
-    implementation ("com.github.barteksc:pdfium-android:1.9.0")
+    implementation("com.github.barteksc:pdfium-android:1.9.0")
 
     //PDF BOX
-    implementation ("com.tom-roush:pdfbox-android:2.0.27.0")
+    implementation("com.tom-roush:pdfbox-android:2.0.27.0")
 
     // TEXT RECOGNITION
     // To recognize Latin script
-    implementation ("com.google.mlkit:text-recognition:16.0.1")
+    implementation("com.google.mlkit:text-recognition:16.0.1")
 
     // To recognize Chinese script
-    implementation ("com.google.mlkit:text-recognition-chinese:16.0.1")
+    implementation("com.google.mlkit:text-recognition-chinese:16.0.1")
 
     // To recognize Devanagari script
-    implementation ("com.google.mlkit:text-recognition-devanagari:16.0.1")
+    implementation("com.google.mlkit:text-recognition-devanagari:16.0.1")
 
     // To recognize Japanese script
-    implementation ("com.google.mlkit:text-recognition-japanese:16.0.1")
+    implementation("com.google.mlkit:text-recognition-japanese:16.0.1")
 
     // To recognize Korean script
-    implementation ("com.google.mlkit:text-recognition-korean:16.0.1")
+    implementation("com.google.mlkit:text-recognition-korean:16.0.1")
 
-    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.6.4")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.6.4")
+
+
 
 
 }
