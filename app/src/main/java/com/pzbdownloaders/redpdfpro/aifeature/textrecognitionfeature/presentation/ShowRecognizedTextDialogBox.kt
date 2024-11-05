@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.sp
 fun ShowRecognizedText(
     text: MutableState<String>,
     showRecognizedText: MutableState<StringBuilder>,
+    showSaveAsDialogBox: MutableState<Boolean>,
     onDismiss: () -> Unit
 ) {
 
@@ -70,6 +71,7 @@ fun ShowRecognizedText(
         confirmButton = {
             Button(
                 onClick = {
+                    showSaveAsDialogBox.value = true
                 },
                 colors = ButtonDefaults.outlinedButtonColors(
                     containerColor = MaterialTheme.colorScheme.onPrimary,

@@ -1,6 +1,7 @@
 package com.pzbdownloaders.redpdfpro.aifeature.main.screens
 
 import android.app.Activity.RESULT_OK
+import android.os.Environment
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResult
@@ -18,6 +19,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
@@ -45,12 +47,16 @@ import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions.SCANNER
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanning
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanningResult
 import com.pzbdownloaders.redpdfpro.R
+import com.pzbdownloaders.redpdfpro.aifeature.textrecognitionfeature.domain.utils.exportPDF
+import com.pzbdownloaders.redpdfpro.aifeature.textrecognitionfeature.presentation.SaveAsDialogBox
 import com.pzbdownloaders.redpdfpro.aifeature.textrecognitionfeature.presentation.SelectScriptDialogBox
 import com.pzbdownloaders.redpdfpro.aifeature.textrecognitionfeature.presentation.ShowRecognizedText
 import com.pzbdownloaders.redpdfpro.aifeature.textrecognitionfeature.presentation.TextRecognition
+import com.pzbdownloaders.redpdfpro.core.presentation.Component.AlertDialogBox
 import com.pzbdownloaders.redpdfpro.core.presentation.Component.LoadingDialogBox
 import com.pzbdownloaders.redpdfpro.core.presentation.MainActivity
 import com.pzbdownloaders.redpdfpro.core.presentation.MyViewModel
+import com.pzbdownloaders.redpdfpro.core.presentation.Screens
 
 @Composable
 fun AIMainScreen(
@@ -75,6 +81,12 @@ fun AIMainScreen(
     var showSelectScriptDialogBox = remember { mutableStateOf(false) }
 
     var selectedScript = remember { mutableStateOf("") }
+
+    val showSaveAsDialogBox = remember { mutableStateOf(false) }
+
+    val showSaveAsPdfDialogBox = remember { mutableStateOf(false) }
+
+    val nameOfPdfFIle = remember { mutableStateOf("") }
 
 
     val options = GmsDocumentScannerOptions.Builder()
@@ -167,7 +179,8 @@ fun AIMainScreen(
             if (showTextRecognitionDialogBox.value) {
                 ShowRecognizedText(
                     mutableStateOf(recognizedText.value.toString()),
-                    recognizedText
+                    recognizedText,
+                    showSaveAsDialogBox
                 ) {
                     showTextRecognitionDialogBox.value = false
                 }
@@ -176,9 +189,34 @@ fun AIMainScreen(
                 LoadingDialogBox("Extracting text")
             }
             if (showSelectScriptDialogBox.value) {
-                SelectScriptDialogBox(scanner, result, activity,selectedScript) {
+                SelectScriptDialogBox(scanner, result, activity, selectedScript) {
                     showSelectScriptDialogBox.value = false
                 }
+            }
+            if (showSaveAsDialogBox.value) {
+                SaveAsDialogBox(showSaveAsPdfDialogBox) {
+                    showSaveAsDialogBox.value = false
+                }
+            }
+            if (showSaveAsPdfDialogBox.value) {
+                AlertDialogBox(
+                    name = nameOfPdfFIle,
+                    featureExecution = {
+                        val externalDir =
+                            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                        exportPDF(activity, recognizedText.value.toString(), nameOfPdfFIle.value)
+                        navHostController.navigate(
+                            Screens.FinalScreenOfPdfOperations.finalScreen(
+                                "$externalDir/Pro Scanner/Pdfs/${nameOfPdfFIle.value}.pdf",
+                                "$externalDir/Pro Scanner/Pdfs/${nameOfPdfFIle.value}.pdf",
+                                ""
+                            )
+                        )
+                    },
+                    onDismiss = {
+                        showSaveAsPdfDialogBox.value = false
+                    }
+                )
             }
         }
     }
