@@ -89,7 +89,7 @@ fun NavGraphBuilder.toolsGraph(
             ImageToPdf(activity, navHostController)
         }
         composable(Screens.DocsToPdf.route) {
-            DocsToPdf(activity)
+            DocsToPdf(activity,viewModel,navHostController)
         }
         composable(Screens.ScanToDocx.route) {
             ScanToDocx(activity, viewModel)

@@ -1,4 +1,4 @@
-FEATURES TO BE ADDED (6/29)
+FEATURES TO BE ADDED (11/29)
 --------------------------------------------
 
 1) Share pdf as pdf and images: DONE
@@ -17,16 +17,16 @@ FEATURES TO BE ADDED (6/29)
 14) Add scanned pdfs directory in which scanned pdfs will go: DONE
 15) Add tabs which will show images created , split , merge etc pdf , word files, tables (excel), powerpoint files:
 16) Create folders in images with the name of the file and store converted images:
-17) Options to download the files from the internet for language conversion of OCR: Use ML Kit instead
+17) Options to download the files from the internet for language conversion of OCR: CANCELLED
 18) Search option to search pdfs: DONE
-19) Images to pdf (OCR): Use ML kit
-20) Images to word(OCR):Use ML kit
-21) Images to txt(OCR): Use ML kit
-22) Refresh pdf list:
-23) Add list of pdfs  in all pdf tools feature:
+19) Images to pdf (OCR): DONE
+20) Images to word(OCR):DONE
+21) Images to txt(OCR): DONE
+22) Refresh pdf list: DONE
+23) Add list of pdfs  in all pdf tools feature: 
 24) Add search to each pdf tools:
 25) Add finish screen to each tool with share and open document feature:
-26) Use Google's MLKIt for text recognition:
+26) Use Google's MLKIt for text recognition: DONE
 27) Apply pdf reader of pdf screen to main screen:
 28) Search bar to the scanned documents:
 29) Way to delete the temp images folder when existing the app:
