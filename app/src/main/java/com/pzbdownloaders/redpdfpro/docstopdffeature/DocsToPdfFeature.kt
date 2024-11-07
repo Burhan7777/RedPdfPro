@@ -45,6 +45,7 @@ import com.chaquo.python.Python
 import com.pzbdownloaders.redpdfpro.core.presentation.MainActivity
 import com.pzbdownloaders.redpdfpro.R
 import com.pzbdownloaders.redpdfpro.core.presentation.MyViewModel
+import com.pzbdownloaders.redpdfpro.docstopdffeature.components.SingleRowDocxToPdf
 import com.pzbdownloaders.redpdfpro.splitpdffeature.components.SingleRowSplitFeature
 import com.pzbdownloaders.redpdfpro.splitpdffeature.screens.getPdfs
 import kotlinx.coroutines.Dispatchers
@@ -180,9 +181,9 @@ fun DocsToPdf(
                 itemsIndexed(items = filteredPdfs) { index, item ->
                     val originalIndex = viewModel.mutableStateListOfDocx.indexOf(item)
                     if (originalIndex != -1) {
-                        SingleRowSplitFeature(
+                        SingleRowDocxToPdf(
                             uri = item,
-                            nameOfPdfFile = viewModel.listOfDocxNames[originalIndex],
+                            nameOfDocxFile = viewModel.listOfDocxNames[originalIndex],
                             activity = activity,
                             navHostController = navHostController,
                             viewModel = viewModel
