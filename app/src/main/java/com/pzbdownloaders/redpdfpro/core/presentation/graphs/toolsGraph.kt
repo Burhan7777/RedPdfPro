@@ -8,6 +8,7 @@ import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import com.pzbdownloaders.redpdfpro.conversions.docstopdffeature.DocsToPdf
 import com.pzbdownloaders.redpdfpro.compresspdffeature.screens.CompressPDF
+import com.pzbdownloaders.redpdfpro.conversions.pptxtopdffeature.presentation.screens.PptxToPdfFeature
 import com.pzbdownloaders.redpdfpro.core.presentation.HomePage
 import com.pzbdownloaders.redpdfpro.core.presentation.MainActivity
 import com.pzbdownloaders.redpdfpro.core.presentation.MyViewModel
@@ -51,14 +52,14 @@ fun NavGraphBuilder.toolsGraph(
         }
         composable(
             Screens.MergePdf.route, arguments = listOf(navArgument("fileName") {
-            type = NavType.StringType
-            defaultValue = ""
-        },
-            navArgument("filePath") {
                 type = NavType.StringType
                 defaultValue = ""
-            }
-        )) {
+            },
+                navArgument("filePath") {
+                    type = NavType.StringType
+                    defaultValue = ""
+                }
+            )) {
             MergePdf(
                 activity = activity,
                 viewModel,
@@ -89,7 +90,7 @@ fun NavGraphBuilder.toolsGraph(
             ImageToPdf(activity, navHostController)
         }
         composable(Screens.DocsToPdf.route) {
-            DocsToPdf(activity,viewModel,navHostController)
+            DocsToPdf(activity, viewModel, navHostController)
         }
         composable(Screens.ScanToDocx.route) {
             ScanToDocx(activity, viewModel)
@@ -162,6 +163,9 @@ fun NavGraphBuilder.toolsGraph(
             defaultValue = ""
         })) {
             FinalScreenOfTextExtraction(navHostController, it.arguments?.getString("pathOfFile")!!)
+        }
+        composable(Screens.PptxToPdf.route) {
+            PptxToPdfFeature(activity, navHostController, viewModel)
         }
     }
 }

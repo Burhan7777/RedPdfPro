@@ -38,6 +38,8 @@ class MyViewModel : ViewModel() {
     var listOfImagesFromExtractImages = ArrayList<String>()
     var mutableStateListOfDocx = mutableStateListOf<Uri>()
     var listOfDocxNames = ArrayList<String>()
+    var mutableStateListOfPptx= mutableStateListOf<Uri>()
+    var listOfPptxNames = ArrayList<String>()
     val showProgressDialogBoxOfWordFile = mutableStateOf(false)
     val showProgressDialogBoxOfTextFile = mutableStateOf(false)
 

@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CornerSize
@@ -21,6 +22,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -37,6 +39,7 @@ fun FeatureBox(
     contentDescription: String,
     navHostController: NavHostController,
     route: String,
+    premium: Int? = null
 ) {
     Box(
         modifier = Modifier
@@ -52,6 +55,19 @@ fun FeatureBox(
                 navHostController.navigate(route)
             }
     ) {
+
+        premium?.let { painterResource(it) }?.let {
+            Icon(
+                painter = it,
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .size(18.dp)
+                    .padding(end = 5.dp, top = 5.dp),
+                contentDescription = "Premium",
+                tint = Color.Unspecified
+            )
+        }
+
         Column(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
