@@ -156,7 +156,8 @@ dependencies {
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.6.4")
 
-
+    //GSON
+    implementation ("com.google.code.gson:gson:2.11.0")
 
 
 }

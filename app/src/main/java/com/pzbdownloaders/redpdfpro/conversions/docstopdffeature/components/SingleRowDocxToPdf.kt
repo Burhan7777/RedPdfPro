@@ -1,6 +1,9 @@
-package com.pzbdownloaders.redpdfpro.docstopdffeature.components
+package com.pzbdownloaders.redpdfpro.conversions.docstopdffeature.components
 
+import android.content.Context
 import android.net.Uri
+import android.os.Environment
+import android.widget.Toast
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -17,17 +20,31 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.chaquo.python.PyObject
+import com.chaquo.python.Python
+import com.google.gson.Gson
+import com.pzbdownloaders.redpdfpro.conversions.core.domain.models.InitializeJob
+import com.pzbdownloaders.redpdfpro.conversions.core.domain.models.JobStatus
 import com.pzbdownloaders.redpdfpro.core.presentation.MainActivity
 import com.pzbdownloaders.redpdfpro.core.presentation.MyViewModel
 import com.pzbdownloaders.redpdfpro.core.presentation.Screens
 import com.pzbdownloaders.redpdfpro.splitpdffeature.utils.getFilePathFromContentUri
+import com.pzbdownloaders.redpdfpro.splitpdffeature.utils.getFilePathFromContentUriForDocx
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Composable
 fun SingleRowDocxToPdf(
@@ -35,16 +52,19 @@ fun SingleRowDocxToPdf(
     nameOfDocxFile: String,
     activity: MainActivity,
     navHostController: NavHostController,
-    viewModel: MyViewModel
+    viewModel: MyViewModel,
+    pathOfDocxFile: MutableState<String>,
+    saveAsDialogBox: MutableState<Boolean>
 ) {
+    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(10.dp)
             .clickable {
-                val path = getFilePathFromContentUri(uri, activity)
-                viewModel.modelList.clear()
-
+                pathOfDocxFile.value = getFilePathFromContentUriForDocx(uri, activity)!!
+                saveAsDialogBox.value = true
             },
         shape = RoundedCornerShape(10.dp),
         colors = CardDefaults.cardColors(

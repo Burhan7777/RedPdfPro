@@ -1,8 +1,11 @@
-package com.pzbdownloaders.redpdfpro.docstopdffeature
+package com.pzbdownloaders.redpdfpro.conversions.docstopdffeature
 
+import android.content.Context
 import android.database.Cursor
 import android.net.Uri
+import android.os.Environment
 import android.provider.MediaStore
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -26,8 +29,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,19 +41,32 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.chaquo.python.PyObject
 import com.chaquo.python.Python
+import com.google.gson.Gson
 import com.pzbdownloaders.redpdfpro.core.presentation.MainActivity
 import com.pzbdownloaders.redpdfpro.R
+import com.pzbdownloaders.redpdfpro.conversions.core.domain.models.InitializeJob
+import com.pzbdownloaders.redpdfpro.conversions.core.domain.models.JobStatus
 import com.pzbdownloaders.redpdfpro.core.presentation.MyViewModel
-import com.pzbdownloaders.redpdfpro.docstopdffeature.components.SingleRowDocxToPdf
+import com.pzbdownloaders.redpdfpro.conversions.docstopdffeature.components.SingleRowDocxToPdf
+import com.pzbdownloaders.redpdfpro.core.presentation.Component.AlertDialogBox
+import com.pzbdownloaders.redpdfpro.core.presentation.Component.LoadingDialogBox
+import com.pzbdownloaders.redpdfpro.core.presentation.Screens
+import com.pzbdownloaders.redpdfpro.mergepdffeature.screens.scanFile
 import com.pzbdownloaders.redpdfpro.splitpdffeature.components.SingleRowSplitFeature
 import com.pzbdownloaders.redpdfpro.splitpdffeature.screens.getPdfs
+import com.pzbdownloaders.redpdfpro.splitpdffeature.utils.getFilePathFromContentUriForDocx
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 @Composable
@@ -66,17 +84,25 @@ fun DocsToPdf(
 
     val queryForSearch = remember { mutableStateOf("") }
 
+    val showUploadingFIleDialogBox = remember { mutableStateOf(false) }
+    val showConvertingFileDialogBox = remember { mutableStateOf(false) }
+    val showDownloadingFileDialogBox = remember { mutableStateOf(false) }
+
+    val saveAsDialogBox = remember { mutableStateOf(false) }
+
+    val nameOfThePdfFile = remember { mutableStateOf("") }
+
+    val scope = rememberCoroutineScope()
+
+    val context = LocalContext.current
+
+    val pathOfDocxFile = remember { mutableStateOf("") }
+
     val result = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
         onResult = {
-            // var path = getFilePathFromContentUri(it!!, mainActivity)
-            val python = Python.getInstance()
-            val module = python.getModule("ocr")
-            module.callAttr(
-                "ocr",
-                "storage/emulated/0/Pictures/ocr.jpg",
-                "burhan123"
-            )
+            pathOfDocxFile.value = getFilePathFromContentUriForDocx(it!!, activity)!!
+            saveAsDialogBox.value = true
         })
 
     LaunchedEffect(key1 = true) {
@@ -105,6 +131,60 @@ fun DocsToPdf(
             .fillMaxSize()
     ) {
 
+        if (showUploadingFIleDialogBox.value) {
+            LoadingDialogBox("File is being uploaded")
+        }
+
+        if (showDownloadingFileDialogBox.value) {
+            LoadingDialogBox("File is being downloaded")
+        }
+
+        if (showConvertingFileDialogBox.value) {
+            LoadingDialogBox("File is being converted")
+        }
+
+        if (saveAsDialogBox.value) {
+            AlertDialogBox(
+                name = nameOfThePdfFile,
+                featureExecution = {
+                    showUploadingFIleDialogBox.value = true
+                    scope.launch(Dispatchers.IO) {
+                        val python = Python.getInstance()
+                        val module = python.getModule("convertDocxToPDF")
+                        val result = module.callAttr("make_request", pathOfDocxFile.value)
+                        println(result.toString())
+                        val initializeJob =
+                            Gson().fromJson(result.toString(), InitializeJob::class.java)
+                        showUploadingFIleDialogBox.value = false
+
+                        //  println(initializeJob)
+                        if (initializeJob.status == "initialising") {
+                            showConvertingFileDialogBox.value = true
+                            checkJobStatus(
+                                scope,
+                                module,
+                                initializeJob,
+                                context,
+                                showConvertingFileDialogBox,
+                                showDownloadingFileDialogBox,
+                                navHostController,
+                                nameOfThePdfFile,
+                                activity
+                            )
+                        } else {
+                            withContext(Dispatchers.Main) {
+                                Toast
+                                    .makeText(context, "Failed", Toast.LENGTH_SHORT)
+                                    .show()
+                            }
+                        }
+                    }
+                },
+                onDismiss = {
+                    saveAsDialogBox.value = false
+                }
+            )
+        }
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -142,7 +222,7 @@ fun DocsToPdf(
                             .height(100.dp)
                             .padding(start = 20.dp, end = 20.dp, top = 10.dp)
                             .clickable {
-                                result.launch("application/pdf")
+                                result.launch("application/vnd.openxmlformats-officedocument.wordprocessingml.document")
                             }
                             .drawBehind {
                                 drawRoundRect(
@@ -169,7 +249,7 @@ fun DocsToPdf(
                                     .padding(top = 20.dp)
                             )
                             Text(
-                                text = stringResource(id = R.string.addPDF),
+                                text = stringResource(id = R.string.addDocx),
                                 fontSize = 20.sp,
                                 modifier = Modifier
                                     .padding(top = 10.dp)
@@ -186,7 +266,9 @@ fun DocsToPdf(
                             nameOfDocxFile = viewModel.listOfDocxNames[originalIndex],
                             activity = activity,
                             navHostController = navHostController,
-                            viewModel = viewModel
+                            viewModel = viewModel,
+                            pathOfDocxFile = pathOfDocxFile,
+                            saveAsDialogBox = saveAsDialogBox
                         )
                     } else {
 
@@ -254,4 +336,58 @@ fun getDocs(
     }
     cursor.close()
     return true
+}
+
+fun checkJobStatus(
+    scope: CoroutineScope,
+    module: PyObject,
+    initializeJob: InitializeJob,
+    context: Context,
+    showConvertingFileDialogBox: MutableState<Boolean>,
+    showDownloadingFIleDialogBox: MutableState<Boolean>,
+    navHostController: NavHostController,
+    nameOfFile: MutableState<String>,
+    activity: MainActivity
+) {
+    val path =
+        "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)}/Pro Scanner/Pdfs/${nameOfFile.value}.pdf"
+    scope.launch(Dispatchers.IO) {
+        delay(3000)
+        val result = module.callAttr("check_status", initializeJob.id)
+        val jobStatus = Gson().fromJson(result.toString(), JobStatus::class.java)
+        if (jobStatus.status == "successful") {
+            showConvertingFileDialogBox.value = false
+            showDownloadingFIleDialogBox.value = true
+            val downloadFileStatus =
+                module.callAttr("download_file", jobStatus.target_files[0].id, path)
+            withContext(Dispatchers.Main) {
+                if (downloadFileStatus.toString() == "Success") {
+                    showDownloadingFIleDialogBox.value = false
+                    scanFile(path, activity)
+                    navHostController.navigate(
+                        Screens.FinalScreenOfPdfOperations.finalScreen(
+                            path = path,
+                            uri = path,
+                            ""
+                        )
+                    )
+                } else {
+                    Toast.makeText(context, "File conversion failed", Toast.LENGTH_SHORT).show()
+
+                }
+            }
+        } else {
+            checkJobStatus(
+                scope,
+                module,
+                initializeJob,
+                context,
+                showConvertingFileDialogBox,
+                showDownloadingFIleDialogBox,
+                navHostController,
+                nameOfFile,
+                activity
+            )
+        }
+    }
 }
