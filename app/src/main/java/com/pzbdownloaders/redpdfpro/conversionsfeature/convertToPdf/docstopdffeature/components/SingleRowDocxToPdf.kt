@@ -1,9 +1,6 @@
-package com.pzbdownloaders.redpdfpro.conversions.docstopdffeature.components
+package com.pzbdownloaders.redpdfpro.conversionsfeature.convertToPdf.docstopdffeature.components
 
-import android.content.Context
 import android.net.Uri
-import android.os.Environment
-import android.widget.Toast
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -30,21 +27,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.chaquo.python.PyObject
-import com.chaquo.python.Python
-import com.google.gson.Gson
-import com.pzbdownloaders.redpdfpro.conversions.core.domain.models.InitializeJob
-import com.pzbdownloaders.redpdfpro.conversions.core.domain.models.JobStatus
 import com.pzbdownloaders.redpdfpro.core.presentation.MainActivity
 import com.pzbdownloaders.redpdfpro.core.presentation.MyViewModel
-import com.pzbdownloaders.redpdfpro.core.presentation.Screens
-import com.pzbdownloaders.redpdfpro.splitpdffeature.utils.getFilePathFromContentUri
 import com.pzbdownloaders.redpdfpro.splitpdffeature.utils.getFilePathFromContentUriForDocx
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 @Composable
 fun SingleRowDocxToPdf(

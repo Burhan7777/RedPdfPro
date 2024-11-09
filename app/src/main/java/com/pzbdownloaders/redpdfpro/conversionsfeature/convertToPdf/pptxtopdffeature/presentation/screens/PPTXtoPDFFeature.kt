@@ -1,4 +1,4 @@
-package com.pzbdownloaders.redpdfpro.conversions.pptxtopdffeature.presentation.screens
+package com.pzbdownloaders.redpdfpro.conversionsfeature.convertToPdf.pptxtopdffeature.presentation.screens
 
 import android.content.Context
 import android.database.Cursor
@@ -49,17 +49,15 @@ import com.chaquo.python.PyObject
 import com.chaquo.python.Python
 import com.google.gson.Gson
 import com.pzbdownloaders.redpdfpro.R
-import com.pzbdownloaders.redpdfpro.conversions.core.domain.models.InitializeJob
-import com.pzbdownloaders.redpdfpro.conversions.core.domain.models.JobStatus
-import com.pzbdownloaders.redpdfpro.conversions.docstopdffeature.components.SingleRowDocxToPdf
-import com.pzbdownloaders.redpdfpro.conversions.pptxtopdffeature.presentation.components.SingleRowPptxToPdf
+import com.pzbdownloaders.redpdfpro.conversionsfeature.core.domain.models.InitializeJob
+import com.pzbdownloaders.redpdfpro.conversionsfeature.core.domain.models.JobStatus
+import com.pzbdownloaders.redpdfpro.conversionsfeature.convertToPdf.pptxtopdffeature.presentation.components.SingleRowPptxToPdf
 import com.pzbdownloaders.redpdfpro.core.presentation.Component.AlertDialogBox
 import com.pzbdownloaders.redpdfpro.core.presentation.Component.LoadingDialogBox
 import com.pzbdownloaders.redpdfpro.core.presentation.MainActivity
 import com.pzbdownloaders.redpdfpro.core.presentation.MyViewModel
 import com.pzbdownloaders.redpdfpro.core.presentation.Screens
 import com.pzbdownloaders.redpdfpro.mergepdffeature.screens.scanFile
-import com.pzbdownloaders.redpdfpro.splitpdffeature.utils.getFilePathFromContentUriForDocx
 import com.pzbdownloaders.redpdfpro.splitpdffeature.utils.getFilePathFromContentUriForPptx
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -158,7 +156,7 @@ fun PptxToPdfFeature(
                         //  println(initializeJob)
                         if (initializeJob.status == "initialising") {
                             showConvertingFileDialogBox.value = true
-                            com.pzbdownloaders.redpdfpro.conversions.docstopdffeature.checkJobStatus(
+                            checkJobStatus(
                                 scope,
                                 module,
                                 initializeJob,
@@ -373,7 +371,7 @@ fun checkJobStatus(
                 }
             }
         } else {
-            com.pzbdownloaders.redpdfpro.conversions.docstopdffeature.checkJobStatus(
+            checkJobStatus(
                 scope,
                 module,
                 initializeJob,

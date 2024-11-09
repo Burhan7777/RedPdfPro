@@ -1,4 +1,4 @@
-package com.pzbdownloaders.redpdfpro.conversions.docstopdffeature
+package com.pzbdownloaders.redpdfpro.conversionsfeature.convertToPdf.docstopdffeature
 
 import android.content.Context
 import android.database.Cursor
@@ -21,8 +21,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CornerSize
-import androidx.compose.material.pullrefresh.PullRefreshIndicator
-import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -52,16 +50,14 @@ import com.chaquo.python.Python
 import com.google.gson.Gson
 import com.pzbdownloaders.redpdfpro.core.presentation.MainActivity
 import com.pzbdownloaders.redpdfpro.R
-import com.pzbdownloaders.redpdfpro.conversions.core.domain.models.InitializeJob
-import com.pzbdownloaders.redpdfpro.conversions.core.domain.models.JobStatus
+import com.pzbdownloaders.redpdfpro.conversionsfeature.core.domain.models.InitializeJob
+import com.pzbdownloaders.redpdfpro.conversionsfeature.core.domain.models.JobStatus
 import com.pzbdownloaders.redpdfpro.core.presentation.MyViewModel
-import com.pzbdownloaders.redpdfpro.conversions.docstopdffeature.components.SingleRowDocxToPdf
+import com.pzbdownloaders.redpdfpro.conversionsfeature.convertToPdf.docstopdffeature.components.SingleRowDocxToPdf
 import com.pzbdownloaders.redpdfpro.core.presentation.Component.AlertDialogBox
 import com.pzbdownloaders.redpdfpro.core.presentation.Component.LoadingDialogBox
 import com.pzbdownloaders.redpdfpro.core.presentation.Screens
 import com.pzbdownloaders.redpdfpro.mergepdffeature.screens.scanFile
-import com.pzbdownloaders.redpdfpro.splitpdffeature.components.SingleRowSplitFeature
-import com.pzbdownloaders.redpdfpro.splitpdffeature.screens.getPdfs
 import com.pzbdownloaders.redpdfpro.splitpdffeature.utils.getFilePathFromContentUriForDocx
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

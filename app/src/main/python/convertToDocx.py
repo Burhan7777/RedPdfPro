@@ -6,7 +6,7 @@ def make_request(source_path):
     api_key = '5c060a983bb5ab4f480ed985908b6f07d8c5e2ec'
     endpoint = "https://sandbox.zamzar.com/v1/jobs"
     source_file = source_path
-    target_format = "pdf"
+    target_format = "docx"
 
     file_content = {'source_file': open(source_file, 'rb')}
     data_content = {'target_format': target_format}

@@ -6,9 +6,10 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
-import com.pzbdownloaders.redpdfpro.conversions.docstopdffeature.DocsToPdf
+import com.pzbdownloaders.redpdfpro.conversionsfeature.convertToPdf.docstopdffeature.DocsToPdf
 import com.pzbdownloaders.redpdfpro.compresspdffeature.screens.CompressPDF
-import com.pzbdownloaders.redpdfpro.conversions.pptxtopdffeature.presentation.screens.PptxToPdfFeature
+import com.pzbdownloaders.redpdfpro.conversionsfeature.convertToDocx.pdftodocxfeature.presentation.screens.PdfToDocxScreen
+import com.pzbdownloaders.redpdfpro.conversionsfeature.convertToPdf.pptxtopdffeature.presentation.screens.PptxToPdfFeature
 import com.pzbdownloaders.redpdfpro.core.presentation.HomePage
 import com.pzbdownloaders.redpdfpro.core.presentation.MainActivity
 import com.pzbdownloaders.redpdfpro.core.presentation.MyViewModel
@@ -166,6 +167,9 @@ fun NavGraphBuilder.toolsGraph(
         }
         composable(Screens.PptxToPdf.route) {
             PptxToPdfFeature(activity, navHostController, viewModel)
+        }
+        composable(Screens.PdfToDocxScreen.route) {
+            PdfToDocxScreen(activity, viewModel, navHostController)
         }
     }
 }

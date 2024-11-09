@@ -1,4 +1,4 @@
-package com.pzbdownloaders.redpdfpro.conversions.core.domain.models
+package com.pzbdownloaders.redpdfpro.conversionsfeature.core.domain.models
 
 data class JobStatus(
     val id: Long,

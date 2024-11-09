@@ -63,4 +63,6 @@
     <string name="openDocxFiles">Open .docx file</string>
     <string name="addDocx"> Add Docx</string>
     <string name="pptxtopdf">PPTX to PDF</string>
+    <string name="convertToDocx">Convert to Docx</string>
+    <string name="pdfToDocx">PDF to DOCX</string>
 </resources>

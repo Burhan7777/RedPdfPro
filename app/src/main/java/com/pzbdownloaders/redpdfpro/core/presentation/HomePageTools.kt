@@ -176,6 +176,26 @@ fun HomePage(navHostController: NavHostController, viewModel: MyViewModel) {
                 Screens.PptxToPdf.route,
                 R.drawable.ic_premium
             )
+        }
+        Spacer(modifier = Modifier.height(30.dp))
+        Text(
+            text = stringResource(id = R.string.convertToDocx),
+            color = MaterialTheme.colorScheme.onPrimary,
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold
+        )
+        Spacer(
+            modifier = Modifier.height(10.dp)
+        )
+        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            FeatureBox(
+                stringId = R.string.pdfToDocx,
+                drawableId = R.drawable.word_red,
+                contentDescription = stringResource(id = R.string.convertToDocx),
+                navHostController,
+                Screens.PdfToDocxScreen.route,
+                R.drawable.ic_premium
+            )
 
         }
 

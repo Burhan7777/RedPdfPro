@@ -1,4 +1,4 @@
-package com.pzbdownloaders.redpdfpro.conversions.pptxtopdffeature.presentation.components
+package com.pzbdownloaders.redpdfpro.conversionsfeature.convertToDocx.pdftodocxfeature.presentation.components
 
 import android.net.Uri
 import androidx.compose.foundation.border
@@ -18,36 +18,30 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
 import com.pzbdownloaders.redpdfpro.core.presentation.MainActivity
-import com.pzbdownloaders.redpdfpro.core.presentation.MyViewModel
-import com.pzbdownloaders.redpdfpro.splitpdffeature.utils.getFilePathFromContentUriForDocx
+import com.pzbdownloaders.redpdfpro.splitpdffeature.utils.getFilePathFromContentUri
 import com.pzbdownloaders.redpdfpro.splitpdffeature.utils.getFilePathFromContentUriForPptx
 
 @Composable
-fun SingleRowPptxToPdf(
+fun SingleRowPdfToDocx(
     uri: Uri,
-    nameOfPptxFile: String,
+    nameOfPdfFile: String,
     activity: MainActivity,
-    pathOfDocxFile: MutableState<String>,
+    pathOfPdfFIle: MutableState<String>,
     saveAsDialogBox: MutableState<Boolean>
 ) {
-    val scope = rememberCoroutineScope()
-    val context = LocalContext.current
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(10.dp)
             .clickable {
-                pathOfDocxFile.value = getFilePathFromContentUriForPptx(uri, activity)!!
+                pathOfPdfFIle.value = getFilePathFromContentUri(uri, activity)!!
                 saveAsDialogBox.value = true
             },
         shape = RoundedCornerShape(10.dp),
@@ -76,7 +70,7 @@ fun SingleRowPptxToPdf(
                 Box(modifier = Modifier.fillMaxHeight()) {
                     Column(modifier = Modifier.align(Alignment.TopStart)) {
                         Text(
-                            text = nameOfPptxFile,
+                            text = nameOfPdfFile,
                             modifier = Modifier
                                 .padding(start = 10.dp, top = 10.dp, end = 10.dp),
                             fontWeight = FontWeight.Bold,
