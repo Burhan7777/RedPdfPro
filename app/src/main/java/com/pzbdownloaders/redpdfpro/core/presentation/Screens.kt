@@ -91,4 +91,6 @@ sealed class Screens(var route: String) {
 
     object PdfToDocxScreen : Screens("pdf_to_docx_screen")
 
+    object XlsToPdf : Screens("xls_to_pdf_screen")
+
 }

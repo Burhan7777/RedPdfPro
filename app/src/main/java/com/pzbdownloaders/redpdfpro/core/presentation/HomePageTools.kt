@@ -176,6 +176,14 @@ fun HomePage(navHostController: NavHostController, viewModel: MyViewModel) {
                 Screens.PptxToPdf.route,
                 R.drawable.ic_premium
             )
+            FeatureBox(
+                stringId = R.string.xlsToPdf,
+                drawableId = R.drawable.converttopdf,
+                contentDescription = stringResource(id = R.string.convertToDocx),
+                navHostController,
+                Screens.XlsToPdf.route,
+                R.drawable.ic_premium
+            )
         }
         Spacer(modifier = Modifier.height(30.dp))
         Text(
@@ -196,6 +204,7 @@ fun HomePage(navHostController: NavHostController, viewModel: MyViewModel) {
                 Screens.PdfToDocxScreen.route,
                 R.drawable.ic_premium
             )
+
 
         }
 

@@ -65,4 +65,6 @@
     <string name="pptxtopdf">PPTX to PDF</string>
     <string name="convertToDocx">Convert to Docx</string>
     <string name="pdfToDocx">PDF to DOCX</string>
+    <string name="addXLS">Add XLS</string>
+    <string name="xlsToPdf">XLS to PDF</string>
 </resources>
