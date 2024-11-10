@@ -72,4 +72,6 @@
     <string name="xlsxToPdf">XLSX to PDF</string>
     <string name="addDoc">Add DOC</string>
     <string name="docToPdf">DOC to PDF</string>
+    <string name="addPpt">Add PPT</string>
+    <string name="pptToPdf">PPT to PDF</string>
 </resources>

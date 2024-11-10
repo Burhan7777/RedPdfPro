@@ -42,6 +42,8 @@ class MyViewModel : ViewModel() {
     var listOfDocNames = ArrayList<String>()
     var mutableStateListOfPptx= mutableStateListOf<Uri>()
     var listOfPptxNames = ArrayList<String>()
+    var mutableStateListOfPpt= mutableStateListOf<Uri>()
+    var listOfPptNames = ArrayList<String>()
     var mutableStateListOfXls= mutableStateListOf<Uri>()
     var listOfXlsNames = ArrayList<String>()
     var mutableStateListOfXlsx= mutableStateListOf<Uri>()

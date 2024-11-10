@@ -10,6 +10,7 @@ import com.pzbdownloaders.redpdfpro.conversionsfeature.convertToPdf.docstopdffea
 import com.pzbdownloaders.redpdfpro.compresspdffeature.screens.CompressPDF
 import com.pzbdownloaders.redpdfpro.conversionsfeature.convertToDocx.pdftodocxfeature.presentation.screens.PdfToDocxScreen
 import com.pzbdownloaders.redpdfpro.conversionsfeature.convertToPdf.doctopdffeature.presentation.screens.DocToPdfScreen
+import com.pzbdownloaders.redpdfpro.conversionsfeature.convertToPdf.ppttopdffeature.presentation.screens.PptToPdfScreen
 import com.pzbdownloaders.redpdfpro.conversionsfeature.convertToPdf.pptxtopdffeature.presentation.screens.PptxToPdfFeature
 import com.pzbdownloaders.redpdfpro.conversionsfeature.convertToPdf.xlstopdffeature.presentation.screens.XlsToPdfScreen
 import com.pzbdownloaders.redpdfpro.conversionsfeature.convertToPdf.xlsxtopdffeature.presentation.screens.XlsxToPdfScreen
@@ -182,6 +183,9 @@ fun NavGraphBuilder.toolsGraph(
         }
         composable(Screens.DocToPdf.route) {
             DocToPdfScreen(activity, viewModel, navHostController)
+        }
+        composable(Screens.PptToPdf.route) {
+            PptToPdfScreen(activity, viewModel, navHostController)
         }
     }
 }

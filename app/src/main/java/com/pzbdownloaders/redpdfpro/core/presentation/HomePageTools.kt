@@ -86,7 +86,7 @@ fun HomePage(navHostController: NavHostController, viewModel: MyViewModel) {
                 Screens.UnlockPdf.route
             )
         }
-       // Spacer(modifier = Modifier.height(10.dp))
+        // Spacer(modifier = Modifier.height(10.dp))
 //        Text(
 //            text = stringResource(id = R.string.ocr),
 //            color = MaterialTheme.colorScheme.onPrimary,
@@ -177,6 +177,19 @@ fun HomePage(navHostController: NavHostController, viewModel: MyViewModel) {
                 R.drawable.ic_premium
             )
             FeatureBox(
+                stringId = R.string.pptToPdf,
+                drawableId = R.drawable.converttopdf,
+                contentDescription = stringResource(id = R.string.pptToPdf),
+                navHostController,
+                Screens.PptToPdf.route,
+                R.drawable.ic_premium
+            )
+
+
+        }
+        Spacer(modifier = Modifier.height(5.dp))
+        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            FeatureBox(
                 stringId = R.string.pptxtopdf,
                 drawableId = R.drawable.converttopdf,
                 contentDescription = stringResource(id = R.string.docsToPDF),
@@ -184,10 +197,6 @@ fun HomePage(navHostController: NavHostController, viewModel: MyViewModel) {
                 Screens.PptxToPdf.route,
                 R.drawable.ic_premium
             )
-
-        }
-        Spacer(modifier = Modifier.height(5.dp))
-        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             FeatureBox(
                 stringId = R.string.xlsToPdf,
                 drawableId = R.drawable.converttopdf,

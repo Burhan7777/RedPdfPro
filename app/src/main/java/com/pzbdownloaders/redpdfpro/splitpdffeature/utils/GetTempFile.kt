@@ -51,6 +51,18 @@ fun getFilePathFromContentUriForPptx(uri: Uri, activity: MainActivity): String? 
     }
 }
 
+fun getFilePathFromContentUriForPpt(uri: Uri, activity: MainActivity): String? {
+    return activity.contentResolver.openInputStream(uri)?.use { inputStream ->
+        // Create a temporary file and copy the content of the input stream
+        val tempFile = createTempFile("temp_ppt", ".ppt", activity.cacheDir)
+        tempFile.outputStream().use { outputStream ->
+            inputStream.copyTo(outputStream)
+        }
+        // Return the absolute path of the temporary file
+        tempFile.absolutePath
+    }
+}
+
 fun getFilePathFromContentUriForXls(uri: Uri, activity: MainActivity): String? {
     return activity.contentResolver.openInputStream(uri)?.use { inputStream ->
         // Create a temporary file and copy the content of the input stream
