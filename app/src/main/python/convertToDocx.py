@@ -30,15 +30,16 @@ def download_file(file_id, file_path):
     endpoint = f"https://sandbox.zamzar.com/v1/files/{file_id}/content".format(file_id)
 
     response = requests.get(endpoint, stream=True, auth=HTTPBasicAuth(api_key, ''))
+    chunk_size = 1024
 
     try:
         with open(local_filename, 'wb') as f:
-            for chunk in response.iter_content():
+            for chunk in response.iter_content(chunk_size=chunk_size):
                 if chunk:
                     f.write(chunk)
                     f.flush()
 
-            return "Success"
+           return "Success"
 
     except IOError:
         return "Failure"

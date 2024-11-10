@@ -1,4 +1,4 @@
-package com.pzbdownloaders.redpdfpro.conversionsfeature.convertToPdf.doctopdffeature.presentation.screens
+package com.pzbdownloaders.redpdfpro.conversionsfeature.convertToPdf.csvtopdffeature.presentation.screens
 
 import android.content.Context
 import android.database.Cursor
@@ -53,9 +53,8 @@ import com.chaquo.python.PyObject
 import com.chaquo.python.Python
 import com.google.gson.Gson
 import com.pzbdownloaders.redpdfpro.R
-import com.pzbdownloaders.redpdfpro.conversionsfeature.convertToPdf.docstopdffeature.components.SingleRowDocxToPdf
-import com.pzbdownloaders.redpdfpro.conversionsfeature.convertToPdf.docstopdffeature.getDocs
-import com.pzbdownloaders.redpdfpro.conversionsfeature.convertToPdf.doctopdffeature.presentation.components.SingleRowDocToPdf
+import com.pzbdownloaders.redpdfpro.conversionsfeature.convertToPdf.csvtopdffeature.presentation.components.SingleRowCsvToPdf
+import com.pzbdownloaders.redpdfpro.conversionsfeature.convertToPdf.pptxtopdffeature.presentation.components.SingleRowPptxToPdf
 import com.pzbdownloaders.redpdfpro.conversionsfeature.core.domain.models.InitializeJob
 import com.pzbdownloaders.redpdfpro.conversionsfeature.core.domain.models.JobStatus
 import com.pzbdownloaders.redpdfpro.core.presentation.Component.AlertDialogBox
@@ -64,18 +63,27 @@ import com.pzbdownloaders.redpdfpro.core.presentation.MainActivity
 import com.pzbdownloaders.redpdfpro.core.presentation.MyViewModel
 import com.pzbdownloaders.redpdfpro.core.presentation.Screens
 import com.pzbdownloaders.redpdfpro.mergepdffeature.screens.scanFile
-import com.pzbdownloaders.redpdfpro.splitpdffeature.utils.getFilePathFromContentUriForDoc
-import com.pzbdownloaders.redpdfpro.splitpdffeature.utils.getFilePathFromContentUriForDocx
+import com.pzbdownloaders.redpdfpro.splitpdffeature.utils.getFilePathFromContentUriForCsv
+import com.pzbdownloaders.redpdfpro.splitpdffeature.utils.getFilePathFromContentUriForPptx
 import downloadFileWithProgress
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.IOException
+import kotlinx.coroutines.withContext
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.ResponseBody
+import java.io.File
+import java.io.FileOutputStream
+import java.io.InputStream
+import java.io.OutputStream
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun DocToPdfScreen(
+fun CsvToPdfScreen(
     activity: MainActivity,
     viewModel: MyViewModel,
     navHostController: NavHostController
@@ -85,7 +93,7 @@ fun DocToPdfScreen(
         pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 10f), 0f)
     )
 
-    var listOfDoc = ArrayList<Uri>()
+    var listOfCsv = ArrayList<Uri>()
 
     val queryForSearch = remember { mutableStateOf("") }
 
@@ -101,13 +109,13 @@ fun DocToPdfScreen(
 
     val context = LocalContext.current
 
-    val pathOfDocFile = remember { mutableStateOf("") }
+    val pathOfCsvFile = remember { mutableStateOf("") }
 
     val result = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
         onResult = {
             if (it != null) {
-                pathOfDocFile.value = getFilePathFromContentUriForDoc(it!!, activity)!!
+                pathOfCsvFile.value = getFilePathFromContentUriForCsv(it!!, activity)!!
                 saveAsDialogBox.value = true
             }
         })
@@ -120,11 +128,11 @@ fun DocToPdfScreen(
             // Simulate loading or data fetching
             scope.launch(Dispatchers.Default) {
                 // if (viewModel.mutableStateListOfPdfs.size == 0 && viewModel.listOfPdfNames.size == 0) {
-                viewModel.mutableStateListOfDoc.clear()
-                viewModel.listOfDocNames.clear()
-                getDoc(listOfDoc, activity, viewModel.listOfDocNames, viewModel.listOfSize)
+                viewModel.mutableStateListOfCsv.clear()
+                viewModel.listOfCsvNames.clear()
+                getCSV(listOfCsv, activity, viewModel.listOfCsvNames, viewModel.listOfSize)
                 withContext(Dispatchers.Main) {
-                    viewModel.mutableStateListOfDoc = listOfDoc.toMutableStateList()
+                    viewModel.mutableStateListOfCsv = listOfCsv.toMutableStateList()
                     isRefreshing.value = false
                     //   }
                 }
@@ -134,23 +142,23 @@ fun DocToPdfScreen(
     )
 
     LaunchedEffect(key1 = true) {
-        getDoc(
-            listOfDoc,
+        getCSV(
+            listOfCsv,
             activity,
-            viewModel.listOfDocNames,
+            viewModel.listOfCsvNames,
             viewModel.listOfSize
         )
         withContext(Dispatchers.Main) {
-            viewModel.mutableStateListOfDoc = listOfDoc.toMutableStateList()
+            viewModel.mutableStateListOfCsv = listOfCsv.toMutableStateList()
         }
     }
 
-    val filteredPdfs = remember(queryForSearch.value, viewModel.mutableStateListOfDoc) {
+    val filteredPdfs = remember(queryForSearch.value, viewModel.mutableStateListOfCsv) {
         if (queryForSearch.value.isBlank()) {
-            viewModel.mutableStateListOfDoc // Show all files if the query is empty
+            viewModel.mutableStateListOfCsv // Show all files if the query is empty
         } else {
-            viewModel.mutableStateListOfDoc.filterIndexed { index, _ ->
-                viewModel.listOfDocNames[index].contains(queryForSearch.value, ignoreCase = true)
+            viewModel.mutableStateListOfCsv.filterIndexed { index, _ ->
+                viewModel.listOfCsvNames[index].contains(queryForSearch.value, ignoreCase = true)
             }
         }
     }
@@ -186,7 +194,7 @@ fun DocToPdfScreen(
                     scope.launch(Dispatchers.IO) {
                         val python = Python.getInstance()
                         val module = python.getModule("convertDocxToPDF")
-                        val result = module.callAttr("make_request", pathOfDocFile.value)
+                        val result = module.callAttr("make_request", pathOfCsvFile.value)
                         println(result.toString())
                         val initializeJob =
                             Gson().fromJson(result.toString(), InitializeJob::class.java)
@@ -230,7 +238,7 @@ fun DocToPdfScreen(
             androidx.compose.material.OutlinedTextField(
                 value = queryForSearch.value,
                 onValueChange = { queryForSearch.value = it },
-                label = { Text("Search DOC") },
+                label = { Text("Search CSV") },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(10.dp),
@@ -257,7 +265,7 @@ fun DocToPdfScreen(
                             .height(100.dp)
                             .padding(start = 20.dp, end = 20.dp, top = 10.dp)
                             .clickable {
-                                result.launch("application/msword")
+                                result.launch("text/csv")
                             }
                             .drawBehind {
                                 drawRoundRect(
@@ -284,7 +292,7 @@ fun DocToPdfScreen(
                                     .padding(top = 20.dp)
                             )
                             Text(
-                                text = stringResource(id = R.string.addDoc),
+                                text = stringResource(id = R.string.addCsv),
                                 fontSize = 20.sp,
                                 modifier = Modifier
                                     .padding(top = 10.dp)
@@ -294,13 +302,13 @@ fun DocToPdfScreen(
                 }
 
                 itemsIndexed(items = filteredPdfs) { index, item ->
-                    val originalIndex = viewModel.mutableStateListOfDoc.indexOf(item)
+                    val originalIndex = viewModel.mutableStateListOfCsv.indexOf(item)
                     if (originalIndex != -1) {
-                        SingleRowDocToPdf(
+                        SingleRowCsvToPdf(
                             uri = item,
-                            nameOfDocFile = viewModel.listOfDocNames[originalIndex],
+                            nameOfCsvFile = viewModel.listOfCsvNames[originalIndex],
                             activity = activity,
-                            pathOfDocFile = pathOfDocFile,
+                            pathOfCsvFile = pathOfCsvFile,
                             saveAsDialogBox = saveAsDialogBox
                         )
                     } else {
@@ -313,10 +321,10 @@ fun DocToPdfScreen(
 
 }
 
-fun getDoc(
+fun getCSV(
     list: ArrayList<Uri>,
     activity: MainActivity,
-    listOfDocNames: ArrayList<String>,
+    listOfPptxNames: ArrayList<String>,
     listOfSizeOfFiles: ArrayList<String>
 ): Boolean {
     val projection = arrayOf(
@@ -330,7 +338,7 @@ fun getDoc(
     )
 
     // Set the MIME type for .docx files
-    val mimeType = "aapplication/msword"
+    val mimeType = "text/csv"
     val whereClause = MediaStore.Files.FileColumns.MIME_TYPE + " IN ('" + mimeType + "')"
     val orderBy = MediaStore.Files.FileColumns.DATE_MODIFIED + " DESC"
 
@@ -354,7 +362,7 @@ fun getDoc(
             )
             val name = cursor.getString(nameCol)
             list.add(fileUri)
-            listOfDocNames.add(name)
+            listOfPptxNames.add(name)
 
             val size = cursor.getString(sizeCol)
             if (size.toDouble() / 1000000 <= 1) {
@@ -392,15 +400,12 @@ fun checkJobStatus(
             showConvertingFileDialogBox.value = false
             showDownloadingFIleDialogBox.value = true
             val downloadFileStatus =
-                downloadFileWithProgress(
-                    jobStatus.target_files[0].id.toInt(),
-                    path,
-                    context
-                ) { progress ->
+                downloadFileWithProgress(jobStatus.target_files[0].id.toInt(), path, context) { progress ->
 
                 }
             withContext(Dispatchers.Main) {
                 if (downloadFileStatus == "Success") {
+
                     showDownloadingFIleDialogBox.value = false
                     scanFile(path, activity)
                     navHostController.navigate(
@@ -413,7 +418,6 @@ fun checkJobStatus(
                 } else {
                     showDownloadingFIleDialogBox.value = false
                     Toast.makeText(context, "File conversion failed", Toast.LENGTH_SHORT).show()
-
                 }
             }
         } else {
@@ -431,3 +435,6 @@ fun checkJobStatus(
         }
     }
 }
+
+
+

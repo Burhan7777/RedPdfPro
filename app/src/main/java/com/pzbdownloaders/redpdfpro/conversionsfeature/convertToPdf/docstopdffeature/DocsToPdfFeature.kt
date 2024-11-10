@@ -64,6 +64,7 @@ import com.pzbdownloaders.redpdfpro.core.presentation.Screens
 import com.pzbdownloaders.redpdfpro.mergepdffeature.screens.scanFile
 import com.pzbdownloaders.redpdfpro.splitpdffeature.screens.getPdfs
 import com.pzbdownloaders.redpdfpro.splitpdffeature.utils.getFilePathFromContentUriForDocx
+import downloadFileWithProgress
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -391,7 +392,13 @@ fun checkJobStatus(
             showConvertingFileDialogBox.value = false
             showDownloadingFIleDialogBox.value = true
             val downloadFileStatus =
-                module.callAttr("download_file", jobStatus.target_files[0].id, path)
+                downloadFileWithProgress(
+                    jobStatus.target_files[0].id.toInt(),
+                    path,
+                    context
+                ) { progress ->
+
+                }
             withContext(Dispatchers.Main) {
                 if (downloadFileStatus.toString() == "Success") {
                     showDownloadingFIleDialogBox.value = false
@@ -404,6 +411,7 @@ fun checkJobStatus(
                         )
                     )
                 } else {
+                    showDownloadingFIleDialogBox.value = false
                     Toast.makeText(context, "File conversion failed", Toast.LENGTH_SHORT).show()
 
                 }

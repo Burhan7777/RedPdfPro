@@ -213,6 +213,14 @@ fun HomePage(navHostController: NavHostController, viewModel: MyViewModel) {
                 Screens.XlsxToPdf.route,
                 R.drawable.ic_premium
             )
+            FeatureBox(
+                stringId = R.string.csvToPdf,
+                drawableId = R.drawable.converttopdf,
+                contentDescription = stringResource(id = R.string.csvToPdf),
+                navHostController,
+                Screens.CsvToPdf.route,
+                R.drawable.ic_premium
+            )
         }
         Spacer(modifier = Modifier.height(30.dp))
         Text(

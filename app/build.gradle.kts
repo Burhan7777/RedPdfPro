@@ -159,5 +159,8 @@ dependencies {
     //GSON
     implementation ("com.google.code.gson:gson:2.11.0")
 
+    //OKHTTP
+    implementation("com.squareup.okhttp3:okhttp:4.9.3")
+
 
 }
