@@ -86,32 +86,32 @@ fun HomePage(navHostController: NavHostController, viewModel: MyViewModel) {
                 Screens.UnlockPdf.route
             )
         }
-        Spacer(modifier = Modifier.height(30.dp))
-        Text(
-            text = stringResource(id = R.string.ocr),
-            color = MaterialTheme.colorScheme.onPrimary,
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold
-        )
-        Spacer(
-            modifier = Modifier.height(10.dp)
-        )
-        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            FeatureBox(
-                stringId = R.string.scanToDocx,
-                drawableId = R.drawable.scan,
-                contentDescription = stringResource(id = R.string.scanToDocx),
-                navHostController,
-                Screens.ScanToDocx.route,
-            )
-            FeatureBox(
-                stringId = R.string.scanToTxt,
-                drawableId = R.drawable.scan,
-                contentDescription = stringResource(id = R.string.scanToTxt),
-                navHostController,
-                Screens.ScanToTxt.route,
-            )
-        }
+       // Spacer(modifier = Modifier.height(10.dp))
+//        Text(
+//            text = stringResource(id = R.string.ocr),
+//            color = MaterialTheme.colorScheme.onPrimary,
+//            fontSize = 20.sp,
+//            fontWeight = FontWeight.Bold
+//        )
+//        Spacer(
+//            modifier = Modifier.height(10.dp)
+//        )
+//        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+//            FeatureBox(
+//                stringId = R.string.scanToDocx,
+//                drawableId = R.drawable.scan,
+//                contentDescription = stringResource(id = R.string.scanToDocx),
+//                navHostController,
+//                Screens.ScanToDocx.route,
+//            )
+//            FeatureBox(
+//                stringId = R.string.scanToTxt,
+//                drawableId = R.drawable.scan,
+//                contentDescription = stringResource(id = R.string.scanToTxt),
+//                navHostController,
+//                Screens.ScanToTxt.route,
+//            )
+//        }
 
         Spacer(modifier = Modifier.height(30.dp))
         Text(

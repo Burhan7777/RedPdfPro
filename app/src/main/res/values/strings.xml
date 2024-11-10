@@ -22,7 +22,7 @@
     <string name="extractImage">Extract Images</string>
     <string name="convertTOPDF">Convert to PDF</string>
     <string name="imagesToPDF">Images to PDF</string>
-    <string name="docsToPDF">Docs to PDF</string>
+    <string name="docsToPDF">DOCX to PDF</string>
     <string name="saveAsDocxFile">Save as .docx file</string>
     <string name="saveAsTxtFile">Save as .txt file</string>
     <string name="delete">Delete</string>
@@ -63,6 +63,7 @@
     <string name="openDocxFiles">Open .docx file</string>
     <string name="addDocx"> Add Docx</string>
     <string name="pptxtopdf">PPTX to PDF</string>
+    <string name="addPptx">Add PPTX</string>
     <string name="convertToDocx">Convert to Docx</string>
     <string name="pdfToDocx">PDF to DOCX</string>
     <string name="addXLS">Add XLS</string>

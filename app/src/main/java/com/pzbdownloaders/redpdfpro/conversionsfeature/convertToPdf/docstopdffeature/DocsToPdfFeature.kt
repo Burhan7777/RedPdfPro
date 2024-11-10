@@ -191,7 +191,7 @@ fun DocsToPdf(
             androidx.compose.material.OutlinedTextField(
                 value = queryForSearch.value,
                 onValueChange = { queryForSearch.value = it },
-                label = { Text("Search PDFs") },
+                label = { Text("Search DOCX") },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(10.dp),

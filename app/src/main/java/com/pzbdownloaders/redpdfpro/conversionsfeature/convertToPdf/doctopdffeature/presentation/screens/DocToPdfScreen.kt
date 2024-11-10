@@ -247,7 +247,7 @@ fun DocToPdfScreen(
                                     .padding(top = 20.dp)
                             )
                             Text(
-                                text = stringResource(id = R.string.addDocx),
+                                text = stringResource(id = R.string.addDoc),
                                 fontSize = 20.sp,
                                 modifier = Modifier
                                     .padding(top = 10.dp)

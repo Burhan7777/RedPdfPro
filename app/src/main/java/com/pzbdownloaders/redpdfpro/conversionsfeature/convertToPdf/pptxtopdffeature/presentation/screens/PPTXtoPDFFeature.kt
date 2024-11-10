@@ -191,7 +191,7 @@ fun PptxToPdfFeature(
             androidx.compose.material.OutlinedTextField(
                 value = queryForSearch.value,
                 onValueChange = { queryForSearch.value = it },
-                label = { Text("Search PDFs") },
+                label = { Text("Search PPTX") },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(10.dp),
@@ -245,7 +245,7 @@ fun PptxToPdfFeature(
                                     .padding(top = 20.dp)
                             )
                             Text(
-                                text = stringResource(id = R.string.addDocx),
+                                text = stringResource(id = R.string.addPptx),
                                 fontSize = 20.sp,
                                 modifier = Modifier
                                     .padding(top = 10.dp)

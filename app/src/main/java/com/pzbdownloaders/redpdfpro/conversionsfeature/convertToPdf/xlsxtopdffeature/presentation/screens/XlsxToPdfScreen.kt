@@ -196,7 +196,7 @@ fun XlsxToPdfScreen(
             androidx.compose.material.OutlinedTextField(
                 value = queryForSearch.value,
                 onValueChange = { queryForSearch.value = it },
-                label = { Text("Search PDFs") },
+                label = { Text("Search XLSX") },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(10.dp),
