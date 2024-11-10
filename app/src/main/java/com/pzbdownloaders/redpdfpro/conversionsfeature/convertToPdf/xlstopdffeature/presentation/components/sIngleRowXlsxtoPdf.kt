@@ -29,6 +29,7 @@ import com.pzbdownloaders.redpdfpro.core.presentation.MainActivity
 import com.pzbdownloaders.redpdfpro.core.presentation.MyViewModel
 import com.pzbdownloaders.redpdfpro.splitpdffeature.utils.getFilePathFromContentUriForDocx
 import com.pzbdownloaders.redpdfpro.splitpdffeature.utils.getFilePathFromContentUriForXls
+import com.pzbdownloaders.redpdfpro.splitpdffeature.utils.getFilePathFromContentUriForXlsx
 
 @Composable
 fun SingleRowXlsToPdf(
@@ -43,7 +44,7 @@ fun SingleRowXlsToPdf(
             .fillMaxWidth()
             .padding(10.dp)
             .clickable {
-                pathOfXlsFile.value = getFilePathFromContentUriForXls( uri, activity)!!
+                pathOfXlsFile.value = getFilePathFromContentUriForXlsx(uri, activity)!!
                 saveAsDialogBox.value = true
             },
         shape = RoundedCornerShape(10.dp),

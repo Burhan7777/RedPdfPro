@@ -176,12 +176,24 @@ fun HomePage(navHostController: NavHostController, viewModel: MyViewModel) {
                 Screens.PptxToPdf.route,
                 R.drawable.ic_premium
             )
+
+        }
+        Spacer(modifier = Modifier.height(5.dp))
+        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             FeatureBox(
                 stringId = R.string.xlsToPdf,
                 drawableId = R.drawable.converttopdf,
-                contentDescription = stringResource(id = R.string.convertToDocx),
+                contentDescription = stringResource(id = R.string.xlsToPdf),
                 navHostController,
                 Screens.XlsToPdf.route,
+                R.drawable.ic_premium
+            )
+            FeatureBox(
+                stringId = R.string.xlsxToPdf,
+                drawableId = R.drawable.converttopdf,
+                contentDescription = stringResource(id = R.string.xlsxToPdf),
+                navHostController,
+                Screens.XlsxToPdf.route,
                 R.drawable.ic_premium
             )
         }

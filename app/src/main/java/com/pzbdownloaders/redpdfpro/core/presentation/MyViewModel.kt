@@ -42,6 +42,8 @@ class MyViewModel : ViewModel() {
     var listOfPptxNames = ArrayList<String>()
     var mutableStateListOfXls= mutableStateListOf<Uri>()
     var listOfXlsNames = ArrayList<String>()
+    var mutableStateListOfXlsx= mutableStateListOf<Uri>()
+    var listOfXlsxNames = ArrayList<String>()
     val showProgressDialogBoxOfWordFile = mutableStateOf(false)
     val showProgressDialogBoxOfTextFile = mutableStateOf(false)
 
