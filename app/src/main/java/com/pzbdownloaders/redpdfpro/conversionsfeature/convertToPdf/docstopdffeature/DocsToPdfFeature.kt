@@ -21,6 +21,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CornerSize
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -58,6 +62,7 @@ import com.pzbdownloaders.redpdfpro.core.presentation.Component.AlertDialogBox
 import com.pzbdownloaders.redpdfpro.core.presentation.Component.LoadingDialogBox
 import com.pzbdownloaders.redpdfpro.core.presentation.Screens
 import com.pzbdownloaders.redpdfpro.mergepdffeature.screens.scanFile
+import com.pzbdownloaders.redpdfpro.splitpdffeature.screens.getPdfs
 import com.pzbdownloaders.redpdfpro.splitpdffeature.utils.getFilePathFromContentUriForDocx
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -65,6 +70,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun DocsToPdf(
     activity: MainActivity,
@@ -97,9 +103,32 @@ fun DocsToPdf(
     val result = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
         onResult = {
-            pathOfDocxFile.value = getFilePathFromContentUriForDocx(it!!, activity)!!
-            saveAsDialogBox.value = true
+            if (it != null) {
+                pathOfDocxFile.value = getFilePathFromContentUriForDocx(it!!, activity)!!
+                saveAsDialogBox.value = true
+            }
         })
+
+    var isRefreshing = remember { mutableStateOf(false) }
+    val pullRefreshState = rememberPullRefreshState(
+        refreshing = isRefreshing.value,
+        onRefresh = {
+            isRefreshing.value = true
+            // Simulate loading or data fetching
+            scope.launch(Dispatchers.Default) {
+                // if (viewModel.mutableStateListOfPdfs.size == 0 && viewModel.listOfPdfNames.size == 0) {
+                viewModel.mutableStateListOfDocx.clear()
+                viewModel.listOfDocxNames.clear()
+                getDocs(listOfDocx, activity, viewModel.listOfDocxNames, viewModel.listOfSize)
+                withContext(Dispatchers.Main) {
+                    viewModel.mutableStateListOfDocx = listOfDocx.toMutableStateList()
+                    isRefreshing.value = false
+                    //   }
+                }
+            }
+            // stop the refresh indicator
+        }
+    )
 
     LaunchedEffect(key1 = true) {
         getDocs(
@@ -125,7 +154,14 @@ fun DocsToPdf(
     Box(
         modifier = Modifier
             .fillMaxSize()
+            .pullRefresh(pullRefreshState)
     ) {
+
+        PullRefreshIndicator(
+            refreshing = isRefreshing.value,
+            state = pullRefreshState,
+            modifier = Modifier.align(Alignment.TopCenter)
+        )
 
         if (showUploadingFIleDialogBox.value) {
             LoadingDialogBox("File is being uploaded")

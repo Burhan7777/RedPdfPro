@@ -21,6 +21,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CornerSize
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -49,6 +53,7 @@ import com.chaquo.python.PyObject
 import com.chaquo.python.Python
 import com.google.gson.Gson
 import com.pzbdownloaders.redpdfpro.R
+import com.pzbdownloaders.redpdfpro.conversionsfeature.convertToPdf.doctopdffeature.presentation.screens.getDoc
 import com.pzbdownloaders.redpdfpro.conversionsfeature.core.domain.models.InitializeJob
 import com.pzbdownloaders.redpdfpro.conversionsfeature.core.domain.models.JobStatus
 import com.pzbdownloaders.redpdfpro.conversionsfeature.convertToPdf.pptxtopdffeature.presentation.components.SingleRowPptxToPdf
@@ -65,6 +70,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun PptxToPdfFeature(
     activity: MainActivity,
@@ -97,9 +103,32 @@ fun PptxToPdfFeature(
     val result = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
         onResult = {
-            pathOfPptxFile.value = getFilePathFromContentUriForPptx(it!!, activity)!!
-            saveAsDialogBox.value = true
+            if (it != null) {
+                pathOfPptxFile.value = getFilePathFromContentUriForPptx(it!!, activity)!!
+                saveAsDialogBox.value = true
+            }
         })
+
+    var isRefreshing = remember { mutableStateOf(false) }
+    val pullRefreshState = rememberPullRefreshState(
+        refreshing = isRefreshing.value,
+        onRefresh = {
+            isRefreshing.value = true
+            // Simulate loading or data fetching
+            scope.launch(Dispatchers.Default) {
+                // if (viewModel.mutableStateListOfPdfs.size == 0 && viewModel.listOfPdfNames.size == 0) {
+                viewModel.mutableStateListOfPptx.clear()
+                viewModel.listOfPptxNames.clear()
+                getPptx(listOfPptx, activity, viewModel.listOfPptxNames, viewModel.listOfSize)
+                withContext(Dispatchers.Main) {
+                    viewModel.mutableStateListOfPptx = listOfPptx.toMutableStateList()
+                    isRefreshing.value = false
+                    //   }
+                }
+            }
+            // stop the refresh indicator
+        }
+    )
 
     LaunchedEffect(key1 = true) {
         getPptx(
@@ -124,8 +153,14 @@ fun PptxToPdfFeature(
     }
     Box(
         modifier = Modifier
-            .fillMaxSize()
+            .fillMaxSize().pullRefresh(pullRefreshState)
     ) {
+
+        PullRefreshIndicator(
+            refreshing = isRefreshing.value,
+            state = pullRefreshState,
+            modifier = Modifier.align(Alignment.TopCenter)
+        )
 
         if (showUploadingFIleDialogBox.value) {
             LoadingDialogBox("File is being uploaded")

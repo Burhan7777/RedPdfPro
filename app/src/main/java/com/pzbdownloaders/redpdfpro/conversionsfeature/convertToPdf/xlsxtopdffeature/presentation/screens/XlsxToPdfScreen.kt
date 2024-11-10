@@ -21,6 +21,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CornerSize
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -49,6 +53,7 @@ import com.chaquo.python.PyObject
 import com.chaquo.python.Python
 import com.google.gson.Gson
 import com.pzbdownloaders.redpdfpro.R
+import com.pzbdownloaders.redpdfpro.conversionsfeature.convertToPdf.pptxtopdffeature.presentation.screens.getPptx
 import com.pzbdownloaders.redpdfpro.conversionsfeature.convertToPdf.xlstopdffeature.presentation.components.SingleRowXlsToPdf
 import com.pzbdownloaders.redpdfpro.conversionsfeature.convertToPdf.xlsxtopdffeature.presentation.components.SingleRowXlsxToPdf
 import com.pzbdownloaders.redpdfpro.conversionsfeature.core.domain.models.InitializeJob
@@ -67,6 +72,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun XlsxToPdfScreen(
     activity: MainActivity,
@@ -105,6 +111,27 @@ fun XlsxToPdfScreen(
                 saveAsDialogBox.value = true
             }
         })
+    var isRefreshing = remember { mutableStateOf(false) }
+    val pullRefreshState = rememberPullRefreshState(
+        refreshing = isRefreshing.value,
+        onRefresh = {
+            isRefreshing.value = true
+            // Simulate loading or data fetching
+            scope.launch(Dispatchers.Default) {
+                // if (viewModel.mutableStateListOfPdfs.size == 0 && viewModel.listOfPdfNames.size == 0) {
+                viewModel.mutableStateListOfXlsx.clear()
+                viewModel.listOfXlsxNames.clear()
+                getXlsx(listOfXlsx, activity, viewModel.listOfXlsxNames, viewModel.listOfSize)
+                withContext(Dispatchers.Main) {
+                    viewModel.mutableStateListOfXlsx = listOfXlsx.toMutableStateList()
+                    isRefreshing.value = false
+                    //   }
+                }
+            }
+            // stop the refresh indicator
+        }
+    )
+
 
     LaunchedEffect(key1 = true) {
         getXlsx(
@@ -130,7 +157,14 @@ fun XlsxToPdfScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
+            .pullRefresh(pullRefreshState)
     ) {
+
+        PullRefreshIndicator(
+            refreshing = isRefreshing.value,
+            state = pullRefreshState,
+            modifier = Modifier.align(Alignment.TopCenter)
+        )
 
         if (showUploadingFIleDialogBox.value) {
             LoadingDialogBox("File is being uploaded")
