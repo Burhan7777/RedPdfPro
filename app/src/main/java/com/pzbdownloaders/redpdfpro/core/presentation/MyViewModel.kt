@@ -38,6 +38,8 @@ class MyViewModel : ViewModel() {
     var listOfImagesFromExtractImages = ArrayList<String>()
     var mutableStateListOfDocx = mutableStateListOf<Uri>()
     var listOfDocxNames = ArrayList<String>()
+    var mutableStateListOfDoc = mutableStateListOf<Uri>()
+    var listOfDocNames = ArrayList<String>()
     var mutableStateListOfPptx= mutableStateListOf<Uri>()
     var listOfPptxNames = ArrayList<String>()
     var mutableStateListOfXls= mutableStateListOf<Uri>()

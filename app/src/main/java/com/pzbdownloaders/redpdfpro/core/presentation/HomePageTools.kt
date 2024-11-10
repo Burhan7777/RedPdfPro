@@ -161,6 +161,14 @@ fun HomePage(navHostController: NavHostController, viewModel: MyViewModel) {
                 Screens.ImageToPdf.route,
             )
             FeatureBox(
+                stringId = R.string.docToPdf,
+                drawableId = R.drawable.converttopdf,
+                contentDescription = stringResource(id = R.string.docToPdf),
+                navHostController,
+                Screens.DocToPdf.route,
+                R.drawable.ic_premium
+            )
+            FeatureBox(
                 stringId = R.string.docsToPDF,
                 drawableId = R.drawable.converttopdf,
                 contentDescription = stringResource(id = R.string.docsToPDF),
