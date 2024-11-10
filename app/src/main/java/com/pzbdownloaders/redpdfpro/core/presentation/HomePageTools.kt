@@ -222,6 +222,19 @@ fun HomePage(navHostController: NavHostController, viewModel: MyViewModel) {
                 R.drawable.ic_premium
             )
         }
+        Spacer(
+            modifier = Modifier.height(10.dp)
+        )
+        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            FeatureBox(
+                stringId = R.string.epubToPdf,
+                drawableId = R.drawable.converttopdf,
+                contentDescription = stringResource(id = R.string.epubToPdf),
+                navHostController,
+                Screens.EpubToPdf.route,
+                R.drawable.ic_premium
+            )
+        }
         Spacer(modifier = Modifier.height(30.dp))
         Text(
             text = stringResource(id = R.string.convertToDocx),
@@ -244,6 +257,5 @@ fun HomePage(navHostController: NavHostController, viewModel: MyViewModel) {
 
 
         }
-
     }
 }

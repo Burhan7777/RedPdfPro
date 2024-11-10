@@ -76,4 +76,6 @@
     <string name="pptToPdf">PPT to PDF</string>
     <string name="addCsv">Add CSV</string>
     <string name="csvToPdf">CSV to PDF</string>
+    <string name="addEpub">Add EPUB</string>
+    <string name="epubToPdf">EPUB to PDF</string>
 </resources>

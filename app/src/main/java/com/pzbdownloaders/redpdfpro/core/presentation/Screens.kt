@@ -101,4 +101,6 @@ sealed class Screens(var route: String) {
 
     object CsvToPdf : Screens("csv_to_pdf_screen")
 
+    object EpubToPdf:Screens("epub_to_pdf_screen")
+
 }
