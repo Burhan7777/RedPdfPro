@@ -80,4 +80,7 @@
     <string name="epubToPdf">EPUB to PDF</string>
     <string name="convertFromPdf">Convert From PDF</string>
     <string name="pdfToJpg">PDF to JPG</string>
+    <string name="pdfToDoc">PDF to DOC</string>
+    <string name="openFile">Open File</string>
+    <string name="pdfToPptx">PDF to PPTX</string>
 </resources>

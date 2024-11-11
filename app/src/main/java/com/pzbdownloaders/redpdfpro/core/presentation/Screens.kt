@@ -104,17 +104,21 @@ sealed class Screens(var route: String) {
     object EpubToPdf : Screens("epub_to_pdf_screen")
 
     object FinalScreen :
-        Screens("final_screen?/pathOfFile={pathOfFile}?/pathOfDir={pathOfDir}?/mimeType={mimeType}?/stringResource={stringResource}") {
+        Screens("final_screen/?pathOfFile={pathOfFile}/?pathOfDir={pathOfDir}/?mimeType={mimeType}/?stringResource={stringResource}") {
         fun withParameters(
             pathOfFile: String,
             pathOfDir: String,
             mimeType: String,
             stringResource: Int
         ): String {
-            return "final_screen?/pathOfFile=$pathOfFile?/pathOfDir=$pathOfDir?/mimeType=$mimeType?/stringResource=$stringResource"
+            return "final_screen/?pathOfFile=$pathOfFile/?pathOfDir=$pathOfDir/?mimeType=$mimeType/?stringResource=$stringResource"
         }
     }
 
     object PdfToJpgScreen : Screens("pdf_to_jpg_screen")
+
+    object PdfToDocScreen : Screens("pdf_to_doc_screen")
+
+    object PdfToPptxScreen : Screens("pdf_to_pptx_screen")
 
 }

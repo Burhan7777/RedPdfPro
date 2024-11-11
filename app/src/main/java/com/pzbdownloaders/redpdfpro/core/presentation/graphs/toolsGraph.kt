@@ -8,8 +8,10 @@ import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import com.pzbdownloaders.redpdfpro.conversionsfeature.convertToPdf.docstopdffeature.DocsToPdf
 import com.pzbdownloaders.redpdfpro.compresspdffeature.screens.CompressPDF
+import com.pzbdownloaders.redpdfpro.conversionsfeature.convertPdfToAnyFormat.pdftodocfeature.presentation.screen.PdfToDocScreen
 import com.pzbdownloaders.redpdfpro.conversionsfeature.convertPdfToAnyFormat.pdftodocxfeature.presentation.screens.PdfToDocxScreen
 import com.pzbdownloaders.redpdfpro.conversionsfeature.convertPdfToAnyFormat.pdftojpgfeature.presentation.screens.PdfToJpgScreen
+import com.pzbdownloaders.redpdfpro.conversionsfeature.convertPdfToAnyFormat.pdftopptxfeature.presentation.screens.PdfToPptx
 import com.pzbdownloaders.redpdfpro.conversionsfeature.convertToPdf.csvtopdffeature.presentation.screens.CsvToPdfScreen
 import com.pzbdownloaders.redpdfpro.conversionsfeature.convertToPdf.doctopdffeature.presentation.screens.DocToPdfScreen
 import com.pzbdownloaders.redpdfpro.conversionsfeature.convertToPdf.epubtopdffeature.presentation.screen.EpubToPdfScreen
@@ -220,6 +222,12 @@ fun NavGraphBuilder.toolsGraph(
         }
         composable(Screens.PdfToJpgScreen.route) {
             PdfToJpgScreen(activity, viewModel, navHostController)
+        }
+        composable(Screens.PdfToDocScreen.route) {
+            PdfToDocScreen(activity, viewModel, navHostController)
+        }
+        composable(Screens.PdfToPptxScreen.route) {
+            PdfToPptx(activity, viewModel, navHostController)
         }
     }
 }
