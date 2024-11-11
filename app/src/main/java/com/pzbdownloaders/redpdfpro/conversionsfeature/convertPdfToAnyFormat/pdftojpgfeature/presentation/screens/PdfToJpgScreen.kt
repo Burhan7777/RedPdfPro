@@ -54,6 +54,7 @@ import com.chaquo.python.Python
 import com.google.gson.Gson
 import com.pzbdownloaders.redpdfpro.R
 import com.pzbdownloaders.redpdfpro.conversionsfeature.convertPdfToAnyFormat.pdftodocxfeature.presentation.components.SingleRowPdfToDocx
+import com.pzbdownloaders.redpdfpro.conversionsfeature.convertToPdf.docstopdffeature.checkJobStatus
 import com.pzbdownloaders.redpdfpro.conversionsfeature.core.domain.models.InitializeJob
 import com.pzbdownloaders.redpdfpro.conversionsfeature.core.domain.models.JobStatus
 import com.pzbdownloaders.redpdfpro.conversionsfeature.core.domain.util.downloadMultipleFilesWithProgress
@@ -175,47 +176,42 @@ fun PdfToJpgScreen(
         }
 
         if (saveAsDialogBox.value) {
-            AlertDialogBox(
-                name = nameOfThePdfFile,
-                featureExecution = {
-                    showUploadingFIleDialogBox.value = true
-                    scope.launch(Dispatchers.IO) {
-                        val python = Python.getInstance()
-                        val module = python.getModule("convertPdfToAnyFormat")
-                        val result = module.callAttr("make_request", pathOfPdfFIle.value, "jpg")
-                        println(result.toString())
-                        val initializeJob =
-                            Gson().fromJson(result.toString(), InitializeJob::class.java)
-                        showUploadingFIleDialogBox.value = false
+            showUploadingFIleDialogBox.value = true
+            scope.launch(Dispatchers.IO) {
+                val python = Python.getInstance()
+                val module = python.getModule("convertPdfToAnyFormat")
+                val result = module.callAttr("make_request", pathOfPdfFIle.value, "jpg")
+                println(result.toString())
+                val initializeJob =
+                    Gson().fromJson(result.toString(), InitializeJob::class.java)
+                showUploadingFIleDialogBox.value = false
 
-                        //  println(initializeJob)
-                        if (initializeJob.status == "initialising") {
-                            showConvertingFileDialogBox.value = true
-                            checkJobStatus(
-                                scope,
-                                module,
-                                initializeJob,
-                                context,
-                                showConvertingFileDialogBox,
-                                showDownloadingFileDialogBox,
-                                navHostController,
-                                nameOfThePdfFile,
-                                activity,
-                                viewModel
-                            )
-                        } else {
-                            withContext(Dispatchers.Main) {
-                                Toast
-                                    .makeText(context, "Failed", Toast.LENGTH_SHORT)
-                                    .show()
-                            }
-                        }
+                //  println(initializeJob)
+                if (initializeJob.status == "initialising") {
+                    showConvertingFileDialogBox.value = true
+                    checkJobStatus(
+                        scope,
+                        module,
+                        initializeJob,
+                        context,
+                        showConvertingFileDialogBox,
+                        showDownloadingFileDialogBox,
+                        navHostController,
+                        nameOfThePdfFile,
+                        activity,
+                        viewModel,
+                        saveAsDialogBox
+                    )
+                } else {
+                    withContext(Dispatchers.Main) {
+                        saveAsDialogBox.value = false
+                        Toast
+                            .makeText(context, "Failed", Toast.LENGTH_SHORT)
+                            .show()
                     }
-                },
-                onDismiss = {
-                    saveAsDialogBox.value = false
                 }
-            )
+
+            }
         }
         Column(
             modifier = Modifier
@@ -378,7 +374,8 @@ fun checkJobStatus(
     navHostController: NavHostController,
     nameOfFile: MutableState<String>,
     activity: MainActivity,
-    viewModel: MyViewModel
+    viewModel: MyViewModel,
+    saveAsDialogBox: MutableState<Boolean>
 ) {
     val listOfIds = ArrayList<Int>()
     val path =
@@ -402,6 +399,7 @@ fun checkJobStatus(
                 )
             withContext(Dispatchers.Main) {
                 if (downloadFileStatus.toString() == "Success") {
+                    saveAsDialogBox.value = false
                     showDownloadingFIleDialogBox.value = false
                     scanFile(path, activity)
                     navHostController.navigate(
@@ -409,6 +407,7 @@ fun checkJobStatus(
                     )
                 } else {
                     showDownloadingFIleDialogBox.value = false
+                    saveAsDialogBox.value = false
                     Toast.makeText(context, "File conversion failed", Toast.LENGTH_SHORT).show()
 
                 }
@@ -424,7 +423,8 @@ fun checkJobStatus(
                 navHostController,
                 nameOfFile,
                 activity,
-                viewModel
+                viewModel,
+                saveAsDialogBox
             )
         }
     }

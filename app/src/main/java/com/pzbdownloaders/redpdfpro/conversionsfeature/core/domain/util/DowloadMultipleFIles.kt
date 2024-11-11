@@ -31,7 +31,7 @@ suspend fun downloadMultipleFilesWithProgress(
         val fileName = "file_$fileId-${randomUUID}.jpg" // or use target_files[index]["name"]
         val filePath = "$outputDirectory/$fileName"
 
-        val url = "https://sandbox.zamzar.com/v1/files/$fileId/content"
+        val url = "https://api.zamzar.com/v1/files/$fileId/content"
         val request = Request.Builder()
             .url(url)
             .addHeader("Authorization", okhttp3.Credentials.basic(apiKey, ""))

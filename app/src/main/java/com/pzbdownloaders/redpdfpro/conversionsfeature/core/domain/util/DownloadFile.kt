@@ -18,7 +18,7 @@ suspend fun downloadFileWithProgress(
 ): String {
     val apiKey = "5c060a983bb5ab4f480ed985908b6f07d8c5e2ec"
     val client = OkHttpClient()
-    val url = "https://sandbox.zamzar.com/v1/files/$fileId/content"
+    val url = "https://api.zamzar.com/v1/files/$fileId/content"
     val request = Request.Builder()
         .url(url)
         .addHeader("Authorization", okhttp3.Credentials.basic(apiKey, ""))

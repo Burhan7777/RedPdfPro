@@ -4,7 +4,7 @@ from requests.auth import HTTPBasicAuth
 
 def make_request(source_path):
     api_key = '5c060a983bb5ab4f480ed985908b6f07d8c5e2ec'
-    endpoint = "https://sandbox.zamzar.com/v1/jobs"
+    endpoint = "https://api.zamzar.com/v1/jobs"
     source_file = source_path
     target_format = "pdf"
 
@@ -16,7 +16,7 @@ def make_request(source_path):
 def check_status(job_id):
     job_id = job_id
     api_key = '5c060a983bb5ab4f480ed985908b6f07d8c5e2ec'
-    endpoint = f"https://sandbox.zamzar.com/v1/jobs/{job_id}".format(job_id)
+    endpoint = f"https://api.zamzar.com/v1/jobs/{job_id}".format(job_id)
 
     response = requests.get(endpoint, auth=HTTPBasicAuth(api_key, ''))
 
@@ -27,7 +27,7 @@ def download_file(file_id, file_path):
     file_id = file_id
     local_filename = file_path
     api_key = '5c060a983bb5ab4f480ed985908b6f07d8c5e2ec'
-    endpoint = f"https://sandbox.zamzar.com/v1/files/{file_id}/content".format(file_id)
+    endpoint = f"https://api.zamzar.com/v1/files/{file_id}/content".format(file_id)
 
     response = requests.get(endpoint, stream=True, auth=HTTPBasicAuth(api_key, ''))
 
