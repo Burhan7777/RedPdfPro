@@ -21,6 +21,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CornerSize
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -50,6 +54,7 @@ import com.chaquo.python.Python
 import com.google.gson.Gson
 import com.pzbdownloaders.redpdfpro.R
 import com.pzbdownloaders.redpdfpro.conversionsfeature.convertToDocx.pdftodocxfeature.presentation.components.SingleRowPdfToDocx
+import com.pzbdownloaders.redpdfpro.conversionsfeature.convertToPdf.epubtopdffeature.presentation.screen.getEpub
 import com.pzbdownloaders.redpdfpro.conversionsfeature.convertToPdf.pptxtopdffeature.presentation.components.SingleRowPptxToPdf
 import com.pzbdownloaders.redpdfpro.conversionsfeature.core.domain.models.InitializeJob
 import com.pzbdownloaders.redpdfpro.conversionsfeature.core.domain.models.JobStatus
@@ -61,12 +66,14 @@ import com.pzbdownloaders.redpdfpro.core.presentation.Screens
 import com.pzbdownloaders.redpdfpro.mergepdffeature.screens.scanFile
 import com.pzbdownloaders.redpdfpro.splitpdffeature.utils.getFilePathFromContentUri
 import com.pzbdownloaders.redpdfpro.splitpdffeature.utils.getFilePathFromContentUriForPptx
+import downloadFileWithProgress
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun PdfToDocxScreen(
     activity: MainActivity,
@@ -103,6 +110,27 @@ fun PdfToDocxScreen(
             saveAsDialogBox.value = true
         })
 
+    var isRefreshing = remember { mutableStateOf(false) }
+    val pullRefreshState = rememberPullRefreshState(
+        refreshing = isRefreshing.value,
+        onRefresh = {
+            isRefreshing.value = true
+            // Simulate loading or data fetching
+            scope.launch(Dispatchers.Default) {
+                // if (viewModel.mutableStateListOfPdfs.size == 0 && viewModel.listOfPdfNames.size == 0) {
+                viewModel.mutableStateListOfPdfs.clear()
+                viewModel.listOfPdfNames.clear()
+                getPdf(listOfPdf, activity, viewModel.listOfPdfNames, viewModel.listOfSize)
+                withContext(Dispatchers.Main) {
+                    viewModel.mutableStateListOfPdfs = listOfPdf.toMutableStateList()
+                    isRefreshing.value = false
+                    //   }
+                }
+            }
+            // stop the refresh indicator
+        }
+    )
+
     LaunchedEffect(key1 = true) {
         getPdf(
             listOfPdf,
@@ -127,7 +155,14 @@ fun PdfToDocxScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
+            .pullRefresh(pullRefreshState)
     ) {
+
+        PullRefreshIndicator(
+            refreshing = isRefreshing.value,
+            state = pullRefreshState,
+            modifier = Modifier.align(Alignment.TopCenter)
+        )
 
         if (showUploadingFIleDialogBox.value) {
             LoadingDialogBox("File is being uploaded")
@@ -148,8 +183,8 @@ fun PdfToDocxScreen(
                     showUploadingFIleDialogBox.value = true
                     scope.launch(Dispatchers.IO) {
                         val python = Python.getInstance()
-                        val module = python.getModule("convertToDocx")
-                        val result = module.callAttr("make_request", pathOfPdfFIle.value)
+                        val module = python.getModule("convertPdfToAnyFormat")
+                        val result = module.callAttr("make_request", pathOfPdfFIle.value, "docx")
                         println(result.toString())
                         val initializeJob =
                             Gson().fromJson(result.toString(), InitializeJob::class.java)
@@ -355,7 +390,13 @@ fun checkJobStatus(
             showConvertingFileDialogBox.value = false
             showDownloadingFIleDialogBox.value = true
             val downloadFileStatus =
-                module.callAttr("download_file", jobStatus.target_files[0].id, path)
+                downloadFileWithProgress(
+                    jobStatus.target_files[0].id.toInt(),
+                    path,
+                    context
+                ) { progress ->
+
+                }
             withContext(Dispatchers.Main) {
                 if (downloadFileStatus.toString() == "Success") {
                     showDownloadingFIleDialogBox.value = false
@@ -366,6 +407,7 @@ fun checkJobStatus(
                         )
                     )
                 } else {
+                    showDownloadingFIleDialogBox.value = false
                     Toast.makeText(context, "File conversion failed", Toast.LENGTH_SHORT).show()
 
                 }

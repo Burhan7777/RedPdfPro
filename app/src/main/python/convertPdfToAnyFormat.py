@@ -2,16 +2,17 @@ import requests
 from requests.auth import HTTPBasicAuth
 
 
-def make_request(source_path):
+def make_request(source_path, target_format_1):
     api_key = '5c060a983bb5ab4f480ed985908b6f07d8c5e2ec'
     endpoint = "https://sandbox.zamzar.com/v1/jobs"
     source_file = source_path
-    target_format = "docx"
+    target_format = target_format_1
 
     file_content = {'source_file': open(source_file, 'rb')}
     data_content = {'target_format': target_format}
     res = requests.post(endpoint, data=data_content, files=file_content, auth=HTTPBasicAuth(api_key, ''))
     return res.json()
+
 
 def check_status(job_id):
     job_id = job_id
@@ -39,7 +40,7 @@ def download_file(file_id, file_path):
                     f.write(chunk)
                     f.flush()
 
-           return "Success"
+        return "Success"
 
     except IOError:
         return "Failure"

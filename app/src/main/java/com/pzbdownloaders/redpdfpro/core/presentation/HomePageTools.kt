@@ -237,7 +237,7 @@ fun HomePage(navHostController: NavHostController, viewModel: MyViewModel) {
         }
         Spacer(modifier = Modifier.height(30.dp))
         Text(
-            text = stringResource(id = R.string.convertToDocx),
+            text = stringResource(id = R.string.convertFromPdf),
             color = MaterialTheme.colorScheme.onPrimary,
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold
