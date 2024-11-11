@@ -1,4 +1,4 @@
-package com.pzbdownloaders.redpdfpro.conversionsfeature.convertToDocx.pdftodocxfeature.presentation.screens
+package com.pzbdownloaders.redpdfpro.conversionsfeature.convertPdfToAnyFormat.pdftodocxfeature.presentation.screens
 
 import android.content.Context
 import android.database.Cursor
@@ -53,9 +53,7 @@ import com.chaquo.python.PyObject
 import com.chaquo.python.Python
 import com.google.gson.Gson
 import com.pzbdownloaders.redpdfpro.R
-import com.pzbdownloaders.redpdfpro.conversionsfeature.convertToDocx.pdftodocxfeature.presentation.components.SingleRowPdfToDocx
-import com.pzbdownloaders.redpdfpro.conversionsfeature.convertToPdf.epubtopdffeature.presentation.screen.getEpub
-import com.pzbdownloaders.redpdfpro.conversionsfeature.convertToPdf.pptxtopdffeature.presentation.components.SingleRowPptxToPdf
+import com.pzbdownloaders.redpdfpro.conversionsfeature.convertPdfToAnyFormat.pdftodocxfeature.presentation.components.SingleRowPdfToDocx
 import com.pzbdownloaders.redpdfpro.conversionsfeature.core.domain.models.InitializeJob
 import com.pzbdownloaders.redpdfpro.conversionsfeature.core.domain.models.JobStatus
 import com.pzbdownloaders.redpdfpro.core.presentation.Component.AlertDialogBox
@@ -65,7 +63,6 @@ import com.pzbdownloaders.redpdfpro.core.presentation.MyViewModel
 import com.pzbdownloaders.redpdfpro.core.presentation.Screens
 import com.pzbdownloaders.redpdfpro.mergepdffeature.screens.scanFile
 import com.pzbdownloaders.redpdfpro.splitpdffeature.utils.getFilePathFromContentUri
-import com.pzbdownloaders.redpdfpro.splitpdffeature.utils.getFilePathFromContentUriForPptx
 import downloadFileWithProgress
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

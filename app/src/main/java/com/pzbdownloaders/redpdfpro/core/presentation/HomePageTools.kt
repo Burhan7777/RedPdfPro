@@ -247,6 +247,14 @@ fun HomePage(navHostController: NavHostController, viewModel: MyViewModel) {
         )
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             FeatureBox(
+                stringId = R.string.pdfToJpg,
+                drawableId = R.drawable.image,
+                contentDescription = stringResource(id = R.string.pdfToJpg),
+                navHostController,
+                Screens.PdfToJpgScreen.route,
+                R.drawable.ic_premium
+            )
+            FeatureBox(
                 stringId = R.string.pdfToDocx,
                 drawableId = R.drawable.word_red,
                 contentDescription = stringResource(id = R.string.convertToDocx),
@@ -254,8 +262,6 @@ fun HomePage(navHostController: NavHostController, viewModel: MyViewModel) {
                 Screens.PdfToDocxScreen.route,
                 R.drawable.ic_premium
             )
-
-
         }
     }
 }

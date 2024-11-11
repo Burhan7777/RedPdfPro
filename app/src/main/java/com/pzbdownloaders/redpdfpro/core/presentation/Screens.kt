@@ -101,6 +101,20 @@ sealed class Screens(var route: String) {
 
     object CsvToPdf : Screens("csv_to_pdf_screen")
 
-    object EpubToPdf:Screens("epub_to_pdf_screen")
+    object EpubToPdf : Screens("epub_to_pdf_screen")
+
+    object FinalScreen :
+        Screens("final_screen?/pathOfFile={pathOfFile}?/pathOfDir={pathOfDir}?/mimeType={mimeType}?/stringResource={stringResource}") {
+        fun withParameters(
+            pathOfFile: String,
+            pathOfDir: String,
+            mimeType: String,
+            stringResource: Int
+        ): String {
+            return "final_screen?/pathOfFile=$pathOfFile?/pathOfDir=$pathOfDir?/mimeType=$mimeType?/stringResource=$stringResource"
+        }
+    }
+
+    object PdfToJpgScreen : Screens("pdf_to_jpg_screen")
 
 }

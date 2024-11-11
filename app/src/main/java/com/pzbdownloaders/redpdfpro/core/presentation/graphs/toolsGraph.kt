@@ -8,7 +8,8 @@ import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import com.pzbdownloaders.redpdfpro.conversionsfeature.convertToPdf.docstopdffeature.DocsToPdf
 import com.pzbdownloaders.redpdfpro.compresspdffeature.screens.CompressPDF
-import com.pzbdownloaders.redpdfpro.conversionsfeature.convertToDocx.pdftodocxfeature.presentation.screens.PdfToDocxScreen
+import com.pzbdownloaders.redpdfpro.conversionsfeature.convertPdfToAnyFormat.pdftodocxfeature.presentation.screens.PdfToDocxScreen
+import com.pzbdownloaders.redpdfpro.conversionsfeature.convertPdfToAnyFormat.pdftojpgfeature.presentation.screens.PdfToJpgScreen
 import com.pzbdownloaders.redpdfpro.conversionsfeature.convertToPdf.csvtopdffeature.presentation.screens.CsvToPdfScreen
 import com.pzbdownloaders.redpdfpro.conversionsfeature.convertToPdf.doctopdffeature.presentation.screens.DocToPdfScreen
 import com.pzbdownloaders.redpdfpro.conversionsfeature.convertToPdf.epubtopdffeature.presentation.screen.EpubToPdfScreen
@@ -22,6 +23,7 @@ import com.pzbdownloaders.redpdfpro.core.presentation.MyViewModel
 import com.pzbdownloaders.redpdfpro.core.presentation.Screens
 import com.pzbdownloaders.redpdfpro.core.presentation.ScreensBottomNavigation
 import com.pzbdownloaders.redpdfpro.core.presentation.TOOLS_GRAPH
+import com.pzbdownloaders.redpdfpro.core.presentation.finalscreens.FinalScreen
 import com.pzbdownloaders.redpdfpro.core.presentation.finalscreens.FinalScreenForImageExtraction
 import com.pzbdownloaders.redpdfpro.core.presentation.finalscreens.FinalScreenOfPdfOperations
 import com.pzbdownloaders.redpdfpro.core.presentation.finalscreens.FinalScreenOfTextExtraction
@@ -192,8 +194,32 @@ fun NavGraphBuilder.toolsGraph(
         composable(Screens.CsvToPdf.route) {
             CsvToPdfScreen(activity, viewModel, navHostController)
         }
-        composable(Screens.EpubToPdf.route){
-            EpubToPdfScreen(activity,viewModel,navHostController)
+        composable(Screens.EpubToPdf.route) {
+            EpubToPdfScreen(activity, viewModel, navHostController)
+        }
+        composable(Screens.FinalScreen.route, listOf(navArgument("pathOfFile") {
+            type = NavType.StringType
+            defaultValue = ""
+        }, navArgument("pathOfDir") {
+            type = NavType.StringType
+            defaultValue = ""
+        }, navArgument("mimeType") {
+            type = NavType.StringType
+            defaultValue = ""
+        }, navArgument("stringResource") {
+            type = NavType.IntType
+            defaultValue = 0
+        })) {
+            FinalScreen(
+                navHostController,
+                it.arguments?.getString("pathOfFile")!!,
+                it.arguments?.getString("pathOfDir")!!,
+                it.arguments?.getString("mimeType")!!,
+                it.arguments?.getInt("stringResource")!!
+            )
+        }
+        composable(Screens.PdfToJpgScreen.route) {
+            PdfToJpgScreen(activity, viewModel, navHostController)
         }
     }
 }

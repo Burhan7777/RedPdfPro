@@ -79,4 +79,5 @@
     <string name="addEpub">Add EPUB</string>
     <string name="epubToPdf">EPUB to PDF</string>
     <string name="convertFromPdf">Convert From PDF</string>
+    <string name="pdfToJpg">PDF to JPG</string>
 </resources>
