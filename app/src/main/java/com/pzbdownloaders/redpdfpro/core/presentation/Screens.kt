@@ -121,4 +121,6 @@ sealed class Screens(var route: String) {
 
     object PdfToPptxScreen : Screens("pdf_to_pptx_screen")
 
+    object PdfToPptScreen : Screens("pdf_to_ppt_screen")
+
 }

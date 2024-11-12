@@ -255,22 +255,6 @@ fun HomePage(navHostController: NavHostController, viewModel: MyViewModel) {
                 R.drawable.ic_premium
             )
             FeatureBox(
-                stringId = R.string.pdfToPptx,
-                drawableId = R.drawable.word_red,
-                contentDescription = stringResource(id = R.string.pdfToPptx),
-                navHostController,
-                Screens.PdfToPptxScreen.route,
-                R.drawable.ic_premium
-            )
-            FeatureBox(
-                stringId = R.string.pdfToDoc,
-                drawableId = R.drawable.word_red,
-                contentDescription = stringResource(id = R.string.pdfToDoc),
-                navHostController,
-                Screens.PdfToDocScreen.route,
-                R.drawable.ic_premium
-            )
-            FeatureBox(
                 stringId = R.string.pdfToDocx,
                 drawableId = R.drawable.word_red,
                 contentDescription = stringResource(id = R.string.convertToDocx),
@@ -278,6 +262,31 @@ fun HomePage(navHostController: NavHostController, viewModel: MyViewModel) {
                 Screens.PdfToDocxScreen.route,
                 R.drawable.ic_premium
             )
+            FeatureBox(
+                stringId = R.string.pdfToPpt,
+                drawableId = R.drawable.word_red,
+                contentDescription = stringResource(id = R.string.pdfToPpt),
+                navHostController,
+                Screens.PdfToPptScreen.route,
+                R.drawable.ic_premium
+            )
+            FeatureBox(
+                stringId = R.string.pdfToPptx,
+                drawableId = R.drawable.word_red,
+                contentDescription = stringResource(id = R.string.pdfToPptx),
+                navHostController,
+                Screens.PdfToPptxScreen.route,
+                R.drawable.ic_premium
+            )
+//            FeatureBox(
+//                stringId = R.string.pdfToDoc,
+//                drawableId = R.drawable.word_red,
+//                contentDescription = stringResource(id = R.string.pdfToDoc),
+//                navHostController,
+//                Screens.PdfToDocScreen.route,
+//                R.drawable.ic_premium
+//            )
+
         }
     }
 }

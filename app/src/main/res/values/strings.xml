@@ -83,4 +83,5 @@
     <string name="pdfToDoc">PDF to DOC</string>
     <string name="openFile">Open File</string>
     <string name="pdfToPptx">PDF to PPTX</string>
+    <string name="pdfToPpt">PDF to PPT</string>
 </resources>
