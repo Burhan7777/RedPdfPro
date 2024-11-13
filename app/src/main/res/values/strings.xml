@@ -87,4 +87,5 @@
     <string name="pdfToEpub">PDF to EPUB</string>
     <string name="pdfToCsv">PDF To CSV</string>
     <string name="pdfToXls">PDF to XLS</string>
+    <string name="pdfToXlsx">PDF to XLSX</string>
 </resources>

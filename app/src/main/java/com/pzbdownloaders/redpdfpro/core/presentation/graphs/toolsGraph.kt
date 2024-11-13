@@ -16,6 +16,7 @@ import com.pzbdownloaders.redpdfpro.conversionsfeature.convertPdfToAnyFormat.pdf
 import com.pzbdownloaders.redpdfpro.conversionsfeature.convertPdfToAnyFormat.pdftojpgfeature.presentation.screens.PdfToJpgScreen
 import com.pzbdownloaders.redpdfpro.conversionsfeature.convertPdfToAnyFormat.pdftopptxfeature.presentation.screens.PdfToPptx
 import com.pzbdownloaders.redpdfpro.conversionsfeature.convertPdfToAnyFormat.pdftoxlsfeature.presentation.screen.PdfToXlsScreen
+import com.pzbdownloaders.redpdfpro.conversionsfeature.convertPdfToAnyFormat.pdftoxlsxfeature.presentation.screen.PdfToXlsxScreen
 import com.pzbdownloaders.redpdfpro.conversionsfeature.convertToPdf.csvtopdffeature.presentation.screens.CsvToPdfScreen
 import com.pzbdownloaders.redpdfpro.conversionsfeature.convertToPdf.doctopdffeature.presentation.screens.DocToPdfScreen
 import com.pzbdownloaders.redpdfpro.conversionsfeature.convertToPdf.epubtopdffeature.presentation.screen.EpubToPdfScreen
@@ -244,6 +245,9 @@ fun NavGraphBuilder.toolsGraph(
         }
         composable(Screens.PdfToXls.route) {
             PdfToXlsScreen(activity, viewModel, navHostController)
+        }
+        composable(Screens.PdfToXlsx.route) {
+            PdfToXlsxScreen(activity, viewModel, navHostController)
         }
     }
 }
