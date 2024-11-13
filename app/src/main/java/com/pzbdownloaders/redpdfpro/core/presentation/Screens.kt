@@ -131,4 +131,6 @@ sealed class Screens(var route: String) {
 
     object PdfToXlsx:Screens("pdf_to_xlsx_screen")
 
+    object PdfToHtml5:Screens("pdf_to_html5_screen")
+
 }

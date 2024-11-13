@@ -88,4 +88,5 @@
     <string name="pdfToCsv">PDF To CSV</string>
     <string name="pdfToXls">PDF to XLS</string>
     <string name="pdfToXlsx">PDF to XLSX</string>
+    <string name="pdftohtml5">PDF to HTML5</string>
 </resources>
