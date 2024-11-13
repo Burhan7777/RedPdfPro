@@ -26,6 +26,7 @@ import com.pzbdownloaders.redpdfpro.conversionsfeature.convertToPdf.pptxtopdffea
 import com.pzbdownloaders.redpdfpro.conversionsfeature.convertToPdf.xlstopdffeature.presentation.screens.XlsToPdfScreen
 import com.pzbdownloaders.redpdfpro.conversionsfeature.convertToPdf.xlsxtopdffeature.presentation.screens.XlsxToPdfScreen
 import com.pzbdownloaders.redpdfpro.conversionsfeature.docx.converttodocx.convertdoctodocx.presentation.screen.DocToDocxScreen
+import com.pzbdownloaders.redpdfpro.conversionsfeature.otherconversions.csvtoxlsfeature.presentation.screen.CsvToXlsScreen
 import com.pzbdownloaders.redpdfpro.core.presentation.HomePage
 import com.pzbdownloaders.redpdfpro.core.presentation.MainActivity
 import com.pzbdownloaders.redpdfpro.core.presentation.MyViewModel
@@ -256,6 +257,9 @@ fun NavGraphBuilder.toolsGraph(
         }
         composable(Screens.DocToDOcx.route) {
             DocToDocxScreen(activity, viewModel, navHostController)
+        }
+        composable(Screens.CsvToXls.route) {
+            CsvToXlsScreen(activity, viewModel, navHostController)
         }
     }
 }

@@ -351,6 +351,14 @@ fun HomePage(navHostController: NavHostController, viewModel: MyViewModel) {
                 Screens.DocToDOcx.route,
                 R.drawable.ic_premium
             )
+            FeatureBox(
+                stringId = R.string.csvToXls,
+                drawableId = R.drawable.xls_image,
+                contentDescription = stringResource(id = R.string.csvToXls),
+                navHostController,
+                Screens.CsvToXls.route,
+                R.drawable.ic_premium
+            )
         }
     }
 }

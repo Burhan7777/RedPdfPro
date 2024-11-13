@@ -129,10 +129,12 @@ sealed class Screens(var route: String) {
 
     object PdfToXls : Screens("pdf_to_xls_screen")
 
-    object PdfToXlsx:Screens("pdf_to_xlsx_screen")
+    object PdfToXlsx : Screens("pdf_to_xlsx_screen")
 
-    object PdfToHtml5:Screens("pdf_to_html5_screen")
+    object PdfToHtml5 : Screens("pdf_to_html5_screen")
 
-    object DocToDOcx:Screens("doc_to_docx_screen")
+    object DocToDOcx : Screens("doc_to_docx_screen")
+
+    object CsvToXls : Screens("csv_to_xls_screen")
 
 }
