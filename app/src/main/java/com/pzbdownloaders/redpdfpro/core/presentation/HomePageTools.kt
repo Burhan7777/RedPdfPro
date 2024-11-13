@@ -336,7 +336,7 @@ fun HomePage(navHostController: NavHostController, viewModel: MyViewModel) {
         }
         Spacer(modifier = Modifier.height(30.dp))
         Text(
-            stringResource(R.string.convertToDocx),
+            stringResource(R.string.otherConversions),
             color = MaterialTheme.colorScheme.onPrimary,
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold
@@ -357,6 +357,14 @@ fun HomePage(navHostController: NavHostController, viewModel: MyViewModel) {
                 contentDescription = stringResource(id = R.string.csvToXls),
                 navHostController,
                 Screens.CsvToXls.route,
+                R.drawable.ic_premium
+            )
+            FeatureBox(
+                stringId = R.string.csvToXlsx,
+                drawableId = R.drawable.xlsx_image,
+                contentDescription = stringResource(id = R.string.csvToXlsx),
+                navHostController,
+                Screens.CsvToXlsx.route,
                 R.drawable.ic_premium
             )
         }

@@ -91,4 +91,6 @@
     <string name="pdftohtml5">PDF to HTML5</string>
     <string name="docToDocx">DOC to DOCX</string>
     <string name="csvToXls">CSV to XLS</string>
+    <string name="otherConversions">Other Conversions</string>
+    <string name="csvToXlsx">CSV to XLSX</string>
 </resources>
