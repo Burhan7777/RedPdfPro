@@ -84,4 +84,5 @@
     <string name="openFile">Open File</string>
     <string name="pdfToPptx">PDF to PPTX</string>
     <string name="pdfToPpt">PDF to PPT</string>
+    <string name="pdfToEpub">PDF to EPUB</string>
 </resources>

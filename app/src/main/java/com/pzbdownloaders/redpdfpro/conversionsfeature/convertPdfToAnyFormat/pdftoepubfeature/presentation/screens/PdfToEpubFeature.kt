@@ -1,4 +1,4 @@
-package com.pzbdownloaders.redpdfpro.conversionsfeature.convertPdfToAnyFormat.PdfToPptfeature.presentation.screen
+package com.pzbdownloaders.redpdfpro.conversionsfeature.convertPdfToAnyFormat.pdftoepubfeature.presentation.screens
 
 import android.content.Context
 import android.database.Cursor
@@ -73,7 +73,7 @@ import java.io.File
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun PdfToPptScreen(
+fun PdfToEpubScreen(
     activity: MainActivity,
     viewModel: MyViewModel,
     navHostController: NavHostController
@@ -182,7 +182,7 @@ fun PdfToPptScreen(
                     scope.launch(Dispatchers.IO) {
                         val python = Python.getInstance()
                         val module = python.getModule("convertPdfToAnyFormat")
-                        val result = module.callAttr("make_request", pathOfPdfFIle.value, "ppt")
+                        val result = module.callAttr("make_request", pathOfPdfFIle.value, "epub")
                         println(result.toString())
                         val initializeJob =
                             Gson().fromJson(result.toString(), InitializeJob::class.java)
@@ -380,13 +380,12 @@ fun checkJobStatus(
 ) {
     var externalDir =
         Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-    val pptx = File("$externalDir/Pro Scanner/pptx")
-    if (!pptx.exists()) {
-        pptx.mkdirs()
+    val epub = File("$externalDir/Pro Scanner/epub")
+    if (!epub.exists()) {
+        epub.mkdirs()
     }
-
     val path =
-        "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)}/Pro Scanner/pptx/${nameOfFile.value}.ppt"
+        "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)}/Pro Scanner/epub/${nameOfFile.value}.epub"
     scope.launch(Dispatchers.IO) {
         delay(3000)
         val result = module.callAttr("check_status", initializeJob.id)
@@ -409,8 +408,8 @@ fun checkJobStatus(
                     navHostController.navigate(
                         Screens.FinalScreen.withParameters(
                             path,
-                            "Downloads/Pro Scanner/pptx",
-                            "application/vnd.ms-powerpoint",
+                            "Downloads/Pro Scanner/epub",
+                            "application/epub+zip",
                             R.string.openFile
                         )
                     )

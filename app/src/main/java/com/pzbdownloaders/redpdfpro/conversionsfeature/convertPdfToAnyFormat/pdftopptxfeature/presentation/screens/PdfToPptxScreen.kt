@@ -69,6 +69,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.File
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -377,8 +378,14 @@ fun checkJobStatus(
     nameOfFile: MutableState<String>,
     activity: MainActivity
 ) {
+    var externalDir =
+        Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+    val pptx = File("$externalDir/Pro Scanner/pptx")
+    if (!pptx.exists()) {
+        pptx.mkdirs()
+    }
     val path =
-        "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)}/Pro Scanner/docx/${nameOfFile.value}.pptx"
+        "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)}/Pro Scanner/pptx/${nameOfFile.value}.pptx"
     scope.launch(Dispatchers.IO) {
         delay(3000)
         val result = module.callAttr("check_status", initializeJob.id)

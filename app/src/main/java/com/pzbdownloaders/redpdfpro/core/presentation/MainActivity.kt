@@ -112,7 +112,6 @@ class MainActivity : ComponentActivity() {
             }
         } else {
             loadPdfs()
-            Toast.makeText(this, "App", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -132,6 +131,40 @@ class MainActivity : ComponentActivity() {
         if (!filePdfTemp.exists()) {
             filePdfTemp.mkdirs()
         }
+        val images = File("$externalDir/Pro Scanner/images")
+        if (!images.exists()) {
+            images.mkdirs()
+        }
+        val docx = File("$externalDir/Pro Scanner/docx")
+        if (!docx.exists()) {
+            docx.mkdirs()
+        }
+        val tempImages = File("$externalDir/Pro Scanner/temp_images")
+        if (!tempImages.exists()) {
+            tempImages.mkdirs()
+        }
+        val textFiles = File("$externalDir/Pro Scanner/text files")
+        if (!textFiles.exists()) {
+            textFiles.mkdirs()
+        }
+        val pptx = File("$externalDir/Pro Scanner/pptx")
+        if (!pptx.exists()) {
+            pptx.mkdirs()
+        }
+        val epub = File("$externalDir/Pro Scanner/epub")
+        if (!epub.exists()) {
+            epub.mkdirs()
+        }
+        val xlsx = File("$externalDir/Pro Scanner/xlsx")
+        if (!xlsx.exists()) {
+            xlsx.mkdirs()
+        }
+        val csv = File("$externalDir/Pro Scanner/csv")
+        if (!csv.exists()) {
+            csv.mkdirs()
+        }
+
+
         //oast.makeText(this, "App", Toast.LENGTH_SHORT).show()
         if (viewModel.listOfFiles.size < (file.listFiles()?.size ?: 0)) {
             viewModel.listOfFiles =

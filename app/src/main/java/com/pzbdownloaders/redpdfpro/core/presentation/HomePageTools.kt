@@ -264,7 +264,7 @@ fun HomePage(navHostController: NavHostController, viewModel: MyViewModel) {
             )
             FeatureBox(
                 stringId = R.string.pdfToPpt,
-                drawableId = R.drawable.word_red,
+                drawableId = R.drawable.pptx_image,
                 contentDescription = stringResource(id = R.string.pdfToPpt),
                 navHostController,
                 Screens.PdfToPptScreen.route,
@@ -272,7 +272,7 @@ fun HomePage(navHostController: NavHostController, viewModel: MyViewModel) {
             )
             FeatureBox(
                 stringId = R.string.pdfToPptx,
-                drawableId = R.drawable.word_red,
+                drawableId = R.drawable.pptx_image,
                 contentDescription = stringResource(id = R.string.pdfToPptx),
                 navHostController,
                 Screens.PdfToPptxScreen.route,
@@ -287,6 +287,17 @@ fun HomePage(navHostController: NavHostController, viewModel: MyViewModel) {
 //                R.drawable.ic_premium
 //            )
 
+        }
+        Spacer(modifier = Modifier.height(10.dp))
+        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            FeatureBox(
+                stringId = R.string.pdfToEpub,
+                drawableId = R.drawable.epub_image,
+                contentDescription = stringResource(id = R.string.pdfToEpub),
+                navHostController,
+                Screens.PdfToEpubScreen.route,
+                R.drawable.ic_premium
+            )
         }
     }
 }
