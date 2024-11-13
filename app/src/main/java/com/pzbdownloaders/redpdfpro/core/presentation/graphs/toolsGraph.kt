@@ -9,6 +9,7 @@ import androidx.navigation.navigation
 import com.pzbdownloaders.redpdfpro.conversionsfeature.convertToPdf.docstopdffeature.DocsToPdf
 import com.pzbdownloaders.redpdfpro.compresspdffeature.screens.CompressPDF
 import com.pzbdownloaders.redpdfpro.conversionsfeature.convertPdfToAnyFormat.PdfToPptfeature.presentation.screen.PdfToPptScreen
+import com.pzbdownloaders.redpdfpro.conversionsfeature.convertPdfToAnyFormat.pdftocsvfeature.presentation.screens.PdfToCsvScreen
 import com.pzbdownloaders.redpdfpro.conversionsfeature.convertPdfToAnyFormat.pdftodocfeature.presentation.screen.PdfToDocScreen
 import com.pzbdownloaders.redpdfpro.conversionsfeature.convertPdfToAnyFormat.pdftodocxfeature.presentation.screens.PdfToDocxScreen
 import com.pzbdownloaders.redpdfpro.conversionsfeature.convertPdfToAnyFormat.pdftoepubfeature.presentation.screens.PdfToEpubScreen
@@ -236,6 +237,9 @@ fun NavGraphBuilder.toolsGraph(
         }
         composable(Screens.PdfToEpubScreen.route) {
             PdfToEpubScreen(activity, viewModel, navHostController)
+        }
+        composable(Screens.PdfToCsvScreen.route) {
+            PdfToCsvScreen(activity, viewModel, navHostController)
         }
     }
 }

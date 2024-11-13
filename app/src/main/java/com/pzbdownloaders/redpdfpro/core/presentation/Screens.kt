@@ -125,4 +125,6 @@ sealed class Screens(var route: String) {
 
     object PdfToEpubScreen : Screens("pdf_to_epub_screen")
 
+    object PdfToCsvScreen : Screens("pdf_to_csv_screen")
+
 }

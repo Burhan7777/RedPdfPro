@@ -298,6 +298,14 @@ fun HomePage(navHostController: NavHostController, viewModel: MyViewModel) {
                 Screens.PdfToEpubScreen.route,
                 R.drawable.ic_premium
             )
+            FeatureBox(
+                stringId = R.string.pdfToCsv,
+                drawableId = R.drawable.csv_image,
+                contentDescription = stringResource(id = R.string.pdfToCsv),
+                navHostController,
+                Screens.PdfToCsvScreen.route,
+                R.drawable.ic_premium
+            )
         }
     }
 }

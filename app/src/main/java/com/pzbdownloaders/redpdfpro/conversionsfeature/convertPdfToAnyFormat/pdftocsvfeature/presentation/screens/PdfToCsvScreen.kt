@@ -1,4 +1,4 @@
-package com.pzbdownloaders.redpdfpro.conversionsfeature.convertPdfToAnyFormat.pdftodocxfeature.presentation.screens
+package com.pzbdownloaders.redpdfpro.conversionsfeature.convertPdfToAnyFormat.pdftocsvfeature.presentation.screens
 
 import android.content.Context
 import android.database.Cursor
@@ -73,7 +73,7 @@ import java.io.File
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun PdfToDocxScreen(
+fun PdfToCsvScreen(
     activity: MainActivity,
     viewModel: MyViewModel,
     navHostController: NavHostController
@@ -182,7 +182,7 @@ fun PdfToDocxScreen(
                     scope.launch(Dispatchers.IO) {
                         val python = Python.getInstance()
                         val module = python.getModule("convertPdfToAnyFormat")
-                        val result = module.callAttr("make_request", pathOfPdfFIle.value, "docx")
+                        val result = module.callAttr("make_request", pathOfPdfFIle.value, "csv")
                         println(result.toString())
                         val initializeJob =
                             Gson().fromJson(result.toString(), InitializeJob::class.java)
@@ -191,7 +191,7 @@ fun PdfToDocxScreen(
                         //  println(initializeJob)
                         if (initializeJob.status == "initialising") {
                             showConvertingFileDialogBox.value = true
-                            checkJobStatus(
+                           checkJobStatus(
                                 scope,
                                 module,
                                 initializeJob,
@@ -380,12 +380,12 @@ fun checkJobStatus(
 ) {
     var externalDir =
         Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-    val docx = File("$externalDir/Pro Scanner/docx")
-    if (!docx.exists()) {
-        docx.mkdirs()
+    val csv = File("$externalDir/Pro Scanner/csv")
+    if (!csv.exists()) {
+        csv.mkdirs()
     }
     val path =
-        "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)}/Pro Scanner/docx/${nameOfFile.value}.docx"
+        "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)}/Pro Scanner/csv/${nameOfFile.value}.csv"
     scope.launch(Dispatchers.IO) {
         delay(3000)
         val result = module.callAttr("check_status", initializeJob.id)
@@ -406,8 +406,8 @@ fun checkJobStatus(
                     showDownloadingFIleDialogBox.value = false
                     scanFile(path, activity)
                     navHostController.navigate(
-                        Screens.FinalScreenDocx.withParameters(
-                            path
+                        Screens.FinalScreen.withParameters(
+                            path, "Downloads/Pro Scanner/csv", "text/csv", R.string.openFile
                         )
                     )
                 } else {
