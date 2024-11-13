@@ -89,4 +89,5 @@
     <string name="pdfToXls">PDF to XLS</string>
     <string name="pdfToXlsx">PDF to XLSX</string>
     <string name="pdftohtml5">PDF to HTML5</string>
+    <string name="docToDocx">DOC to DOCX</string>
 </resources>

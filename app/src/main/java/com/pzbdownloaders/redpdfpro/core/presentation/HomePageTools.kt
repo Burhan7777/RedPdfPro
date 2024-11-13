@@ -325,12 +325,30 @@ fun HomePage(navHostController: NavHostController, viewModel: MyViewModel) {
         }
         Spacer(modifier = Modifier.height(10.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+//            FeatureBox(
+//                stringId = R.string.pdftohtml5,
+//                drawableId = R.drawable.html_image,
+//                contentDescription = stringResource(id = R.string.pdftohtml5),
+//                navHostController,
+//                Screens.PdfToHtml5.route,
+//                R.drawable.ic_premium
+//            )
+        }
+        Spacer(modifier = Modifier.height(30.dp))
+        Text(
+            stringResource(R.string.convertToDocx),
+            color = MaterialTheme.colorScheme.onPrimary,
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold
+        )
+        Spacer(modifier = Modifier.height(10.dp))
+        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             FeatureBox(
-                stringId = R.string.pdftohtml5,
-                drawableId = R.drawable.html_image,
-                contentDescription = stringResource(id = R.string.pdftohtml5),
+                stringId = R.string.docToDocx,
+                drawableId = R.drawable.word_red,
+                contentDescription = stringResource(id = R.string.docToDocx),
                 navHostController,
-                Screens.PdfToHtml5.route,
+                Screens.DocToDOcx.route,
                 R.drawable.ic_premium
             )
         }
