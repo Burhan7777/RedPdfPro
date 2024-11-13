@@ -367,6 +367,14 @@ fun HomePage(navHostController: NavHostController, viewModel: MyViewModel) {
                 Screens.CsvToXlsx.route,
                 R.drawable.ic_premium
             )
+            FeatureBox(
+                stringId = R.string.docxToEpub,
+                drawableId = R.drawable.epub_image,
+                contentDescription = stringResource(id = R.string.docxToEpub),
+                navHostController,
+                Screens.DocxToEpub.route,
+                R.drawable.ic_premium
+            )
         }
     }
 }
