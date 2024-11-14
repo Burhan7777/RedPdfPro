@@ -95,4 +95,5 @@
     <string name="csvToXlsx">CSV to XLSX</string>
     <string name="docxToEpub">DOCX to EPUB</string>
     <string name="xlsToCsv">XLS to CSV</string>
+    <string name="xlsxToCsv">XLSX to CSV</string>
 </resources>

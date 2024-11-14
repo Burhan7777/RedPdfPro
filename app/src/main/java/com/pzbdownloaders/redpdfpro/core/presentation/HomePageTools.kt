@@ -386,6 +386,14 @@ fun HomePage(navHostController: NavHostController, viewModel: MyViewModel) {
                 Screens.XlsToCsv.route,
                 R.drawable.ic_premium
             )
-        }
+            FeatureBox(
+                stringId = R.string.xlsxToCsv,
+                drawableId = R.drawable.csv_image,
+                contentDescription = stringResource(id = R.string.xlsxToCsv),
+                navHostController,
+                Screens.XlsxToCsv.route,
+                R.drawable.ic_premium
+            )
         }
     }
+}
