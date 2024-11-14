@@ -44,7 +44,7 @@ fun SingleRowXlsToPdf(
             .fillMaxWidth()
             .padding(10.dp)
             .clickable {
-                pathOfXlsFile.value = getFilePathFromContentUriForXlsx(uri, activity)!!
+                pathOfXlsFile.value = getFilePathFromContentUriForXls(uri, activity)!!
                 saveAsDialogBox.value = true
             },
         shape = RoundedCornerShape(10.dp),

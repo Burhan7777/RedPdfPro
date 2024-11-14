@@ -30,6 +30,7 @@ import com.pzbdownloaders.redpdfpro.conversionsfeature.otherconversions.csvtoxls
 import com.pzbdownloaders.redpdfpro.conversionsfeature.otherconversions.csvtoxlsxfeature.presentation.screen.CsvToXlsxScreen
 import com.pzbdownloaders.redpdfpro.conversionsfeature.otherconversions.docxtoepubfeature.presentation.screen.DocxToEpubScreen
 import com.pzbdownloaders.redpdfpro.conversionsfeature.otherconversions.xlstocsvfeature.presentation.screen.XlsToCsvScreen
+import com.pzbdownloaders.redpdfpro.conversionsfeature.otherconversions.xlstoxlsxfeature.presentation.screen.XlsToXlsxScreen
 import com.pzbdownloaders.redpdfpro.conversionsfeature.otherconversions.xlsxtocsvfeature.presentation.screen.XlsxToCsvScreen
 import com.pzbdownloaders.redpdfpro.core.presentation.HomePage
 import com.pzbdownloaders.redpdfpro.core.presentation.MainActivity
@@ -276,6 +277,9 @@ fun NavGraphBuilder.toolsGraph(
         }
         composable(Screens.XlsxToCsv.route) {
             XlsxToCsvScreen(activity, viewModel, navHostController)
+        }
+        composable(Screens.XlsToXlsx.route) {
+            XlsToXlsxScreen(activity, viewModel, navHostController)
         }
     }
 }

@@ -145,4 +145,6 @@ sealed class Screens(var route: String) {
 
     object XlsxToCsv : Screens("xlsx_to_csv_screen")
 
+    object XlsToXlsx : Screens("xls_to_xlsx_screen")
+
 }
