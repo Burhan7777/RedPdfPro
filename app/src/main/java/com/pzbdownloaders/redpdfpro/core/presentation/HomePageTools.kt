@@ -411,5 +411,16 @@ fun HomePage(navHostController: NavHostController, viewModel: MyViewModel) {
                 R.drawable.ic_premium
             )
         }
+        Spacer(modifier = Modifier.height(10.dp))
+        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            FeatureBox(
+                stringId = R.string.txtToEpub,
+                drawableId = R.drawable.epub_image,
+                contentDescription = stringResource(id = R.string.txtToEpub),
+                navHostController,
+                Screens.TxtToEpub.route,
+                R.drawable.ic_premium
+            )
+        }
     }
 }
