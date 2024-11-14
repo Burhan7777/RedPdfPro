@@ -26,6 +26,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.pzbdownloaders.redpdfpro.core.presentation.MainActivity
 import com.pzbdownloaders.redpdfpro.splitpdffeature.utils.getFilePathFromContentUriForXls
+import com.pzbdownloaders.redpdfpro.splitpdffeature.utils.getFilePathFromContentUriForXlsx
 
 @Composable
 fun SingleRowXlsxToPdf(
@@ -40,7 +41,7 @@ fun SingleRowXlsxToPdf(
             .fillMaxWidth()
             .padding(10.dp)
             .clickable {
-                pathOfXlsxFile.value = getFilePathFromContentUriForXls( uri, activity)!!
+                pathOfXlsxFile.value = getFilePathFromContentUriForXlsx( uri, activity)!!
                 saveAsDialogBox.value = true
             },
         shape = RoundedCornerShape(10.dp),

@@ -97,4 +97,5 @@
     <string name="xlsToCsv">XLS to CSV</string>
     <string name="xlsxToCsv">XLSX to CSV</string>
     <string name="xlsToXlsx">XLS to XLSX</string>
+    <string name="xlsxToXls">XLSX to XLS</string>
 </resources>
