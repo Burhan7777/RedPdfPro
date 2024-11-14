@@ -376,5 +376,16 @@ fun HomePage(navHostController: NavHostController, viewModel: MyViewModel) {
                 R.drawable.ic_premium
             )
         }
+        Spacer(modifier = Modifier.height(10.dp))
+        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            FeatureBox(
+                stringId = R.string.xlsToCsv,
+                drawableId = R.drawable.csv_image,
+                contentDescription = stringResource(id = R.string.xlsToCsv),
+                navHostController,
+                Screens.XlsToCsv.route,
+                R.drawable.ic_premium
+            )
+        }
+        }
     }
-}

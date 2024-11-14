@@ -141,4 +141,6 @@ sealed class Screens(var route: String) {
 
     object DocxToEpub : Screens("docx_to_epub_screen")
 
+    object XlsToCsv : Screens("xls_to_csv_screen")
+
 }
