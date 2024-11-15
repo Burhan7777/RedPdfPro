@@ -153,4 +153,6 @@ sealed class Screens(var route: String) {
 
     object TxtToPdf:Screens("txt_to_pdf_screen")
 
+    object PdfToTxt:Screens("pdf_to_txt_screen")
+
 }

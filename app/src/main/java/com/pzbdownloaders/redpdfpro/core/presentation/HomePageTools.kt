@@ -331,6 +331,7 @@ fun HomePage(navHostController: NavHostController, viewModel: MyViewModel) {
                 R.drawable.ic_premium
             )
         }
+
         Spacer(modifier = Modifier.height(10.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
 //            FeatureBox(
@@ -341,6 +342,14 @@ fun HomePage(navHostController: NavHostController, viewModel: MyViewModel) {
 //                Screens.PdfToHtml5.route,
 //                R.drawable.ic_premium
 //            )
+            FeatureBox(
+                stringId = R.string.pdfToTxt,
+                drawableId = R.drawable.txt_image,
+                contentDescription = stringResource(id = R.string.pdfToTxt),
+                navHostController,
+                Screens.PdfToTxt.route,
+                R.drawable.ic_premium
+            )
         }
         Spacer(modifier = Modifier.height(30.dp))
         Text(
