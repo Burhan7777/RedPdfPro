@@ -1,5 +1,6 @@
 package com.pzbdownloaders.redpdfpro.core.presentation.graphs
 
+import androidx.compose.runtime.internal.composableLambda
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -23,6 +24,7 @@ import com.pzbdownloaders.redpdfpro.conversionsfeature.convertToPdf.doctopdffeat
 import com.pzbdownloaders.redpdfpro.conversionsfeature.convertToPdf.epubtopdffeature.presentation.screen.EpubToPdfScreen
 import com.pzbdownloaders.redpdfpro.conversionsfeature.convertToPdf.ppttopdffeature.presentation.screens.PptToPdfScreen
 import com.pzbdownloaders.redpdfpro.conversionsfeature.convertToPdf.pptxtopdffeature.presentation.screens.PptxToPdfFeature
+import com.pzbdownloaders.redpdfpro.conversionsfeature.convertToPdf.txttopdffeature.presentation.screen.TxtToPdfScreen
 import com.pzbdownloaders.redpdfpro.conversionsfeature.convertToPdf.xlstopdffeature.presentation.screens.XlsToPdfScreen
 import com.pzbdownloaders.redpdfpro.conversionsfeature.convertToPdf.xlsxtopdffeature.presentation.screens.XlsxToPdfScreen
 import com.pzbdownloaders.redpdfpro.conversionsfeature.docx.converttodocx.convertdoctodocx.presentation.screen.DocToDocxScreen
@@ -288,6 +290,9 @@ fun NavGraphBuilder.toolsGraph(
         }
         composable(Screens.TxtToEpub.route) {
             TxtToEpubScreen(activity, viewModel, navHostController)
+        }
+        composable(Screens.TxtToPdf.route) {
+            TxtToPdfScreen(activity, viewModel, navHostController)
         }
     }
 }

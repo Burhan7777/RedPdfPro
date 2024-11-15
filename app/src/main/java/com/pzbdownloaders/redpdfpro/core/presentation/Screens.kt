@@ -151,4 +151,6 @@ sealed class Screens(var route: String) {
 
     object TxtToEpub : Screens("txt_to_epub_screen")
 
+    object TxtToPdf:Screens("txt_to_pdf_screen")
+
 }

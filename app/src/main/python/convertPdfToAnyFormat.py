@@ -10,7 +10,7 @@ def make_request(source_path, target_format_1):
 
     file_content = {'source_file': open(source_file, 'rb')}
     data_content = {'target_format': target_format}
-    res = requests.post(endpoint, data=data_content, files=file_content, auth=HTTPBasicAuth(api_key, ''))
+    res = requests.post(endpoint, data=data_content, files=file_content, auth=HTTPBasicAuth(api_key, ''),verify=False)
     return res.json()
 
 

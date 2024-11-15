@@ -234,6 +234,14 @@ fun HomePage(navHostController: NavHostController, viewModel: MyViewModel) {
                 Screens.EpubToPdf.route,
                 R.drawable.ic_premium
             )
+            FeatureBox(
+                stringId = R.string.txtToPdf,
+                drawableId = R.drawable.converttopdf,
+                contentDescription = stringResource(id = R.string.txtToPdf),
+                navHostController,
+                Screens.TxtToPdf.route,
+                R.drawable.ic_premium
+            )
         }
         Spacer(modifier = Modifier.height(30.dp))
         Text(

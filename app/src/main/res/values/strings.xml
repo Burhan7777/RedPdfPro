@@ -100,4 +100,5 @@
     <string name="xlsxToXls">XLSX to XLS</string>
     <string name="txtToEpub">TXT to EPUB</string>
     <string name="addTxt">Add TXT</string>
+    <string name="txtToPdf">TXT to PDF</string>
 </resources>
